@@ -1,7 +1,7 @@
 /*
  * SeqNumber.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
 import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
@@ -31,6 +32,7 @@ import org.grails.datastore.gorm.GormEntity
  * @author  Daniel Ellermann
  * @version 3.0
  */
+@EqualsAndHashCode(includes = ['controllerName'])
 class SeqNumber implements GormEntity<SeqNumber> {
 
     //-- Class fields ---------------------------
@@ -44,7 +46,9 @@ class SeqNumber implements GormEntity<SeqNumber> {
         orderId min: 0
     }
     static mapping = {
-        controllerName index: 'controller_name'
+        controllerName(
+            index: true, indexAttributes: [unique: true, dropDups: true]
+        )
         sort 'orderId'
     }
 
@@ -88,16 +92,6 @@ class SeqNumber implements GormEntity<SeqNumber> {
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof SeqNumber && obj.controllerName == controllerName
-    }
-
-    @Override
-    int hashCode() {
-        controllerName.hashCode()
-    }
 
     @Override
     String toString() {

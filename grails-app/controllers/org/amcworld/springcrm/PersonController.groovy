@@ -1,7 +1,7 @@
 /*
  * PersonController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,16 @@
 
 package org.amcworld.springcrm
 
+import static org.springframework.http.HttpStatus.*
+
+import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationException
 import javax.naming.AuthenticationException
 import javax.naming.CommunicationException
 import javax.naming.NameNotFoundException
 import net.sf.jmimemagic.Magic
 import org.amcworld.springcrm.google.GoogleContactSync
-import org.grails.datastore.mapping.query.api.BuildableCriteria
+import org.bson.types.ObjectId
 
 
 /**
@@ -33,63 +37,68 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * that belong to an organization.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
-class PersonController extends GeneralController<Person> {
+@Secured(['ROLE_ADMIN', 'ROLE_CONTACT'])
+class PersonController {
 
     //-- Fields ---------------------------------
 
     GoogleContactSync googleContactSync
     LdapService ldapService
-
-
-    //-- Constructors ---------------------------
-
-    PersonController() {
-        super(Person)
-    }
+    OrganizationService organizationService
+    PersonService personService
+    UserService userService
 
 
     //-- Public methods -------------------------
 
-    def copy(Long id) {
-        super.copy id
+    def copy(Person person) {
+        respond new Person(person), view: 'create'
     }
 
     def create() {
-        super.create()
+        respond new Person(params)
     }
 
-    def delete(Long id) {
-        super.delete id
-    }
-
-    def edit(Long id) {
-        super.edit id
-    }
-
-    def find(Long organization) {
-        Organization organizationInstance = Organization.get(organization)
-        BuildableCriteria c = Person.createCriteria()
-        List<Person> list = (List<Person>) c.list {
-            eq('organization', organizationInstance)
-            and {
-                or {
-                    ilike('lastName', "${params.name}%")
-                    ilike('firstName', "${params.name}%")
-                }
-            }
-            order('lastName', 'asc')
+    def delete(String id) {
+        if (id == null) {
+            notFound()
+            return
         }
 
-        [(getDomainInstanceName('List')): list]
+        Person person = personService.delete new ObjectId(id)
+        if (ldapService) {
+            ldapService.delete person
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.deleted.message',
+                    args: [message(code: 'person.label'), person]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NO_CONTENT }
+        }
+    }
+
+    def edit(String id) {
+        respond id == null ? null : personService.get(new ObjectId(id))
+    }
+
+    def find(String organization) {
+        Organization org = organizationService.get(new ObjectId(organization))
+
+        respond personService.search(org, params.name?.toString())
     }
 
     def gdatasync() {
         if (googleContactSync) {
-            googleContactSync.sync credential.loadUser()
+            googleContactSync.sync currentUser
             flash.message = message(
-                code: 'default.gdata.allsync.success', args: [plural]
+                code: 'default.gdata.allsync.success', args: ['person.plural']
             ) as Object
         }
 
@@ -100,36 +109,35 @@ class PersonController extends GeneralController<Person> {
         }
     }
 
-    def getPhoneNumbers(Long id) {
-        Person personInstance = getDomainInstanceWithStatus(id)
-        if (personInstance == null) {
+    def getPhoneNumbers(String id) {
+        Person person = personService.get(new ObjectId(id))
+        if (person == null) {
             return
         }
 
         List<String> phoneNumbers = [
-                personInstance.phone,
-                personInstance.phoneHome,
-                personInstance.mobile,
-                personInstance.fax,
-                personInstance.phoneAssistant,
-                personInstance.phoneOther,
-                personInstance.organization.phone,
-                personInstance.organization.phoneOther,
-                personInstance.organization.fax
+                person.phone,
+                person.phoneHome,
+                person.mobile,
+                person.fax,
+                person.phoneAssistant,
+                person.phoneOther,
+                person.organization.phone,
+                person.organization.phoneOther,
+                person.organization.fax
             ]
             .findAll({ it != '' })
             .unique()
 
-        [phoneNumbers: phoneNumbers]
+        respond phoneNumbers: phoneNumbers
     }
 
-    def getPicture(Long id) {
-        Person personInstance = getDomainInstanceWithStatus(id)
-        if (personInstance != null) {
-            response.contentType =
-                Magic.getMagicMatch(personInstance.picture).mimeType
-            response.contentLength = personInstance.picture.length
-            response.outputStream << personInstance.picture
+    def getPicture(String id) {
+        Person person = personService.get(new ObjectId(id))
+        if (person != null) {
+            response.contentType = Magic.getMagicMatch(person.picture).mimeType
+            response.contentLength = person.picture.length
+            response.outputStream << person.picture
         }
 
         null
@@ -150,55 +158,58 @@ class PersonController extends GeneralController<Person> {
     def index() {
         if (params.letter) {
             int max = params.int('max')
-            int num = Person.countByLastNameLessThan(params.letter.toString())
+            int num =
+                personService.countByLastNameLessThan(params.letter.toString())
             params.sort = 'lastName'
-            params.offset = Math.floor(num / max) * max
+            params.offset = Math.floor(num.toDouble() / max) * max
         }
 
-        super.index()
+        respond(
+            personService.list(params),
+            model: [personCount: personService.count()]
+        )
     }
 
-    def ldapdelete(Long id) {
+    def ldapdelete(String id) {
         if (ldapService && id) {
-            Person personInstance = Person.get(id)
-            if (personInstance) {
-                ldapService.delete personInstance
+            Person person = personService.get(new ObjectId(id))
+            if (person != null) {
+                ldapService.delete person
             }
         }
 
         redirect action: 'index'
     }
 
-    def ldapexport(Long id) {
+    def ldapexport(String id) {
         if (ldapService) {
-            List<Long> excludeIds = excludeFromSyncValues
+            List<String> excludeIds = excludeFromSyncValues
             if (id) {
-                Person personInstance = Person.get(id)
-                if (personInstance
-                    && !isExcludeFromSync(personInstance, excludeIds))
-                {
-                    ldapService.save personInstance
+                Person person = personService.get(new ObjectId(id))
+                if (person && !isExcludeFromSync(person, excludeIds)) {
+                    ldapService.save person
                     flash.message = message(
                         code: 'default.ldap.export.success',
-                        args: [label, personInstance.toString()]
+                        args: ['person.label', person.toString()]
                     ) as Object
                 } else {
                     flash.message = message(
-                        code: 'default.not.found.message', args: [label, id]
+                        code: 'default.not.found.message',
+                        args: ['person.label', id]
                     ) as Object
                 }
                 redirect action: 'show', id: id
                 return
             }
 
-            List<Person> personInstanceList = Person.list()
-            for (Person personInstance : personInstanceList) {
+            List<Person> personList = personService.list()
+            for (Person personInstance : personList) {
                 if (!isExcludeFromSync(personInstance, excludeIds)) {
                     ldapService.save personInstance
                 }
             }
             flash.message = message(
-                code: 'default.ldap.allexport.success', args: [plural]
+                code: 'default.ldap.allexport.success', args: ['person.plural']
             ) as Object
         }
 
@@ -209,42 +220,100 @@ class PersonController extends GeneralController<Person> {
         }
     }
 
-    def listEmbedded(Long organization) {
+    def listEmbedded(String organization) {
         List<Person> list = null
         int count = 0
         Map<String, Object> linkParams = null
 
         if (organization) {
-            def organizationInstance = Organization.get(organization)
-            if (organizationInstance) {
-                list =
-                    Person.findAllByOrganization(organizationInstance, params)
-                count = Person.countByOrganization(organizationInstance)
-                linkParams = [organization: organizationInstance.id]
+            Organization org =
+                organizationService.get(new ObjectId(organization))
+            if (org) {
+                list = personService.findAllByOrganization(org, params)
+                count = personService.countByOrganization(org)
+                linkParams = [organization: organization]
             }
         }
 
-        getListEmbeddedModel list, count, linkParams
+        respond list, model: [personCount: count, linkParams: linkParams]
     }
 
-    def save() {
-        Person personInstance = saveInstance()
+    def save(Person person) {
+        if (person == null) {
+            notFound()
+            return
+        }
 
-        if (ldapService && !isExcludeFromSync(personInstance)) {
-            ldapService.save personInstance
+        try {
+            personService.save person
+        } catch (ValidationException ignored) {
+            respond person.errors, view: 'create'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.created.message',
+                    args: [message(code: 'person.label'), person]
+                ) as Object
+                redirect person
+            }
+            '*' { respond person, [status: CREATED] }
         }
     }
 
-    def show(Long id) {
-        super.show id
+    def show(String id) {
+        respond id == null ? null : personService.get(new ObjectId(id))
     }
 
-    def update(Long id) {
-        super.update id
+    def update(String id) {
+        Person person = id ? personService.get(new ObjectId(id)) : null
+        if (person == null) {
+            notFound()
+            return
+        }
+
+        byte [] picture = person.picture
+        bindData person, params, [exclude: 'picture']
+
+        if (params.pictureRemove == '1') {
+            person.picture = null
+        } else if (params.picture?.isEmpty()) {
+            person.picture = picture
+        }
+
+        try {
+            personService.save person
+        } catch (ValidationException ignored) {
+            respond person.errors, view: 'edit'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.updated.message',
+                    args: [message(code: 'person.label'), person]
+                ) as Object
+                redirect person
+            }
+            '*' { respond person, [status: OK] }
+        }
     }
 
 
     //-- Non-public methods ---------------------
+
+    /**
+     * Gets the currently logged in user.
+     *
+     * @return  the currently logged in user
+     * @since   3.0
+     */
+    private User getCurrentUser() {
+        userService.currentUser
+    }
 
     /**
      * Gets the IDs of the {@code Rating} instances which should be exclude
@@ -254,9 +323,8 @@ class PersonController extends GeneralController<Person> {
      *          excluded from synchronization
      * @since   2.0
      */
-    private List<Long> getExcludeFromSyncValues() {
-        List<Long> ids = credential.settings.excludeFromSync?.split(/,/)?.
-            collect { it as Long }
+    private List<String> getExcludeFromSyncValues() {
+        List<String> ids = currentUser.settings.excludeFromSync?.split(/,/)
 
         ids ?: []
     }
@@ -294,31 +362,21 @@ class PersonController extends GeneralController<Person> {
      * @since       2.0
      */
     private boolean isExcludeFromSync(Person p,
-                                      List<Long> ids = excludeFromSyncValues)
+                                      List<String> ids = excludeFromSyncValues)
     {
         ids.contains p.organization.rating?.id
     }
 
-    @Override
-    protected void lowLevelDelete(Person personInstance) {
-        super.lowLevelDelete personInstance
-
-        if (ldapService) {
-            ldapService.delete personInstance
+    private void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.not.found.message',
+                    args: [message(code: 'person.label'), params.id]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NOT_FOUND }
         }
-    }
-
-    @Override
-    protected Person lowLevelUpdate(Person personInstance) {
-        byte [] picture = personInstance.picture
-        personInstance.properties = params
-
-        if (params.pictureRemove == '1') {
-            personInstance.picture = null
-        } else if (params.picture?.isEmpty()) {
-            personInstance.picture = picture
-        }
-
-        personInstance.save failOnError: true, flush: true
     }
 }

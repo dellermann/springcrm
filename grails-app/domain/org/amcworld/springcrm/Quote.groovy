@@ -1,7 +1,7 @@
 /*
  * Quote.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,16 @@
 
 package org.amcworld.springcrm
 
-import org.grails.datastore.gorm.GormEntity
+import com.mongodb.client.model.Filters
 
 
 /**
  * The class {@code Quote} represents a quote.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class Quote extends InvoicingTransaction implements GormEntity<Quote> {
+class Quote extends InvoicingTransaction {
 
     //-- Constants ----------------------------------
 
@@ -41,6 +41,7 @@ class Quote extends InvoicingTransaction implements GormEntity<Quote> {
         'shippingAddr.state', 'shippingAddr.country', 'headerText',
         'items.*name', 'items.*description', 'footerText', 'notes'
     ].asImmutable()
+    public static final String TYPE = 'Q'
 
 
     //-- Class fields ---------------------------
@@ -52,6 +53,7 @@ class Quote extends InvoicingTransaction implements GormEntity<Quote> {
     static mapping = {
         stage column: 'quote_stage_id'
     }
+    static nextNumberFilters = [Filters.eq('type', TYPE)]
 
 
     //-- Fields ---------------------------------
@@ -74,7 +76,7 @@ class Quote extends InvoicingTransaction implements GormEntity<Quote> {
      */
     Quote() {
         super()
-        type = 'Q'
+        type = TYPE
     }
 
     /**

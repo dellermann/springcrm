@@ -1,7 +1,7 @@
 /*
  * SalesItem.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -29,9 +31,10 @@ import org.grails.datastore.gorm.GormEntity
  * The class {@code SalesItem} acts as a base class for products and works.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.3
  */
+@EqualsAndHashCode(includes = ['id'])
 class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
 
     //-- Class fields ---------------------------
@@ -63,67 +66,10 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
         name index: 'name'
         sort 'number'
     }
-    static transients = ['fullNumber', 'total']
+    static transients = ['total']
 
 
     //-- Fields ---------------------------------
-
-    /**
-     * The type of this sales item, either {@code P} for products or {@code S}
-     * for works.
-     */
-    String type
-
-    /**
-     * The name of this sales item.
-     */
-    String name
-
-    /**
-     * The quantity of this sales item.
-     */
-    BigDecimal quantity = ZERO
-
-    /**
-     * The unit associated with the quantity of this sales item.
-     */
-    Unit unit
-
-    /**
-     * The net unit price of this sales item.
-     */
-    BigDecimal unitPrice = ZERO
-
-    /**
-     * The tax rate of this sales item.
-     */
-    TaxRate taxRate
-
-    /**
-     * The net purchase price of this sales item.
-     */
-    BigDecimal purchasePrice
-
-    /**
-     * The date when sale of this item starts.
-     */
-    Date salesStart
-
-    /**
-     * The date when sale of this item ends.
-     */
-    Date salesEnd
-
-    /**
-     * A description of this sales item.
-     */
-    String description
-
-    /**
-     * A detailed pricing for this sales item.  If not {@code null} the unit
-     * price is obtained from this pricing.
-     */
-    SalesItemPricing pricing
 
     /**
      * The timestamp when this sales item has been created.
@@ -131,9 +77,71 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
     Date dateCreated
 
     /**
-     * The timestamp when this sales item has been modified.
+     * A description of this sales item.
+     */
+    String description
+
+    /**
+     * The ID of the sales item.
+     */
+    ObjectId id
+
+    /**
+     * The timestamp when the sales item has been modified.
      */
     Date lastUpdated
+
+    /**
+     * The name of the sales item.
+     */
+    String name
+
+    /**
+     * A detailed pricing for the sales item.  If not {@code null} the unit
+     * price is obtained from the pricing.
+     */
+    SalesItemPricing pricing
+
+    /**
+     * The net purchase price of the sales item.
+     */
+    BigDecimal purchasePrice
+
+    /**
+     * The quantity of the sales item.
+     */
+    BigDecimal quantity = ZERO
+
+    /**
+     * The date when sale of the item starts.
+     */
+    Date salesStart
+
+    /**
+     * The date when sale of the item ends.
+     */
+    Date salesEnd
+
+    /**
+     * The tax rate of the sales item.
+     */
+    TaxRate taxRate
+
+    /**
+     * The type of the sales item, either {@code P} for products or {@code S}
+     * for works.
+     */
+    String type
+
+    /**
+     * The unit associated with the quantity of the sales item.
+     */
+    Unit unit
+
+    /**
+     * The net unit price of the sales item.
+     */
+    BigDecimal unitPrice = ZERO
 
 
     //-- Constructors ---------------------------
@@ -165,7 +173,7 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
     //-- Properties -----------------------------
 
     /**
-     * Sets the quantity of this sales item.
+     * Sets the quantity of the sales item.
      *
      * @param quantity  the quantity that should be set; if {@code null} it is
      *                  converted to zero
@@ -176,7 +184,7 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
     }
 
     /**
-     * Gets the total price of this sales item.
+     * Gets the total price of the sales item.
      *
      * @return  the total price
      */
@@ -185,7 +193,7 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
     }
 
     /**
-     * Gets the unit price of this sales item.  The unit price is either
+     * Gets the unit price of the sales item.  The unit price is either
      * obtained by the underlying pricing or from field {@code unitPrice}.
      *
      * @return  the unit price
@@ -201,7 +209,7 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
     }
 
     /**
-     * Set the unit price of this sales item.
+     * Set the unit price of the sales item.
      *
      * @param unitPrice the unit price that should be set; if {@code null} it
      *                  is converted to zero
@@ -213,16 +221,6 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof SalesItem && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
 
     @Override
     String toString() {

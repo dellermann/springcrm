@@ -1,15 +1,13 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <meta name="stylesheet" content="sales-item-pricing" />
+    <meta name="stylesheet" content="sales-item-pricing"/>
   </head>
 
   <body>
-    <g:applyLayout name="create"
-      model="[type: 'work', instance: workInstance]" />
+    <g:applyLayout name="create" model="[type: 'work', instance: work]"/>
 
     <content tag="scripts">
-      <asset:javascript src="sales-item-pricing" />
+      <asset:javascript src="sales-item-pricing"/>
     </content>
   </body>
 </html>

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransaction.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@ package org.amcworld.springcrm
 import static java.math.BigDecimal.ZERO
 
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.GormEntity
-import org.grails.datastore.mapping.query.api.BuildableCriteria
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
 
 
 /**
@@ -32,15 +32,14 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * accounts such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class InvoicingTransaction
-    implements GormEntity<InvoicingTransaction>, NumberedDomain
-{
+@EqualsAndHashCode(includes = ['id'])
+class InvoicingTransaction implements NumberedDomain {
 
     //-- Constants ------------------------------
 
-    private static final BigInteger HUNDRED = new BigDecimal(100i)
+    private static final BigDecimal HUNDRED = new BigDecimal(100i)
 
 
     //-- Class fields ---------------------------
@@ -81,8 +80,8 @@ class InvoicingTransaction
         order 'desc'
     }
     static transients = [
-        'discountPercentAmount', 'fullName', 'fullNumber',
-        'shippingCostsGross', 'subtotalGross', 'subtotalNet', 'taxRateSums'
+        'discountPercentAmount', 'fullName', 'shippingCostsGross',
+        'subtotalGross', 'subtotalNet', 'taxRateSums'
     ]
 
 
@@ -99,74 +98,79 @@ class InvoicingTransaction
     Address billingAddr
 
     /**
-     * The carrier used to transport the document generated from this customer
+     * The carrier used to transport the document generated from the customer
      * account.
      */
     Carrier carrier
 
     /**
-     * The user has created this customer account.
+     * The user has created the customer account.
      */
     User createUser
 
     /**
-     * The timestamp when this customer account has been created.
+     * The timestamp when the customer account has been created.
      */
     Date dateCreated
 
     /**
-     * A fixed discount amount of this customer account.  The value is
+     * A fixed discount amount of the customer account.  The value is
      * subtracted from the gross subtotal.
      */
     BigDecimal discountAmount = ZERO
 
     /**
-     * A percentage discount amount of this customer account.  The value is
+     * A percentage discount amount of the customer account.  The value is
      * relative to the gross subtotal subtracted from it.
      */
     BigDecimal discountPercent = ZERO
 
     /**
-     * The date of the document, that is, when this customer account has been
+     * The date of the document, that is, when the customer account has been
      * created.
      */
     Date docDate = new Date()
 
     /**
-     * A text which appears in the footer of the document generated from this
+     * A text which appears in the footer of the document generated from the
      * customer account.
      */
     String footerText
 
     /**
-     * A text which appears in the header of the document generated from this
+     * A text which appears in the header of the document generated from the
      * customer account.
      */
     String headerText
 
     /**
-     * The items of this customer account.
+     * The ID of the invoicing transaction.
+     */
+    ObjectId id
+
+    /**
+     * The items of the customer account.
      */
     List<InvoicingItem> items
 
     /**
-     * The timestamp when this customer account has been modified.
+     * The timestamp when the customer account has been modified.
      */
     Date lastUpdated
 
     /**
-     * Any notes which are not printed in the document generated from this
+     * Any notes which are not printed in the document generated from the
      * customer account.
      */
     String notes
 
     /**
-     * The organization associated to this invoicing transaction.
+     * The organization associated to the invoicing transaction.
      */
     Organization organization
 
     /**
-     * The person associated to this invoicing transaction.
+     * The person associated to the invoicing transaction.
      */
     Person person
 
@@ -181,7 +185,7 @@ class InvoicingTransaction
     BigDecimal shippingCosts = ZERO
 
     /**
-     * The date when the document generated from this customer account has been
+     * The date when the document generated from the customer account has been
      * shipped.
      */
     Date shippingDate
@@ -192,21 +196,21 @@ class InvoicingTransaction
     BigDecimal shippingTax = ZERO
 
     /**
-     * The subject of this customer account.
+     * The subject of the customer account.
      */
     String subject
 
     /**
-     * The total of this customer account.  Normally, this method is called
+     * The total of the customer account.  Normally, the method is called
      * by Hibernate only to set the total value from a database record.  You
-     * should not call this method to set the total.  Use method
+     * should not call the method to set the total.  Use method
      * {@code computeTotal} instead.
      */
     BigDecimal total = ZERO
 
     /**
      * The type of customer account.  This value is intended to be set by
-     * derived classes or by Hibernate during loading.  You should not set this
+     * derived classes or by Hibernate during loading.  You should not set the
      * property by yourself.
      */
     String type
@@ -254,7 +258,7 @@ class InvoicingTransaction
     //-- Properties -----------------------------
 
     /**
-     * Sets the price adjustment of this customer account.
+     * Sets the price adjustment of the customer account.
      *
      * @param adjustment    the adjustment that should be set; if {@code null}
      *                      it is converted to zero
@@ -265,7 +269,7 @@ class InvoicingTransaction
     }
 
     /**
-     * Sets a fixed discount amount of this customer account.
+     * Sets a fixed discount amount of the customer account.
      *
      * @param discountAmount    the discount amount that should be set; if
      *                          {@code null} it is converted to zero
@@ -276,7 +280,7 @@ class InvoicingTransaction
     }
 
     /**
-     * Sets a percentage discount amount of this customer account.
+     * Sets a percentage discount amount of the customer account.
      *
      * @param discountPercent   the percentage discount amount that should be
      *                          set; if {@code null} it is converted to zero
@@ -299,7 +303,7 @@ class InvoicingTransaction
     }
 
     /**
-     * Gets the full name of this invoicing transaction, that is, the full
+     * Gets the full name of the invoicing transaction, that is, the full
      * number from property {@code fullNumber} and the subject.
      *
      * @return  the full name
@@ -310,25 +314,7 @@ class InvoicingTransaction
     }
 
     /**
-     * Gets the full number of this invoicing transaction, that is, the type
-     * prefix, the sequence number, the type suffix and the organization number.
-     *
-     * @return  the full number
-     */
-    String getFullNumber() {
-        StringBuilder buf = new StringBuilder()
-        if (seqNumberService) {
-            buf << seqNumberService.formatWithPrefix(getClass(), number)
-        }
-        if (organization) {
-            buf << '-' << organization.number
-        }
-
-        buf.toString()
-    }
-
-    /**
-     * Sets the shipping costs of this customer account.
+     * Sets the shipping costs of the customer account.
      *
      * @param shippingCosts the shipping costs that should be set; if
      *                      {@code null} it is converted to zero
@@ -349,7 +335,7 @@ class InvoicingTransaction
     }
 
     /**
-     * Sets the shipping tax of this customer account.
+     * Sets the shipping tax of the customer account.
      *
      * @param shippingTax the shipping tax that should be set; if {@code null} it
      *                    is converted to zero
@@ -382,9 +368,9 @@ class InvoicingTransaction
     }
 
     /**
-     * Computes a map of taxes used in this transaction.  The key represents the
+     * Computes a map of taxes used in the transaction.  The key represents the
      * tax rate (a percentage value), the value the sum of tax values of all
-     * items which belong to this tax rate.
+     * items which belong to the tax rate.
      * <p>
      * The keys which represent the tax rates in the returned map are stored as
      * {@code Double} values because the more precise {@code BigDecimal} values
@@ -417,9 +403,9 @@ class InvoicingTransaction
     }
 
     /**
-     * Sets the total of this customer account.  Normally, this method is
+     * Sets the total of the customer account.  Normally, the method is
      * called by Hibernate only to set the total value from a database record.
-     * You should not call this method to set the total.  Use method
+     * You should not call the method to set the total.  Use method
      * {@code computeTotal} instead.
      *
      * @param total the total that should be set; if {@code null} it is
@@ -435,7 +421,7 @@ class InvoicingTransaction
     //-- Public methods -------------------------
 
     /**
-     * Called before this customer account is created in the underlying data
+     * Called before the customer account is created in the underlying data
      * store.  The method obtains the next available sequence number and
      * computes the total value.
      */
@@ -445,7 +431,7 @@ class InvoicingTransaction
     }
 
     /**
-     * Called before this customer account is updated in the underlying data
+     * Called before the customer account is updated in the underlying data
      * store.  The method computes the total value.
      */
     def beforeUpdate() {
@@ -453,11 +439,36 @@ class InvoicingTransaction
     }
 
     /**
-     * Called before this customer account is validated.  The method computes the
+     * Called before the customer account is validated.  The method computes the
      * total value.
      */
     def beforeValidate() {
         total = computeTotal()
+    }
+
+    /**
+     * Computes the sequence number in the instance.  The method works like the
+     * method in {@code NumberedDomain} but adds the number of the organization
+     * to the result.
+     *
+     * @param seqNumber the given sequence number which specifies prefix and
+     *                  suffix; may be {@code null}
+     * @return          the formatted sequence number
+     * @since 3.0
+     */
+    @Override
+    String computeFullNumber(SeqNumber seqNumber) {
+        StringBuilder buf = new StringBuilder(
+            NumberedDomain.super.computeFullNumber(seqNumber, withSuffix: false)
+        )
+        if (organization != null) {
+            buf << '-' << organization.number
+        }
+        if (seqNumber.suffix) {
+            buf << '-' << seqNumber.suffix
+        }
+
+        buf.toString()
     }
 
     /**
@@ -472,46 +483,16 @@ class InvoicingTransaction
 
     /**
      * Copies the billing and shipping address from the given organization to
-     * the corresponding addresses of this invoicing transaction.
+     * the corresponding addresses of the invoicing transaction.
      *
      * @param org   the given organization; if {@code null} the organization is
-     *              taken from this invoicing transaction
+     *              taken from the invoicing transaction
      */
     void copyAddressesFromOrganization(Organization org = organization) {
         if (org) {
             billingAddr = new Address(org.billingAddr)
             shippingAddr = new Address(org.shippingAddr)
         }
-    }
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof InvoicingTransaction && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
-
-    /**
-     * Gets the largest number of any customer account within the limits of the
-     * given sequence number.
-     *
-     * @param seq the given sequence number
-     * @return    the largest number
-     */
-    int maxNumber(SeqNumber seq) {
-        BuildableCriteria c = createCriteria()
-        c.get {
-            projections {
-                max 'number'
-            }
-            and {
-                eq 'type', type
-                between 'number', seq.startValue, seq.endValue
-            }
-        } as int
     }
 
     @Override
@@ -530,12 +511,12 @@ class InvoicingTransaction
     }
 
     /**
-     * Gets all items of this customer account which is associated to a sales
+     * Gets all items of the customer account which is associated to a sales
      * item of the given type.
      *
      * @param type  the given sales item type; {@code null} to select all items
      *              not associated to any sales item
-     * @return      the items of this customer account associated to the given
+     * @return      the items of the customer account associated to the given
      *              sales item type
      * @since       2.0
      */

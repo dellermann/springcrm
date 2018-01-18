@@ -21,7 +21,9 @@
 package org.amcworld.springcrm
 
 import grails.artefact.Interceptor
+import grails.core.GrailsClass
 import groovy.transform.CompileStatic
+import org.grails.core.artefact.DomainClassArtefactHandler
 
 
 @CompileStatic
@@ -45,27 +47,6 @@ class SeqNumberStoreInterceptor implements Interceptor {
     //-- Public methods -------------------------
 
     /**
-     * Called after the action has been executed.  The method stores the next
-     * available sequence number to the instance which is stored in the model.
-     *
-     * @return  always {@code true}
-     */
-    boolean after() {
-        Map<String, Object> model = getModel()
-        if (model) {
-            def inst = model["${controllerName}Instance".toString()]
-            if (inst instanceof NumberedDomain) {
-                NumberedDomain nd = (NumberedDomain) inst
-                if (nd.number == 0i) {
-                    nd.number = seqNumberService.nextNumber(controllerName)
-                }
-            }
-        }
-
-        true
-    }
-
-    /**
      * Called before the action is executed.  The method sets the number
      * parameter to zero if the {@code autoNumber} flag is submitted.
      *
@@ -74,6 +55,15 @@ class SeqNumberStoreInterceptor implements Interceptor {
     boolean before() {
         if (params.number != null && params.autoNumber) {
             params.number = 0i
+        }
+
+        if (params.number == 0) {
+            GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName(
+                DomainClassArtefactHandler.TYPE, controllerName
+            )
+            if (NumberedDomain.isAssignableFrom(gc?.clazz)) {
+                params.number = seqNumberService.nextNumber(controllerName)
+            }
         }
 
         true

@@ -1,31 +1,62 @@
-<g:applyLayout name="listEmbedded"
-  model="[list: personInstanceList, total: personInstanceTotal]">
-  <table class="table data-table">
-    <thead>
-      <tr>
-        <g:sortableColumn property="number" title="${message(code: 'person.number.label')}" />
-        <g:sortableColumn property="lastName" title="${message(code: 'person.lastName.label')}" />
-        <g:sortableColumn property="firstName" title="${message(code: 'person.firstName.label')}" />
-        <g:sortableColumn property="phone" title="${message(code: 'person.phone.label')}" />
-        <g:sortableColumn property="email1" title="${message(code: 'person.email1.label')}" />
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <g:each in="${personInstanceList}" status="i" var="personInstance">
-      <tr>
-        <td class="col-type-id person-number"><g:link controller="person" action="show" id="${personInstance.id}"><g:fieldValue bean="${personInstance}" field="fullNumber" /></g:link></td>
-        <td class="col-type-string person-last-name"><g:link controller="person" action="show" id="${personInstance.id}"><g:fieldValue bean="${personInstance}" field="lastName" /></g:link></td>
-        <td class="col-type-string person-first-name"><g:fieldValue bean="${personInstance}" field="firstName" /></td>
-        <td class="col-type-string person-phone"><a href="tel:${fieldValue(bean: personInstance, field: "phone")}"><g:fieldValue bean="${personInstance}" field="phone" /></a></td>
-        <td class="col-type-string person-email1"><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}"><g:fieldValue bean="${personInstance}" field="email1" /></a></td>
-        <td class="col-actions">
-          <g:button controller="person" action="edit" id="${personInstance.id}"
-            color="success" size="xs" icon="pencil-square-o"
-            message="default.button.edit.label" />
-        </td>
-      </tr>
-      </g:each>
-    </tbody>
-  </table>
-</g:applyLayout>
+<html>
+  <head>
+    <meta name="layout" content="null"/>
+  </head>
+
+  <body>
+    <g:applyLayout name="listEmbedded"
+      model="[list: personList, total: personCount]">
+      <table class="table data-table">
+        <thead>
+          <tr>
+            <g:sortableColumn property="number"
+              title="${message(code: 'person.number.label')}"/>
+            <g:sortableColumn property="lastName"
+              title="${message(code: 'person.lastName.label')}"/>
+            <g:sortableColumn property="firstName"
+              title="${message(code: 'person.firstName.label')}"/>
+            <g:sortableColumn property="phone"
+              title="${message(code: 'person.phone.label')}"/>
+            <g:sortableColumn property="email1"
+              title="${message(code: 'person.email1.label')}"/>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <g:each var="person" in="${personList}" status="i">
+            <tr>
+              <td class="col-type-id person-number">
+                <g:link controller="person" action="show" id="${person.id}">
+                  <g:fullNumber bean="${person}"/>
+                </g:link>
+              </td>
+              <td class="col-type-string person-last-name">
+                <g:link controller="person" action="show" id="${person.id}">
+                  <g:fieldValue bean="${person}" field="lastName"/>
+                </g:link>
+              </td>
+              <td class="col-type-string person-first-name">
+                <g:fieldValue bean="${person}" field="firstName"/>
+              </td>
+              <td class="col-type-string person-phone">
+                <a href="tel:${fieldValue(bean: person, field: "phone")}">
+                  <g:fieldValue bean="${person}" field="phone"/>
+                </a>
+              </td>
+              <td class="col-type-string person-email1">
+                <a href="mailto:${fieldValue(bean: person, field: "email1")}">
+                  <g:fieldValue bean="${person}" field="email1"/>
+                </a>
+              </td>
+              <td class="col-actions">
+                <g:button controller="person" action="edit" id="${person.id}"
+                  color="success" size="xs" icon="pencil-square-o"
+                  message="default.button.edit.label"/>
+              </td>
+            </tr>
+          </g:each>
+        </tbody>
+      </table>
+    </g:applyLayout>
+  </body>
+</html>

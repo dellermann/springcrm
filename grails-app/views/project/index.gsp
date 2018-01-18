@@ -2,13 +2,11 @@
 
 <html>
   <head>
-    <meta name="layout" content="main"/>
     <meta name="stylesheet" content="project"/>
   </head>
 
   <body>
-    <g:applyLayout name="list"
-      model="[list: projectInstanceList, type: 'project']">
+    <g:applyLayout name="list" model="[list: projectList, type: 'project']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>
@@ -33,24 +31,23 @@
             </tr>
           </thead>
           <tbody>
-            <g:each in="${projectInstanceList}" status="i"
-              var="projectInstance">
+            <g:each var="project" in="${projectList}" status="i">
             <tr>
               <td class="col-type-id project-number">
-                <g:link action="show" id="${projectInstance.id}">
-                  <g:fieldValue bean="${projectInstance}" field="fullNumber"/>
+                <g:link action="show" id="${project.id}">
+                  <g:fullNumber bean="${project}"/>
                 </g:link>
               </td>
               <td class="col-type-string project-title">
-                <g:link action="show" id="${projectInstance.id}">
-                  <g:fieldValue bean="${projectInstance}" field="title"/>
+                <g:link action="show" id="${project.id}">
+                  <g:fieldValue bean="${project}" field="title"/>
                 </g:link>
               </td>
               <g:ifModuleAllowed modules="CONTACT">
                 <td class="col-type-ref project-organization">
                   <g:link controller="organization" action="show"
-                    id="${projectInstance.organization?.id}">
-                    <g:fieldValue bean="${projectInstance}"
+                    id="${project.organization?.id}">
+                    <g:fieldValue bean="${project}"
                       field="organization"/>
                   </g:link>
                 </td>
@@ -58,21 +55,22 @@
               <g:ifModuleAllowed modules="CONTACT">
                 <td class="col-type-ref project-person">
                   <g:link controller="person" action="show"
-                    id="${projectInstance.person?.id}">
-                    <g:fieldValue bean="${projectInstance}" field="person"/>
+                    id="${project.person?.id}">
+                    <g:fieldValue bean="${project}" field="person"/>
                   </g:link>
                 </td>
               </g:ifModuleAllowed>
               <td class="col-type-string project-phase">
-                <g:message code="project.phase.${projectInstance.phase}"
-                  default="${projectInstance.phase.toString()}"/>
+                <g:message code="project.phase.${project.phase}"
+                  default="${project.phase.toString()}"/>
               </td>
-              <td class="col-type-status project-status project-status project-status-${projectInstance.status.id}">
-                <g:fieldValue bean="${projectInstance}" field="status"/>
+              <td class="col-type-status project-status project-status
+                  project-status-${project.status.id}">
+                <g:fieldValue bean="${project}" field="status"/>
               </td>
               <td class="col-actions">
-                <g:button action="edit" id="${projectInstance.id}"
-                  color="success" size="xs" icon="pencil-square-o"
+                <g:button action="edit" id="${project.id}" color="success"
+                  size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
               </td>
             </tr>
@@ -83,11 +81,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${projectInstanceTotal}" maxsteps="3"
+            <g:paginate total="${projectCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${projectInstanceTotal}"/>
+            <g:paginate total="${projectCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

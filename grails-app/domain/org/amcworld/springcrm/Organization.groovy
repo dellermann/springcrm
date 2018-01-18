@@ -1,7 +1,7 @@
 /*
  * Organization.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@
 
 package org.amcworld.springcrm
 
-import org.grails.datastore.gorm.GormEntity
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
 
 
 /**
@@ -28,9 +29,10 @@ import org.grails.datastore.gorm.GormEntity
  * customer or a vendor.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class Organization implements GormEntity<Organization>, NumberedDomain {
+@EqualsAndHashCode(includes = ['id'])
+class Organization implements NumberedDomain {
 
     //-- Constants ----------------------------------
 
@@ -78,45 +80,143 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
         projects: Project, calendarEvents: CalendarEvent, helpdesks: Helpdesk
     ]
     static mapping = {
-        calls column: 'Organization'
         sort 'name'
-        name index: 'name'
+        name index: true
         notes type: 'text'
-        recType index: 'rec_type'
+        recType index: true
     }
-    static transients = ['fullNumber', 'shortName', 'customer', 'vendor']
+    static transients = ['shortName', 'client', 'vendor']
 
 
     //-- Fields ---------------------------------
 
-    byte recType
-    String name
-    Address billingAddr
-    Address shippingAddr
-    String phone
-    String fax
-    String phoneOther
-    String email1
-    String email2
-    String website
-    String legalForm
-    OrgType type
-    Industry industry
-    String owner
-    String numEmployees
-    Rating rating
-    String notes
-    Integer termOfPayment
-    String docPlaceholderValue
-    String assessmentPositive
+    /**
+     * Any negative assessments of the organization.
+     */
     String assessmentNegative
+
+    /**
+     * Any positive assessments of the organization.
+     */
+    String assessmentPositive
+
+    /**
+     * The billing address of the organization.
+     */
+    Address billingAddr
+
+    /**
+     * The timestamp of the creation of the record.
+     */
     Date dateCreated
+
+    /**
+     * The placeholder of the organization in the document management.
+     */
+    String docPlaceholderValue
+
+    /**
+     * The e-mail address of the organization.
+     */
+    String email1
+
+    /**
+     * Any other e-mail address of the organization.
+     */
+    String email2
+
+    /**
+     * The fax of the organization.
+     */
+    String fax
+
+    /**
+     * The ID of the organization.
+     */
+    ObjectId id
+
+    /**
+     * The industry the organization belongs to.
+     */
+    Industry industry
+
+    /**
+     * The timestamp of the last update of the record.
+     */
     Date lastUpdated
+
+    /**
+     * The legal form of the organization, for example "ltd.".
+     */
+    String legalForm
+
+    /**
+     * The name of the organization.
+     */
+    String name
+
+    /**
+     * Any notes about the organization.
+     */
+    String notes
+
+    /**
+     * Information about the number of employees of the organization.
+     */
+    String numEmployees
+
+    /**
+     * The name of the owner of the organization.
+     */
+    String owner
+
+    /**
+     * The phone of the organization.
+     */
+    String phone
+
+    /**
+     * Any other phone number of the organization.
+     */
+    String phoneOther
+
+    /**
+     * The rating of the organization.
+     */
+    Rating rating
+
+    /**
+     * The type of record (client or vendor) of the organization.
+     */
+    byte recType
+
+    /**
+     * The shipping address of the organization.
+     */
+    Address shippingAddr
+
+    /**
+     * The term of payment of the organization in days.
+     */
+    Integer termOfPayment
+
+    /**
+     * The type of the organization.
+     */
+    OrgType type
+
+    /**
+     * The URL of the website of the organization.
+     */
+    String website
 
 
     //-- Constructors ---------------------------
 
-    Organization() {}
+    Organization() {
+        billingAddr = new Address()
+        shippingAddr = new Address()
+    }
 
     Organization(Organization org) {
         recType = org.recType
@@ -147,12 +247,12 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
     String getShortName() {
         String res = name ?: ''
         if (res.length() > 40) {
-            res = name.substring(0, 40) + '...'
+            res = name.substring(0, 40) + '…'
         }
         res
     }
 
-    boolean isCustomer() {
+    boolean isClient() {
         (recType & 1) != 0
     }
 
@@ -170,16 +270,6 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof Organization && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
 
     @Override
     String toString() {

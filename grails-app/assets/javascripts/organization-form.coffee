@@ -1,7 +1,7 @@
 #
 # organization-form.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,49 +20,85 @@
 #= require widgets/addr-fields
 
 
-$ = jQuery
-$recType = $('#recType')
+# Class `OrganizationFormPage` handles the scripting for the organization form
+# page.
+#
+# @author   Daniel Ellermann
+# @version  3.0
+# @since    3.0
+#
+class OrganizationFormPage
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = __jq = jQuery
+
+  # @nodoc
+  $LANG = $L
 
 
-#== Functions ===================================
+  #-- Constructor -------------------------------
 
-initRecTypes = ->
-  $this = $(this)
-  $this.attr 'checked', true if $recType.val() & $this.val()
+  # Creates a new scripting instance for the organization form page.
+  #
+  constructor: ->
+    $ = __jq
+    $L = $LANG
+    @$recType = $('#recType')
 
-onClickRecType = ->
-  $rt = $recType
-  val = $(this).val()
+    $('.addresses').addrfields
+      menuItems:
+        left: [
+          action: 'clear'
+          text: $L('organization.billingAddr.clear')
+        ,
+          action: 'copy'
+          text: $L('organization.billingAddr.copy')
+        ]
+        right: [
+          action: 'clear'
+          text: $L('organization.shippingAddr.clear')
+        ,
+          action: 'copy'
+          text: $L('organization.shippingAddr.copy')
+        ]
 
-  if @checked
-    $rt.val $rt.val() | val
-  else
-    $rt.val $rt.val() & val
-
-  true
+    $('.rec-type')
+      .on('click', (event) => @_onClickRecType event)
+      .each (_, elem) => @_initRecTypes elem
 
 
-#== Main ========================================
+  #-- Public methods ----------------------------
 
-$('.addresses').addrfields
-  menuItems:
-    left: [
-        action: 'clear'
-        text: $L('organization.billingAddr.clear')
-      ,
-        action: 'copy'
-        text: $L('organization.billingAddr.copy')
-    ]
-    right: [
-        action: 'clear'
-        text: $L('organization.shippingAddr.clear')
-      ,
-        action: 'copy'
-        text: $L('organization.shippingAddr.copy')
-    ]
+  # Initializes the given checkbox for the type of organization record.
+  #
+  # @param [Element] elem the given checkbox which should be initialized
+  # @private
+  #
+  _initRecTypes: (elem) ->
+    $elem = $(elem)
+    $elem.attr 'checked', true if @$recType.val() & $elem.val()
 
-$('.rec-type').on('click', onClickRecType)
-  .each initRecTypes
+  # Called when the user clicks a checkbox to set the type of organization
+  # record.  The method computes a numeric value by combining the checkbox
+  # value bitwise.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `true` to allow default behaviour
+  # @private
+  #
+  _onClickRecType: (event) ->
+    target = event.currentTarget
+    val = target.value
 
-# vim:set ts=2 sw=2 sts=2:
+    $rt = @$recType
+    if target.checked
+      $rt.val $rt.val() | val
+    else
+      $rt.val $rt.val() & val
 
+    true
+
+
+new OrganizationFormPage()

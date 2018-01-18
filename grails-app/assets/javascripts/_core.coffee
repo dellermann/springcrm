@@ -48,6 +48,21 @@ window.$I = do ->
     s = taxRates.split ','
     parseFloat r for r in s
 
+# Removes the given element from the array.
+#
+# @param [Object] elem  the element to remove
+# @return [Boolean]     `true` if the element has been removed; `false`
+#                       otherwise
+# @since 3.0
+#
+Array::remove = (elem) ->
+  pos = @indexOf elem
+
+  return false if pos < 0
+
+  @splice pos, 1
+  true
+
 # Formats this date with either the given user-defined format or the localized
 # date and time format as specified in the messages `dateFormat` and
 # `timeFormat`.  If using a user-defined format, the following placeholders may

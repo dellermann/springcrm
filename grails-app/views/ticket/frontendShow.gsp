@@ -7,16 +7,16 @@
 <html>
   <head>
     <meta name="layout" content="frontend"/>
-    <title>${ticketInstance}</title>
+    <title>${ticket}</title>
     <meta name="stylesheet" content="helpdesk-frontend"/>
     <g:set var="entityName" value="${message(code: 'ticket.label')}"/>
   </head>
 
   <body>
     <content tag="toolbar">
-      <g:unless test="${helpdeskInstance.forEndUsers}">
+      <g:unless test="${helpdesk.forEndUsers}">
         <g:button mapping="helpdeskFrontend"
-          params="[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]"
+          params="[urlName: helpdesk.urlName, accessCode: helpdesk.accessCode]"
           color="default" class="hidden-xs" icon="arrow-left"
           message="default.button.back.label"/>
       </g:unless>
@@ -27,7 +27,7 @@
       </button>
     </content>
     <g:if test="${
-      ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess, TicketStage.closed]
+      ticket.stage in [TicketStage.assigned, TicketStage.inProcess, TicketStage.closed]
     }">
     <content tag="actionMenu">
       <li class="visible-xs visible-sm" role="menuitem">
@@ -37,21 +37,21 @@
         </a>
       </li>
       <g:if test="${
-        ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]
+        ticket.stage in [TicketStage.assigned, TicketStage.inProcess]
       }">
       <li role="menuitem">
-        <g:link action="frontendCloseTicket" id="${ticketInstance.id}"
-          params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
+        <g:link action="frontendCloseTicket" id="${ticket.id}"
+          params="[helpdesk: helpdesk.id, accessCode: helpdesk.accessCode]"
           class="close-ticket-link">
           <i class="fa fa-check-circle-o"></i>
           <g:message code="ticket.close.label"/>
         </g:link>
       </li>
       </g:if>
-      <g:if test="${ticketInstance.stage == TicketStage.closed}">
+      <g:if test="${ticket.stage == TicketStage.closed}">
       <li>
-        <g:link action="frontendResubmitTicket" id="${ticketInstance.id}"
-          params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]">
+        <g:link action="frontendResubmitTicket" id="${ticket.id}"
+          params="[helpdesk: helpdesk.id, accessCode: helpdesk.accessCode]">
           <i class="fa fa-share-square-o"></i>
           <g:message code="ticket.resubmission.label"/>
         </g:link>
@@ -67,16 +67,16 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${ticketInstance}" property="number">
-              <g:fieldValue bean="${ticketInstance}" field="fullNumber"/>
+            <f:display bean="${ticket}" property="number">
+              <g:fullNumber bean="${ticket}"/>
             </f:display>
-            <f:display bean="${ticketInstance}" property="subject"/>
-            <f:display bean="${ticketInstance}" property="stage"/>
+            <f:display bean="${ticket}" property="subject"/>
+            <f:display bean="${ticket}" property="stage"/>
           </div>
           <div class="column">
-            <f:display bean="${ticketInstance}" property="priority"/>
-            <f:display bean="${ticketInstance}" property="creator"/>
-            <f:display bean="${ticketInstance}" property="assignedUser"/>
+            <f:display bean="${ticket}" property="priority"/>
+            <f:display bean="${ticket}" property="creator"/>
+            <f:display bean="${ticket}" property="assignedUser"/>
           </div>
         </div>
       </section>
@@ -86,18 +86,17 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${ticketInstance}" property="salutation"/>
-            <f:display bean="${ticketInstance}" property="firstName"/>
-            <f:display bean="${ticketInstance}" property="lastName"/>
-            <f:display bean="${ticketInstance}" property="phone"/>
-            <f:display bean="${ticketInstance}" property="phoneHome"/>
-            <f:display bean="${ticketInstance}" property="mobile"/>
-            <f:display bean="${ticketInstance}" property="fax"/>
-            <f:display bean="${ticketInstance}" property="email1"/>
-            <f:display bean="${ticketInstance}" property="email2"/>
+            <f:display bean="${ticket}" property="salutation"/>
+            <f:display bean="${ticket}" property="firstName"/>
+            <f:display bean="${ticket}" property="lastName"/>
+            <f:display bean="${ticket}" property="phone"/>
+            <f:display bean="${ticket}" property="phoneHome"/>
+            <f:display bean="${ticket}" property="mobile"/>
+            <f:display bean="${ticket}" property="fax"/>
+            <f:display bean="${ticket}" property="email1"/>
+            <f:display bean="${ticket}" property="email2"/>
           </div>
-          <f:display bean="${ticketInstance}" property="address"
-            suppressHeader="true"/>
+          <f:display bean="${ticket}" property="address" suppressHeader="true"/>
         </div>
       </section>
       <section>
@@ -107,7 +106,7 @@
         <div class="column-group">
           <div class="column">
             <g:render template="logEntries/logEntry"
-              collection="${ticketInstance.logEntries.reverse()}"/>
+              collection="${ticket.logEntries.reverse()}"/>
           </div>
         </div>
       </section>
@@ -130,11 +129,10 @@
           <div class="modal-body">
             <div class="container-fluid">
               <g:uploadForm action="frontendSendMessage"
-                id="${ticketInstance.id}" method="post">
-                <g:hiddenField name="helpdesk"
-                  value="${helpdeskInstance.id}"/>
+                id="${ticket.id}" method="post">
+                <g:hiddenField name="helpdesk" value="${helpdesk.id}"/>
                 <g:hiddenField name="accessCode"
-                  value="${helpdeskInstance.accessCode}"/>
+                  value="${helpdesk.accessCode}"/>
                 <g:hiddenField name="returnUrl" value="${url()}"/>
                 <f:field bean="${new TicketLogEntry()}" property="message"
                   required="true" orientation="vertical"

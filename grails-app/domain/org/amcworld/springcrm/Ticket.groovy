@@ -1,7 +1,7 @@
 /*
  * Ticket.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,18 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
+
 
 /**
  * The class {@code Ticket} represents a ticket of a particular helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.4
  */
+@EqualsAndHashCode(includes = ['id4'])
 class Ticket implements NumberedDomain {
 
     //-- Constants ----------------------------------
@@ -76,31 +80,31 @@ class Ticket implements NumberedDomain {
         sort lastUpdated: 'desc'
     }
     static transients = [
-        'customerName', 'fullName', 'fullNumber', 'initialMessage',
-        'messageText'
+        'customerName', 'fullName', 'initialMessage', 'messageText'
     ]
 
 
     //-- Fields ---------------------------------
 
-    String subject
-    TicketStage stage = TicketStage.created
-    Salutation salutation
-    String firstName
-    String lastName
     Address address
-    String phone
-    String phoneHome
-    String mobile
-    String fax
+    User assignedUser
+    User creator
+    Date dateCreated
     String email1
     String email2
-    User creator
-    User assignedUser
-    TicketPriority priority
-    List<TicketLogEntry> logEntries
-    Date dateCreated
+    String fax
+    String firstName
+    ObjectId id
+    String lastName
     Date lastUpdated
+    List<TicketLogEntry> logEntries
+    String mobile
+    String phone
+    String phoneHome
+    TicketPriority priority
+    Salutation salutation
+    TicketStage stage = TicketStage.created
+    String subject
 
     /* temporary value for the first message text; not persisted */
     String messageText
@@ -183,16 +187,6 @@ class Ticket implements NumberedDomain {
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof Ticket && id == obj.id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
 
     @Override
     String toString() {

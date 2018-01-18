@@ -7,10 +7,17 @@
  * http://www.opensource.org/licenses/MIT
  */
 
+
+@import "bootstrap/variables";
+@import "bootstrap/mixins/border-radius";
+@import "bootstrap/mixins/forms";
+@import "bootstrap/mixins/vendor-prefixes";
+
+
 //custom mixin for .form-control-validation
-@mixin typeahead-form-control($border-color: #ccc,) {
+@mixin typeahead-form-control($border-color: #ccc) {
   border-color: $border-color;
-  .box-shadow(inset 0 1px 1px rgba(0,0,0,.075)); // Redeclare so transitions work
+  @include box-shadow(inset 0 1px 1px rgba(0,0,0,.075)); // Redeclare so transitions work
   &:focus {
     border-color: darken($border-color, 10%);
     $shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px lighten($border-color, 20%);
@@ -44,7 +51,10 @@
 
   //sizing - small:size and border
   .input-group.input-group-sm .twitter-typeahead &{
-    .input-size($input-height-small; $padding-small-vertical; $padding-small-horizontal; $font-size-small; $line-height-small; $border-radius-small);
+    @include input-size(
+      &, $input-height-small, $padding-small-vertical, $padding-small-horizontal,
+      $font-size-small, $line-height-small, $border-radius-small
+    );
   }
   .input-group.input-group-sm .twitter-typeahead:not(:first-child):not(:last-child) &{
     border-radius: 0;
@@ -60,7 +70,11 @@
 
   //sizing - large:size and border
   .input-group.input-group-lg .twitter-typeahead &{
-    .input-size($input-height-large; $padding-large-vertical; $padding-large-horizontal; $font-size-large; $line-height-large; $border-radius-large);
+    @include input-size(
+      &, $input-height-large, $padding-large-vertical,
+      $padding-large-horizontal, $font-size-large, $line-height-large,
+      $border-radius-large
+    );
   }
   .input-group.input-group-lg .twitter-typeahead:not(:first-child):not(:last-child) &{
     border-radius: 0;

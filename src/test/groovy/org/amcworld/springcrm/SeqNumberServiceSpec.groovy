@@ -74,12 +74,9 @@ class SeqNumberServiceSpec extends Specification
         UserSettings settings = Mock()
         user.settings = settings
 
-        and: 'a credential of that user'
-        Credential cred = new Credential(user)
-
         expect: 'the sequence number scheme is suitable'
         service.checkNumberScheme()
-        !service.getShowHint(cred)
+        !service.getShowHint(user)
     }
 
     def 'Check not suitable sequence numbers'() {
@@ -114,9 +111,6 @@ class SeqNumberServiceSpec extends Specification
         given: 'a user with mocked settings'
         User user = makeUser()
 
-        and: 'a credential of that user'
-        Credential cred = new Credential(user)
-
         /* leave sequence number for invoices at start value 10000 */
 
         when:
@@ -128,7 +122,7 @@ class SeqNumberServiceSpec extends Specification
         user.afterLoad()
 
         then:
-        res == service.getShowHint(cred)
+        res == service.getShowHint(user)
 
         where:
         year                            || res
@@ -148,9 +142,6 @@ class SeqNumberServiceSpec extends Specification
 //        user.admin = false
         user.save failOnError: true
 
-        and: 'a credential of that user'
-        Credential cred = new Credential(user)
-
         /* leave sequence number for invoices at start value 10000 */
 
         when:
@@ -162,7 +153,7 @@ class SeqNumberServiceSpec extends Specification
         user.afterLoad()
 
         then:
-        !service.getShowHint(cred)
+        !service.getShowHint(user)
 
         where:
         year                            || _

@@ -6,7 +6,7 @@
 
   <body>
     <g:applyLayout name="list"
-      model="[list: creditMemoInstanceList, type: 'creditMemo']">
+      model="[list: creditMemoList, type: 'creditMemo']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>
@@ -30,55 +30,53 @@
             </tr>
           </thead>
           <tbody>
-          <g:each in="${creditMemoInstanceList}" status="i"
-            var="creditMemoInstance">
+          <g:each var="creditMemo" in="${creditMemoList}" status="i">
             <tr>
               <td class="col-type-id credit-memo-number">
-                <g:link action="show" id="${creditMemoInstance.id}">
-                  <g:fieldValue bean="${creditMemoInstance}"
-                    field="fullNumber"/>
+                <g:link action="show" id="${creditMemo.id}">
+                  <g:fullNumber bean="${creditMemo}"/>
                 </g:link>
               </td>
               <td class="col-type-string credit-memo-subject">
-                <g:link action="show" id="${creditMemoInstance.id}">
-                  <g:nl2br value="${creditMemoInstance.subject}"/>
+                <g:link action="show" id="${creditMemo.id}">
+                  <g:nl2br value="${creditMemo.subject}"/>
                 </g:link>
               </td>
               <td class="col-type-ref credit-memo-organization">
                 <g:link controller="organization" action="show"
-                  id="${creditMemoInstance.organization?.id}">
-                  <g:fieldValue bean="${creditMemoInstance}"
+                  id="${creditMemo.organization?.id}">
+                  <g:fieldValue bean="${creditMemo}"
                     field="organization"/>
                 </g:link>
               </td>
-              <td class="col-type-status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}">
-                <g:fieldValue bean="${creditMemoInstance}" field="stage"/>
+              <td class="col-type-status credit-memo-stage payment-state payment-state-${creditMemo?.paymentStateColor}">
+                <g:fieldValue bean="${creditMemo}" field="stage"/>
               </td>
               <td class="col-type-date credit-memo-doc-date">
-                <g:formatDate date="${creditMemoInstance?.docDate}"
+                <g:formatDate date="${creditMemo?.docDate}"
                   formatName="default.format.date"/>
               </td>
               <td class="col-type-date credit-memo-payment-date">
-                <g:formatDate date="${creditMemoInstance?.paymentDate}"
+                <g:formatDate date="${creditMemo?.paymentDate}"
                   formatName="default.format.date"/>
               </td>
               <td class="col-type-currency credit-memo-total">
-                <g:formatCurrency number="${creditMemoInstance?.total}"
+                <g:formatCurrency number="${creditMemo?.total}"
                   displayZero="true" external="true"/>
               </td>
-              <td class="col-type-currency credit-memo-closing-balance balance-state balance-state-${creditMemoInstance?.balanceColor}">
-                <g:formatCurrency number="${creditMemoInstance?.closingBalance}"
+              <td class="col-type-currency credit-memo-closing-balance balance-state balance-state-${creditMemo?.balanceColor}">
+                <g:formatCurrency number="${creditMemo?.closingBalance}"
                   displayZero="true" external="true"/>
               </td>
               <td class="col-actions">
                 <g:if test="${session.credential.admin ||
-                    creditMemoInstance.stage.id < 2502}">
-                <g:button action="edit" id="${creditMemoInstance.id}"
+                    creditMemo.stage.id < 2502}">
+                <g:button action="edit" id="${creditMemo.id}"
                   color="success" size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
                 </g:if>
                 <g:else>
-                <g:button action="editPayment" id="${creditMemoInstance.id}"
+                <g:button action="editPayment" id="${creditMemo.id}"
                   color="success" size="xs" icon="pencil-square-o"
                   message="invoicingTransaction.button.editPayment.label"/>
                 </g:else>
@@ -91,11 +89,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${creditMemoInstanceTotal}" maxsteps="3"
+            <g:paginate total="${creditMemoCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${creditMemoInstanceTotal}"/>
+            <g:paginate total="${creditMemoCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

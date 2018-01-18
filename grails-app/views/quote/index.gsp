@@ -1,11 +1,6 @@
 <html>
-  <head>
-    <meta name="layout" content="main"/>
-  </head>
-
   <body>
-    <g:applyLayout name="list"
-      model="[list: quoteInstanceList, type: 'quote']">
+    <g:applyLayout name="list" model="[list: quoteList, type: 'quote']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>
@@ -28,42 +23,42 @@
             </tr>
           </thead>
           <tbody>
-            <g:each in="${quoteInstanceList}" status="i" var="quoteInstance">
-            <tr data-item-id="${quoteInstance.id}">
+            <g:each var="quote" in="${quoteList}" status="i">
+            <tr data-item-id="${quote.id}">
               <td class="col-type-id quote-number">
-                <g:link action="show" id="${quoteInstance.id}">
-                  <g:fieldValue bean="${quoteInstance}" field="fullNumber"/>
+                <g:link action="show" id="${quote.id}">
+                  <g:fullNumber bean="${quote}"/>
                 </g:link>
               </td>
               <td class="col-type-string quote-subject">
-                <g:link action="show" id="${quoteInstance.id}">
-                  <g:nl2br value="${quoteInstance.subject}"/>
+                <g:link action="show" id="${quote.id}">
+                  <g:nl2br value="${quote.subject}"/>
                 </g:link>
               </td>
               <td class="col-type-ref quote-organization">
                 <g:link controller="organization" action="show"
-                  id="${quoteInstance.organization?.id}">
-                  <g:fieldValue bean="${quoteInstance}" field="organization"/>
+                  id="${quote.organization?.id}">
+                  <g:fieldValue bean="${quote}" field="organization"/>
                 </g:link>
               </td>
               <td class="col-type-status quote-stage">
-                <g:fieldValue bean="${quoteInstance}" field="stage"/>
+                <g:fieldValue bean="${quote}" field="stage"/>
               </td>
               <td class="col-type-date quote-doc-date">
-                <g:formatDate date="${quoteInstance?.docDate}"
+                <g:formatDate date="${quote?.docDate}"
                   formatName="default.format.date"/>
               </td>
               <td class="col-type-date quote-shipping-date">
-                <g:formatDate date="${quoteInstance?.shippingDate}"
+                <g:formatDate date="${quote?.shippingDate}"
                   formatName="default.format.date"/>
               </td>
               <td class="col-type-currency quote-total">
-                <g:formatCurrency number="${quoteInstance?.total}"
+                <g:formatCurrency number="${quote?.total}"
                   displayZero="true" external="true"/>
               </td>
               <td class="col-actions">
-                <g:button action="edit" id="${quoteInstance.id}"
-                  color="success" size="xs" icon="pencil-square-o"
+                <g:button action="edit" id="${quote.id}" color="success"
+                  size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
               </td>
             </tr>
@@ -74,11 +69,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${quoteInstanceTotal}" maxsteps="3"
+            <g:paginate total="${quoteCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${quoteInstanceTotal}"/>
+            <g:paginate total="${quoteCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

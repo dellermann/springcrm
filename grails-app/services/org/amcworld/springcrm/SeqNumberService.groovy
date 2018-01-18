@@ -20,13 +20,49 @@
 
 package org.amcworld.springcrm
 
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Accumulators
+import com.mongodb.client.model.Aggregates
+import com.mongodb.client.model.Filters
 import grails.core.ArtefactHandler
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
-import groovy.transform.CompileDynamic
+import grails.gorm.services.Service
 import groovy.transform.CompileStatic
+import org.bson.conversions.Bson
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.beans.factory.annotation.Autowired
+
+
+/**
+ * The interface {@code ISeqNumberService} contains general methods to handle
+ * sequence numbers in the underlying data store.
+ *
+ * @author  Daniel Ellermann
+ * @version 3.0
+ * @since   3.0
+ */
+interface ISeqNumberService {
+
+    //-- Public methods -----------------------------
+
+    /**
+     * Finds a sequence number by the given controller name.
+     *
+     * @param controllerName    the given controller name
+     * @return                  the found sequence number or {@code null} if no
+     *                          such sequence number exists
+     */
+    SeqNumber findByControllerName(String controllerName)
+
+    /**
+     * Lists all sequence numbers.
+     *
+     * @param args  any arguments for loading sequence numbers
+     * @return      the list of sequence numbers
+     */
+    List<SeqNumber> list(Map args)
+}
 
 
 /**
@@ -37,8 +73,8 @@ import org.springframework.transaction.annotation.Transactional
  * @version 3.0
  */
 @CompileStatic
-@Transactional(readOnly = true)
-class SeqNumberService {
+@Service(SeqNumber)
+abstract class SeqNumberService implements ISeqNumberService {
 
     //-- Constants ------------------------------
 
@@ -53,13 +89,9 @@ class SeqNumberService {
         ].asImmutable()
 
 
-    //-- Class fields ---------------------------
-
-    static transactional = false
-
-
     //-- Fields ---------------------------------
 
+    @Autowired
     GrailsApplication grailsApplication
 
 
@@ -97,7 +129,7 @@ class SeqNumberService {
         String year = new Date().format('YY')
         int num = year.toInteger() * 1000
 
-        List<SeqNumber> res = SeqNumber.list(readOnly: true)
+        List<SeqNumber> res = list(readOnly: true)
         for (SeqNumber sn : res) {
             Class<?> cls = domainNameToClass(sn.controllerName)
             if (InvoicingTransaction.isAssignableFrom(cls)) {
@@ -114,96 +146,32 @@ class SeqNumberService {
 
     /**
      * Checks whether or not to display the hint about changing the sequence
-     * numbers for the user with the given credential.  The hint is displayed
-     * for administrators, only.
+     * numbers for the given user.  The hint is displayed for administrators,
+     * only.
      *
-     * @param credential    the given credential of the user
-     * @return              {@code true} if the hint should be displayed;
-     *                      {@code false} otherwise
+     * @param user  the given user
+     * @return      {@code true} if the hint should be displayed; {@code false}
+     *              otherwise
      * @since 2.1
      */
-    boolean getShowHint(Credential credential) {
-        if (checkNumberScheme() || !credential.admin) return false
+    boolean getShowHint(User user) {
+        if (checkNumberScheme() || !user.administrator) {
+            return false
+        }
 
-        String year = credential.settings['seqNumberHintYear']
+        String year = user.settings.seqNumberHintYear
 
         !year || new Date().format('YYYY').toInteger() > year.toInteger()
     }
 
     /**
-     * Formats the given sequence number as specified in the number schema for
-     * the given controller.
+     * Computes the full number of the given domain model instance.
      *
-     * @param controllerName    the given controller name
-     * @param number            the given number
-     * @return                  the formatted number
+     * @param domain    the given domain model
+     * @return          the computed number
      */
-    String format(String controllerName, int number) {
-        formatNumber controllerName: controllerName, number: number
-    }
-
-    /**
-     * Formats the given sequence number as specified in the number schema for
-     * the controller which is associated to the given class.
-     *
-     * @param cls       the given class
-     * @param number    the given number
-     * @return          the formatted number
-     */
-    String format(Class cls, int number) {
-        format classToDomainName(cls), number
-    }
-
-    /**
-     * Formats the given sequence number with the prefix which is defined for
-     * the given controller.
-     *
-     * @param controllerName    the given controller name
-     * @param number            the given number
-     * @return                  the formatted number
-     */
-    String formatWithPrefix(String controllerName, int number) {
-        formatNumber(
-            controllerName: controllerName, number: number, withSuffix: false
-        )
-    }
-
-    /**
-     * Formats the given sequence number with the prefix which is defined for
-     * the controller which is associated to the given class.
-     *
-     * @param cls       the given class
-     * @param number    the given number
-     * @return          the formatted number
-     */
-    String formatWithPrefix(Class cls, int number) {
-        formatWithPrefix classToDomainName(cls), number
-    }
-
-    /**
-     * Formats the given sequence number with the suffix which is defined for
-     * the given controller.
-     *
-     * @param controllerName    the given controller name
-     * @param number            the given number
-     * @return                  the formatted number
-     */
-    String formatWithSuffix(String controllerName, int number) {
-        formatNumber(
-            controllerName: controllerName, number: number, withPrefix: false
-        )
-    }
-
-    /**
-     * Formats the given sequence number with the suffix which is defined for
-     * the controller which is associated to the given class.
-     *
-     * @param cls       the given class
-     * @param number    the given number
-     * @return          the formatted number
-     */
-    String formatWithSuffix(Class cls, int number) {
-        formatWithSuffix classToDomainName(cls), number
+    String getFullNumber(NumberedDomain domain) {
+        domain.computeFullNumber loadSeqNumber(domain.getClass())
     }
 
     /**
@@ -213,9 +181,8 @@ class SeqNumberService {
      * @return                  the sequence number data; {@code null} if no
      *                          such data are stored for the given controller
      */
-    @CompileDynamic
     SeqNumber loadSeqNumber(String controllerName) {
-        SeqNumber.findByControllerName controllerName
+        findByControllerName controllerName
     }
 
     /**
@@ -231,52 +198,32 @@ class SeqNumberService {
     }
 
     /**
-     * Returns the next sequence number for the given controller formatted with
-     * prefix and suffix, if any.
-     *
-     * @param controllerName    the given controller name
-     * @return                  the formatted next sequence number
-     */
-    String nextFullNumber(String controllerName) {
-        formatNumber controllerName: controllerName
-    }
-
-    /**
-     * Returns the next sequence number for the controller which is associated
-     * to the given class formatted with prefix and suffix, if any.
-     *
-     * @param cls   the given class
-     * @return      the formatted next sequence number
-     */
-    String nextFullNumber(Class cls) {
-        nextFullNumber classToDomainName(cls)
-    }
-
-    /**
      * Retrieves the next available sequence number for the given controller
      * name.
      *
      * @param controllerName    the given controller name
      * @return                  the next available sequence number
      */
-    @CompileDynamic
     int nextNumber(String controllerName) {
         SeqNumber seq = loadSeqNumber(controllerName)
-        GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
-            DomainClassArtefactHandler.TYPE, controllerName
-        )
-        Integer num
-        try {
-            num = cls.clazz.'maxNumber'(seq)
-        } catch (Exception ignore) {
-            def c = cls.clazz.'createCriteria'()
-            num = c.get {
-                projections {
-                    max 'number'
-                }
-                between 'number', seq.startValue, seq.endValue
-            }
+        Class<?> clazz = domainNameToClass(controllerName)
+
+        List<Bson> filters = [Filters.lte('number', seq.endValue)]
+        if (clazz.hasProperty('nextNumberFilters')) {
+            filters.addAll(
+                (List<Bson>) clazz.getField('nextNumberFilters').get(null)
+            )
         }
+
+        Integer num = (Integer) getCollection(clazz)
+            .aggregate([
+                Aggregates.match(Filters.and(filters)),
+                Aggregates.group(null, Accumulators.max('num', '$number'))
+            ])
+            .first()
+            ?.getAt('num')
+
+        // TODO what if num >= seq.endValue?
 
         (num == null || num < seq.startValue) ? seq.startValue : num + 1
     }
@@ -298,9 +245,8 @@ class SeqNumberService {
      *
      * @param user  the currently logged in user
      */
-    @Transactional
     void setDontShowAgain(User user) {
-        user.settings['seqNumberHintYear'] = new Date().format('YYYY')
+        user.settings.seqNumberHintYear = new Date().format('YYYY')
     }
 
     /**
@@ -309,9 +255,8 @@ class SeqNumberService {
      *
      * @param user  the currently logged in user
      */
-    @Transactional
     void setNeverShowAgain(User user) {
-        user.settings['seqNumberHintYear'] = '9999'
+        user.settings.seqNumberHintYear = '9999'
     }
 
 
@@ -362,49 +307,20 @@ class SeqNumberService {
      */
     private Class<?> domainNameToClass(String domainName) {
         GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName(
-            'Domain', domainName
+            DomainClassArtefactHandler.TYPE, domainName
         )
 
         gc?.clazz
     }
 
     /**
-     * Formats a sequence number as specified in the given arguments.  The
-     * given argument map may contain the following keys:
-     * <ul>
-     *   <li>{@code controllerName}.  The name of the controller that sequence
-     *   number should be returned.</li>
-     *   <li>{@code number}.  The number to format; if not specified the next
-     *   available sequence number for the given controller is used.</li>
-     *   <li>{@code withPrefix}.  If {@code true} or not specified the prefix
-     *   is added to the returned string.</li>
-     *   <li>{@code withSuffix}. If {@code true} or not specified the suffix is
-     *   added to the returned string.</li>
-     * </ul>
+     * Gets the MongoDB collection of the given domain model class.
      *
-     * @param args  any arguments as described above
-     * @return      the formatted sequence number
+     * @param clazz the given domain model class
+     * @return      the MongoDB collection
      */
-    private String formatNumber(Map args) {
-        String controllerName = args.controllerName.toString()
-        Integer number = (Integer) args.number
-        boolean withPrefix = (args.withPrefix == null) ? true
-            : (boolean) args.withPrefix
-        boolean withSuffix = (args.withSuffix == null) ? true
-            : (boolean) args.withSuffix
-
-        def seqNumberInstance = loadSeqNumber(controllerName)
-        if (seqNumberInstance) {
-            def s = new StringBuilder()
-            if (withPrefix) s << seqNumberInstance.prefix
-            if (s) s << '-'
-            s << ((number == null) ? nextNumber(controllerName) : number)
-            if (withSuffix && (seqNumberInstance.suffix != '')) {
-                s << '-' << seqNumberInstance.suffix
-            }
-            s.toString()
-        } else {
-            ((number == null) ? 1 : number).toString()
-        }
+    private static MongoCollection getCollection(Class<?> clazz) {
+        (MongoCollection) clazz.getMethod('getCollection')
+            .invoke(null)
     }
 }

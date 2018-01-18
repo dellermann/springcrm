@@ -1,13 +1,8 @@
 <%@ page import="org.amcworld.springcrm.Product" %>
 
 <html>
-  <head>
-    <meta name="layout" content="main"/>
-  </head>
-
   <body>
-    <g:applyLayout name="list"
-      model="[list: productInstanceList, type: 'product']">
+    <g:applyLayout name="list" model="[list: productList, type: 'product']">
       <div class="visible-xs">
         <g:letterBar clazz="${Product}" property="name" numLetters="5"
           separator="-"/>
@@ -38,34 +33,34 @@
             </tr>
           </thead>
           <tbody>
-          <g:each in="${productInstanceList}" status="i" var="productInstance">
+          <g:each var="product" in="${productList}" status="i">
             <tr>
               <td class="col-type-id product-number">
-                <g:link action="show" id="${productInstance.id}">
-                  <g:fieldValue bean="${productInstance}" field="fullNumber"/>
+                <g:link action="show" id="${product.id}">
+                  <g:fullNumber bean="${product}"/>
                 </g:link>
               </td>
               <td class="col-type-string product-name">
-                <g:link action="show" id="${productInstance.id}">
-                  <g:fieldValue bean="${productInstance}" field="name"/>
+                <g:link action="show" id="${product.id}">
+                  <g:fieldValue bean="${product}" field="name"/>
                 </g:link>
               </td>
               <td class="col-type-string product-category">
-                <g:fieldValue bean="${productInstance}" field="category"/>
+                <g:fieldValue bean="${product}" field="category"/>
               </td>
               <td class="col-type-number product-quantity">
-                <g:formatNumber number="${productInstance.quantity}"
+                <g:formatNumber number="${product.quantity}"
                   maxFractionDigits="10" groupingUsed="true"/>
               </td>
               <td class="col-type-string product-unit">
-                <g:fieldValue bean="${productInstance}" field="unit"/>
+                <g:fieldValue bean="${product}" field="unit"/>
               </td>
               <td class="col-type-currency product-unit-price">
-                <g:formatCurrency number="${productInstance.unitPrice}"
+                <g:formatCurrency number="${product.unitPrice}"
                   displayZero="true"/>
               </td>
               <td class="col-actions">
-                <g:button action="edit" id="${productInstance.id}"
+                <g:button action="edit" id="${product.id}"
                   color="success" size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
               </td>
@@ -77,11 +72,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${productInstanceTotal}" maxsteps="3"
+            <g:paginate total="${productCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${productInstanceTotal}"/>
+            <g:paginate total="${productCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

@@ -1,7 +1,7 @@
 /*
  * CreditMemoController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +26,14 @@ package org.amcworld.springcrm
  * memos.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
 class CreditMemoController extends InvoicingController<CreditMemo> {
+
+    //-- Class fields -------------------------------
+
+    SeqNumberService seqNumberService
+
 
     //-- Constructors ---------------------------
 
@@ -133,9 +138,13 @@ class CreditMemoController extends InvoicingController<CreditMemo> {
                 creditMemoInstance, template,
                 [
                     invoice: creditMemoInstance.invoice,
-                    invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
+                    invoiceFullNumber: seqNumberService.getFullNumber(
+                        creditMemoInstance.invoice
+                    ),
                     dunning: creditMemoInstance.dunning,
-                    dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
+                    dunningFullNumber: seqNumberService.getFullNumber(
+                        creditMemoInstance.dunning
+                    ),
                     paymentMethod: creditMemoInstance.paymentMethod?.name
                 ]
             )

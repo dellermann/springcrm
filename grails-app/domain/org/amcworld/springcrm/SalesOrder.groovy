@@ -1,7 +1,7 @@
 /*
  * SalesOrder.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import com.mongodb.client.model.Filters
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -27,7 +28,7 @@ import org.grails.datastore.gorm.GormEntity
  * The class {@code SalesOrder} represents a sales order.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
 class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
 {
@@ -42,6 +43,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
         'shippingAddr.state', 'shippingAddr.country', 'headerText',
         'items.*name', 'items.*description', 'footerText', 'notes'
     ].asImmutable()
+    public static final String TYPE = 'O'
 
 
     //-- Class fields ---------------------------
@@ -61,14 +63,20 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
         stage column: 'so_stage_id'
         signature type: 'text'
     }
+    static nextNumberFilters = [Filters.eq('type', TYPE)]
 
 
     //-- Fields ---------------------------------
 
     /**
-     * The stage of this sales order.
+     * The actual date of delivery.
      */
-    SalesOrderStage stage
+    Date deliveryDate
+
+    /**
+     * The date when the delivery should take place.
+     */
+    Date dueDate
 
     /**
      * The date when the client placed the order.
@@ -78,18 +86,18 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
     Date orderDate
 
     /**
-     * The way the order has been placed.
-     *
-     * @since 2.2
-     */
-    OrderMethod orderMethod
-
-    /**
      * A document containing the order of the client.
      *
      * @since 2.2
      */
     DataFile orderDocument
+
+    /**
+     * The way the order has been placed.
+     *
+     * @since 2.2
+     */
+    OrderMethod orderMethod
 
     /**
      * The signature of the client in SVG format.
@@ -99,14 +107,9 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
     String signature
 
     /**
-     * The date when the delivery should take place.
+     * The stage of this sales order.
      */
-    Date dueDate
-
-    /**
-     * The actual date of delivery.
-     */
-    Date deliveryDate
+    SalesOrderStage stage
 
 
     //-- Constructors ---------------------------
@@ -116,7 +119,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
      */
     SalesOrder() {
         super()
-        type = 'O'
+        type = TYPE
     }
 
     /**
@@ -138,7 +141,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
      */
     SalesOrder(Quote q) {
         super(q)
-        type = 'O'
+        type = TYPE
         quote = q
     }
 }

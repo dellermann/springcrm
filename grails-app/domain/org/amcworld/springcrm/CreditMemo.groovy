@@ -1,7 +1,7 @@
 /*
  * CreditMemo.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import com.mongodb.client.model.Filters
 import java.math.RoundingMode
 
 
@@ -29,7 +30,7 @@ import java.math.RoundingMode
  * The class {@code CreditMemo} represents a credit note.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class CreditMemo extends InvoicingTransaction implements Payable {
 
@@ -43,6 +44,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         'shippingAddr.state', 'shippingAddr.country', 'headerText',
         'items.*name', 'items.*description', 'footerText', 'notes'
     ].asImmutable()
+    public static final String TYPE = 'C'
 
 
     //-- Class fields ---------------------------
@@ -58,6 +60,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     static mapping = {
         stage column: 'credit_memo_stage_id'
     }
+    static nextNumberFilters = [Filters.eq('type', TYPE)]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'payable', 'paymentStateColor', 'turnoverOtherSalesItems',
@@ -69,9 +72,9 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     def userService
 
     /**
-     * The stage of this credit note.
+     * The payment amount.
      */
-    CreditMemoStage stage
+    BigDecimal paymentAmount = ZERO
 
     /**
      * The date of payment.
@@ -79,14 +82,14 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     Date paymentDate
 
     /**
-     * The payment amount.
-     */
-    BigDecimal paymentAmount = ZERO
-
-    /**
      * The payment method.
      */
     PaymentMethod paymentMethod
+
+    /**
+     * The stage of this credit note.
+     */
+    CreditMemoStage stage
 
 
     //-- Constructors ---------------------------
@@ -96,7 +99,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      */
     CreditMemo() {
         super()
-        type = 'C'
+        type = TYPE
     }
 
     /**
@@ -107,7 +110,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     CreditMemo(Invoice i) {
         super(i)
         userService = i.userService
-        type = 'C'
+        type = TYPE
         headerText = ''
         footerText = ''
         invoice = i
@@ -125,7 +128,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     CreditMemo(Dunning d) {
         super(d)
         userService = d.userService
-        type = 'C'
+        type = TYPE
         headerText = ''
         footerText = ''
         dunning = d

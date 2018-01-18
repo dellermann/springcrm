@@ -124,7 +124,7 @@ class OrganizationSpec extends Specification
         org.recType = r
 
         then: 'the customer and vendor flags should be set correctly'
-        c == org.customer
+        c == org.client
         v == org.vendor
 
         where:

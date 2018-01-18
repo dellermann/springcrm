@@ -1,9 +1,8 @@
 <html>
   <head>
-    <meta name="layout" content="main"/>
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[message(code: 'salesOrder.label'), salesOrderInstance.fullNumber]"/> -
+        args="[message(code: 'salesOrder.label'), fullNumber]"/> -
       <g:message code="salesOrder.plural"/>
     </title>
     <meta name="stylesheet" content="sales-order"/>
@@ -11,7 +10,7 @@
 
   <body>
     <g:applyLayout name="edit" model="[
-      type: 'salesOrder', instance: salesOrderInstance,
+      type: 'salesOrder', instance: salesOrder,
       enctype: 'multipart/form-data'
     ]"/>
 

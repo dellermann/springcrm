@@ -1,7 +1,7 @@
 #
 # person-form.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,30 +26,31 @@
 $ = jQuery
 
 
-#== Classes =====================================
-
 # Class `PictureFileinput` represents a file input widget for setting the
 # picture of a person.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class PictureFileinput
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jQuery
+  $ = __jq = jQuery
 
 
   #-- Constructor -------------------------------
 
   # Creates a new file input widget for setting the picture of a person.
   #
-  # @param [jQuery] $element  the file input control which is augmented as widget
+  # @param [Element] element  the file input control which is augmented as
+  #                           widget
   #
-  constructor: ($element) ->
-    @$element = $element
+  constructor: (element) ->
+    $ = __jq
+
+    @$element = $(element)
     @$pictureRemove = $('#pictureRemove')
     @url = $element.data 'picture'
     @newPicture = false
@@ -88,7 +89,8 @@ class PictureFileinput
 
   # Initializes the initial preview if a picture already exists.
   #
-  # @return [Object]  any options which should be set to display the initial preview
+  # @return [Object]  any options which should be set to display the initial
+  #                   preview
   # @private
   #
   _initPreviewOptions: ->
@@ -98,7 +100,7 @@ class PictureFileinput
     if url
       previewOptions.initialPreview = [
           """
-<img src="#{url}" class="file-preview-image img-responsive" alt="" />
+<img src="#{url}" class="file-preview-image img-responsive" alt=""/>
 """
         ]
 
@@ -130,10 +132,9 @@ class PictureFileinput
 
   # Called if a new picture has been selected and loading into the preview.
   #
-  # @param [Event] event  any event data
   # @private
   #
-  _onFileLoaded: (event) ->
+  _onFileLoaded: ->
     @newPicture = true
     @$pictureRemove.val '0'
 
@@ -144,47 +145,72 @@ class PictureFileinput
   # @private
   #
   _registerListeners: ->
-    @$element.on('filecleared', (event) => @_onFileCleared event)
-      .on('fileloaded', (event) => @_onFileLoaded event)
+    @$element
+      .on('filecleared', (event) => @_onFileCleared event)
+      .on('fileloaded', => @_onFileLoaded())
 
 
-#== Main ========================================
+# Class `PersonFormPage` represents the scripting for pages containing the
+# person forms.
+#
+# @author   Daniel Ellermann
+# @version  3.0
+# @since    3.0
+#
+class PersonFormPage
 
-$('#picture').each -> new PictureFileinput $(this)
+  #-- Internal variables ------------------------
 
-$('.addresses').addrfields
-  menuItems:
-    left: [
-        action: 'clear'
-        text: $L('person.mailingAddr.clear')
-      ,
-        action: 'copy'
-        text: $L('person.mailingAddr.copy')
-      ,
-        action: 'loadFromOrganization'
-        prefix: 'billingAddr'
-        text: $L('person.addr.fromOrgBillingAddr')
-      ,
-        action: 'loadFromOrganization'
-        prefix: 'shippingAddr'
-        text: $L('person.addr.fromOrgShippingAddr')
-    ]
-    right: [
-        action: 'clear'
-        text: $L('person.otherAddr.clear')
-      ,
-        action: 'copy'
-        text: $L('person.otherAddr.copy')
-      ,
-        action: 'loadFromOrganization'
-        prefix: 'billingAddr'
-        text: $L('person.addr.fromOrgBillingAddr')
-      ,
-        action: 'loadFromOrganization'
-        prefix: 'shippingAddr'
-        text: $L('person.addr.fromOrgShippingAddr')
-    ]
-  organizationId: '#organization-select'
+  # @nodoc
+  $ = __jq = jQuery
 
-# vim:set ts=2 sw=2 sts=2:
+  # @nodoc
+  $LANG = $L
 
+
+  #-- Constructor -------------------------------
+
+  # Initializes the person form page.
+  #
+  constructor: ->
+    $ = __jq
+    $L = $LANG
+
+    $('#picture').each -> new PictureFileinput(this)
+
+    $('.addresses').addrfields
+      menuItems:
+        left: [
+            action: 'clear'
+            text: $L('person.mailingAddr.clear')
+          ,
+            action: 'copy'
+            text: $L('person.mailingAddr.copy')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'billingAddr'
+            text: $L('person.addr.fromOrgBillingAddr')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'shippingAddr'
+            text: $L('person.addr.fromOrgShippingAddr')
+        ]
+        right: [
+            action: 'clear'
+            text: $L('person.otherAddr.clear')
+          ,
+            action: 'copy'
+            text: $L('person.otherAddr.copy')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'billingAddr'
+            text: $L('person.addr.fromOrgBillingAddr')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'shippingAddr'
+            text: $L('person.addr.fromOrgShippingAddr')
+        ]
+      organizationId: '#organization-select'
+
+
+new PersonFormPage()

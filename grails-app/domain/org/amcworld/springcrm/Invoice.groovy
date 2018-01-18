@@ -1,7 +1,7 @@
 /*
  * Invoice.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,19 +22,17 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import com.mongodb.client.model.Filters
 import java.math.RoundingMode
-import org.grails.datastore.gorm.GormEntity
 
 
 /**
  * The class {@code Invoice} represents an invoice.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class Invoice extends InvoicingTransaction
-    implements GormEntity<Invoice>, PayableAndDue
-{
+class Invoice extends InvoicingTransaction implements PayableAndDue {
 
     //-- Constants ----------------------------------
 
@@ -46,6 +44,7 @@ class Invoice extends InvoicingTransaction
         'shippingAddr.state', 'shippingAddr.country', 'headerText',
         'items.*name', 'items.*description', 'footerText', 'notes'
     ].asImmutable()
+    public static final String TYPE = 'I'
 
 
     //-- Class fields ---------------------------
@@ -63,6 +62,7 @@ class Invoice extends InvoicingTransaction
         creditMemos lazy: false
         stage column: 'invoice_stage_id'
     }
+    static nextNumberFilters = [Filters.eq('type', TYPE)]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'payable', 'paymentStateColor', 'turnover', 'turnoverOtherSalesItems',
@@ -75,19 +75,9 @@ class Invoice extends InvoicingTransaction
     def userService
 
     /**
-     * The stage of this invoice.
-     */
-    InvoiceStage stage
-
-    /**
      * The due date of payment.
      */
     Date dueDatePayment
-
-    /**
-     * The date of payment.
-     */
-    Date paymentDate
 
     /**
      * The amount of payment.
@@ -95,9 +85,19 @@ class Invoice extends InvoicingTransaction
     BigDecimal paymentAmount = ZERO
 
     /**
+     * The date of payment.
+     */
+    Date paymentDate
+
+    /**
      * The payment method.
      */
     PaymentMethod paymentMethod
+
+    /**
+     * The stage of this invoice.
+     */
+    InvoiceStage stage
 
 
     //-- Constructors ---------------------------
@@ -107,7 +107,7 @@ class Invoice extends InvoicingTransaction
      */
     Invoice() {
         super()
-        type = 'I'
+        type = TYPE
     }
 
     /**
@@ -130,7 +130,7 @@ class Invoice extends InvoicingTransaction
      */
     Invoice(Quote q) {
         super(q)
-        type = 'I'
+        type = TYPE
         quote = q
         if (q.invoices == null) {
             q.invoices = []
@@ -145,7 +145,7 @@ class Invoice extends InvoicingTransaction
      */
     Invoice(SalesOrder so) {
         super(so)
-        type = 'I'
+        type = TYPE
         salesOrder = so
         if (so.invoices == null) {
             so.invoices = []

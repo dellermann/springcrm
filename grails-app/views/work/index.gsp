@@ -1,12 +1,8 @@
 <%@ page import="org.amcworld.springcrm.Work" %>
 
 <html>
-  <head>
-    <meta name="layout" content="main"/>
-  </head>
-
   <body>
-    <g:applyLayout name="list" model="[list: workInstanceList, type: 'work']">
+    <g:applyLayout name="list" model="[list: workList, type: 'work']">
       <div class="visible-xs">
         <g:letterBar clazz="${Work}" property="name" numLetters="5"
           separator="-"/>
@@ -37,35 +33,35 @@
             </tr>
           </thead>
           <tbody>
-          <g:each in="${workInstanceList}" status="i" var="workInstance">
+          <g:each var="work" in="${workList}" status="i">
             <tr>
               <td class="col-type-id work-number">
-                <g:link action="show" id="${workInstance.id}">
-                  <g:fieldValue bean="${workInstance}" field="fullNumber"/>
+                <g:link action="show" id="${work.id}">
+                  <g:fullNumber bean="${work}"/>
                 </g:link>
               </td>
               <td class="col-type-string work-name">
-                <g:link action="show" id="${workInstance.id}">
-                  <g:fieldValue bean="${workInstance}" field="name"/>
+                <g:link action="show" id="${work.id}">
+                  <g:fieldValue bean="${work}" field="name"/>
                 </g:link>
               </td>
               <td class="col-type-string work-category">
-                <g:fieldValue bean="${workInstance}" field="category"/>
+                <g:fieldValue bean="${work}" field="category"/>
               </td>
               <td class="col-type-number work-quantity">
-                <g:formatNumber number="${workInstance.quantity}"
+                <g:formatNumber number="${work.quantity}"
                   maxFractionDigits="10" groupingUsed="true"/>
               </td>
               <td class="col-type-string work-unit">
-                <g:fieldValue bean="${workInstance}" field="unit"/>
+                <g:fieldValue bean="${work}" field="unit"/>
               </td>
               <td class="col-type-currency work-unit-price">
-                <g:formatCurrency number="${workInstance.unitPrice}"
+                <g:formatCurrency number="${work.unitPrice}"
                   displayZero="true"/>
               </td>
               <td class="col-actions">
-                <g:button action="edit" id="${workInstance.id}"
-                  color="success" size="xs" icon="pencil-square-o"
+                <g:button action="edit" id="${work.id}" color="success"
+                  size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
               </td>
             </tr>
@@ -76,11 +72,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${workInstanceTotal}" maxsteps="3"
+            <g:paginate total="${workCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${workInstanceTotal}"/>
+            <g:paginate total="${workCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

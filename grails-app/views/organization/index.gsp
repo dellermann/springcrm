@@ -24,7 +24,7 @@
         createParams: [
             recType: params.listType ?: 0, listType: params.listType
         ],
-        list: organizationInstanceList,
+        list: organizationList,
         type: 'organization'
       ]">
       <div class="visible-xs">
@@ -61,39 +61,37 @@
             </tr>
           </thead>
           <tbody>
-            <g:each in="${organizationInstanceList}" status="i"
-              var="organizationInstance">
+            <g:each var="organization" in="${organizationList}" status="i">
             <tr>
               <td class="col-type-id organization-number">
-                <g:link action="show" id="${organizationInstance.id}"
+                <g:link action="show" id="${organization.id}"
                   params="[listType: params.listType]">
-                  <g:fieldValue bean="${organizationInstance}"
-                    field="fullNumber"/>
+                  <g:fullNumber bean="${organization}"/>
                 </g:link>
               </td>
               <td class="col-type-string organization-name">
-                <g:link action="show" id="${organizationInstance.id}"
+                <g:link action="show" id="${organization.id}"
                   params="[listType: params.listType]">
-                  <g:fieldValue bean="${organizationInstance}" field="name"/>
+                  <g:fieldValue bean="${organization}" field="name"/>
                 </g:link>
               </td>
               <td class="col-type-string organization-billing-addr">
-                <g:fieldValue bean="${organizationInstance}"
+                <g:fieldValue bean="${organization}"
                   field="billingAddr"/>
               </td>
               <td class="col-type-string organization-phone">
-                <a href="tel:${organizationInstance.phone}">
-                  <g:fieldValue bean="${organizationInstance}"
+                <a href="tel:${organization.phone}">
+                  <g:fieldValue bean="${organization}"
                     field="phone"/>
                 </a>
               </td>
               <td class="col-type-string organization-email1">
-                <a href="mailto:${fieldValue(bean: organizationInstance, field: 'email1')}">
-                  <g:fieldValue bean="${organizationInstance}" field="email1"/>
+                <a href="mailto:${fieldValue(bean: organization, field: 'email1')}">
+                  <g:fieldValue bean="${organization}" field="email1"/>
                 </a>
               </td>
               <td class="col-actions">
-                <g:button action="edit" id="${organizationInstance.id}"
+                <g:button action="edit" id="${organization.id}"
                   params="[listType: params.listType]" color="success"
                   size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
@@ -106,12 +104,12 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${organizationInstanceTotal}"
+            <g:paginate total="${organizationCount}"
               params="[listType: params.listType]" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${organizationInstanceTotal}"
+            <g:paginate total="${organizationCount}"
               params="[listType: params.listType]"/>
           </div>
         </nav>

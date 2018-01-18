@@ -1,7 +1,7 @@
 /*
  * ViewTagLib.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@ class ViewTagLib implements TagLibrary {
     //-- Fields ---------------------------------
 
     CalendarEventService calendarEventService
+    SeqNumberService seqNumberService
     UserService userService
 
 
@@ -386,6 +387,16 @@ class ViewTagLib implements TagLibrary {
             ) as String)
             out << ' ' << unit
         }
+    }
+
+    /**
+     * Renders the full number of the given numbered domain model instance.
+     *
+     * @attr bean REQUIRED  the given instance
+     * @since 3.0
+     */
+    def fullNumber = { attrs ->
+        out << seqNumberService.getFullNumber(attrs.bean as NumberedDomain)
     }
 
     /**

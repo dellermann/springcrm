@@ -1,7 +1,7 @@
 /*
  * WorkController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,11 @@
 
 package org.amcworld.springcrm
 
+import static org.springframework.http.HttpStatus.*
+
+import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationException
+import org.bson.types.ObjectId
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 
 
@@ -28,33 +33,48 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * (services).
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
-class WorkController extends SalesItemController<Work> {
+@Secured(['ROLE_ADMIN', 'ROLE_WORK'])
+class WorkController {
 
-    //-- Constructors ---------------------------
+    //-- Class fields -------------------------------
 
-    WorkController() {
-        super(Work)
-    }
+    WorkService workService
 
 
     //-- Public methods -------------------------
 
-    def copy(Long id) {
-        super.copy id
+    def copy(Work work) {
+        respond new Work(work), view: 'create'
     }
 
     def create() {
-        super.create()
+        respond new Work(params)
     }
 
-    def delete(Long id) {
-        super.delete id
+    def delete(String id) {
+        if (id == null) {
+            notFound()
+            return
+        }
+
+        Work work = workService.delete new ObjectId(id)
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.deleted.message',
+                    args: [message(code: 'work.label'), work]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NO_CONTENT }
+        }
     }
 
-    def edit(Long id) {
-        super.edit id
+    def edit(String id) {
+        respond id == null ? null : workService.get(new ObjectId(id))
     }
 
     def find(String name) {
@@ -72,30 +92,90 @@ class WorkController extends SalesItemController<Work> {
             order 'number', 'asc'
         }
 
-        [(getDomainInstanceName('List')): list]
+        respond list
     }
 
-    def get(Long id) {
-        super.get id
+    def get(String id) {
+        respond workService.get(new ObjectId(id))
     }
 
     def index() {
-        super.index()
+        respond(
+            workService.list(params), model: [workCount: workService.count()]
+        )
     }
 
-    def save() {
-        super.save()
+    def save(Work work) {
+        if (work == null) {
+            notFound()
+            return
+        }
+
+        try {
+            workService.save work
+        } catch (ValidationException ignored) {
+            respond work.errors, view: 'create'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.created.message',
+                    args: [message(code: 'work.label'), work]
+                ) as Object
+                redirect work
+            }
+            '*' { respond work, [status: CREATED] }
+        }
     }
 
     def selectorList() {
-        super.selectorList()
+//        super.selectorList()
     }
 
-    def show(Long id) {
-        super.show id
+    def show(String id) {
+        respond id == null ? null : workService.get(new ObjectId(id))
     }
 
-    def update(Long id) {
-        super.update id
+    def update(Work work) {
+        if (work == null) {
+            notFound()
+            return
+        }
+
+        try {
+            workService.save work
+        } catch (ValidationException ignored) {
+            respond work.errors, view: 'edit'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.updated.message',
+                    args: [message(code: 'work.label'), work]
+                ) as Object
+                redirect work
+            }
+            '*' { respond work, [status: OK] }
+        }
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    private void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.not.found.message',
+                    args: [message(code: 'work.label'), params.id]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NOT_FOUND }
+        }
     }
 }

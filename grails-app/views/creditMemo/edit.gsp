@@ -1,22 +1,19 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[
-            message(code: 'creditMemo.label'), creditMemoInstance.fullNumber
-          ]" />
-      - <g:message code="creditMemo.plural" />
+        args="[message(code: 'creditMemo.label'), fullNumber]"/>
+      - <g:message code="creditMemo.plural"/>
     </title>
-    <meta name="stylesheet" content="invoicing-transaction" />
+    <meta name="stylesheet" content="invoicing-transaction"/>
   </head>
 
   <body>
     <g:applyLayout name="edit"
-      model="[type: 'creditMemo', instance: creditMemoInstance]" />
+      model="[type: 'creditMemo', instance: creditMemo]"/>
 
     <content tag="scripts">
-      <asset:javascript src="invoicing-transaction-form" />
+      <asset:javascript src="invoicing-transaction-form"/>
       <asset:script>//<![CDATA[
         new SPRINGCRM.InvoicingTransaction(
           $("#credit-memo-form"), {

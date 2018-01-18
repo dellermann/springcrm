@@ -1,7 +1,7 @@
 /*
  * OrganizationController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,63 +20,93 @@
 
 package org.amcworld.springcrm
 
+import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.NO_CONTENT
+import static org.springframework.http.HttpStatus.OK
+
+import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationException
+import org.bson.types.ObjectId
+
 
 /**
  * The class {@code OrganizationController} contains actions which manage
  * organizations.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
-class OrganizationController extends GeneralController<Organization> {
+@Secured(['ROLE_ADMIN', 'ROLE_CONTACT'])
+class OrganizationController {
 
-    //-- Constructors ---------------------------
+    //-- Class fields ---------------------------
 
-    OrganizationController() {
-        super(Organization)
-    }
+    static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
+
+
+    //-- Fields -------------------------------------
+
+    OrganizationService organizationService
 
 
     //-- Public methods -------------------------
 
-    def copy(Long id) {
-        super.copy id
+    def copy(Organization organization) {
+        respond new Organization(organization), view: 'create'
     }
 
     def create() {
-        super.create()
+        respond new Organization(params)
     }
 
-    def delete(Long id) {
-        super.delete id
+    def delete(String id) {
+        if (id == null) {
+            notFound()
+            return
+        }
+
+        Organization organization = organizationService.delete new ObjectId(id)
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.deleted.message',
+                    args: [message(code: 'organization.label'), organization]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NO_CONTENT }
+        }
     }
 
-    def edit(Long id) {
-        super.edit id
+    def edit(String id) {
+        respond id == null ? null : organizationService.get(new ObjectId(id))
     }
 
     def find(Byte type) {
         List<Organization> list
         if (type) {
-            List<Byte> types = [type, 3 as byte]
-            list = Organization.findAllByRecTypeInListAndNameLike(
-                types, "%${params.name}%", [sort: 'name']
+            list = organizationService.findAllByRecTypeInListAndNameLike(
+                [type, 3 as byte] as Set<Byte>, "%${params.name}%",
+                [sort: 'name']
             )
         } else {
-            list = Organization.findAllByNameLike(
+            list = organizationService.findAllByNameLike(
                 "%${params.name}%", [sort: 'name']
             )
         }
 
-        [(getDomainInstanceName('List')): list]
+        respond list
     }
 
-    def get(Long id) {
-        super.get id
+    def get(String id) {
+        respond id == null ? null : organizationService.get(new ObjectId(id))
     }
 
-    def getPhoneNumbers(Long id) {
-        Organization organizationInstance = getDomainInstanceWithStatus(id)
+    def getPhoneNumbers(String id) {
+        Organization organizationInstance =
+            organizationService.get(new ObjectId(id))
         if (organizationInstance == null) {
             return
         }
@@ -89,75 +119,119 @@ class OrganizationController extends GeneralController<Organization> {
             .findAll({ it != '' })
             .unique()
 
-        [phoneNumbers: phoneNumbers]
+        respond phoneNumbers: phoneNumbers
     }
 
-    def getTermOfPayment(Long id) {
+    def getTermOfPayment(String id) {
         int termOfPayment =
             ConfigHolder.instance['termOfPayment'].toType(Integer) ?: 14
 
-        Organization organizationInstance = Organization.get(id)
+        Organization organizationInstance =
+            organizationService.get(new ObjectId(id))
         if (organizationInstance?.termOfPayment != null) {
             termOfPayment = organizationInstance.termOfPayment
         }
 
-        [termOfPayment: termOfPayment]
+        respond termOfPayment: termOfPayment
     }
 
     def index(Byte listType) {
-        List<Byte> types = [listType, 3 as byte]
+        Set<Byte> types = [listType, 3 as byte] as Set<Byte>
         String letter = params.letter?.toString()
         if (letter) {
             int max = params.int('max')
             int num
             if (listType) {
-                num = Organization.countByNameLessThanAndRecTypeInList(
+                num = organizationService.countByNameLessThanAndRecTypeInList(
                     letter, types
                 )
             } else {
-                num = Organization.countByNameLessThan(letter)
+                num = organizationService.countByNameLessThan(letter)
             }
             params.sort = 'name'
-            params.offset = Math.floor(num / max) * max
+            params.offset = Math.floor(num.toDouble() / max) * max
         }
 
         List<Organization> list
         int count
         if (listType) {
-            list = Organization.findAllByRecTypeInList(types, params)
-            count = Organization.countByRecTypeInList(types)
+            list = organizationService.findAllByRecTypeInList(types, params)
+            count = organizationService.countByRecTypeInList(types)
         } else {
-            list = Organization.list(params)
-            count = Organization.count()
+            list = organizationService.list(params)
+            count = organizationService.count()
         }
 
-        getIndexModel list, count
+        respond list, model: [organizationCount: count]
     }
 
-    def show(Long id) {
-        super.show id
+    def save(Organization organization) {
+        if (organization == null) {
+            notFound()
+            return
+        }
+
+        try {
+            organizationService.save organization
+        } catch (ValidationException ignored) {
+            respond organization.errors, view: 'create'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.created.message',
+                    args: [message(code: 'organization.label'), organization]
+                ) as Object
+                redirect organization
+            }
+            '*' { respond organization, [status: CREATED] }
+        }
     }
 
-    def save() {
-        request['redirectParams'] = [listType: params.listType]
-        super.save()
+    def show(String id) {
+        respond id == null ? null : organizationService.get(new ObjectId(id))
     }
 
-    def update(Long id) {
-        request['redirectParams'] = [listType: params.listType]
-        super.update id
+    def update(Organization organization) {
+        if (organization == null) {
+            notFound()
+            return
+        }
+
+        try {
+            organizationService.save organization
+        } catch (ValidationException ignored) {
+            respond organization.errors, view: 'edit'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.updated.message',
+                    args: [message(code: 'organization.label'), organization]
+                ) as Object
+                redirect organization
+            }
+            '*' { respond organization, [status: OK] }
+        }
     }
 
 
     //-- Non-public methods ---------------------
 
-    @Override
-    protected Map<String, Object> getIndexActionParams() {
-        [listType: params.listType]
-    }
-
-    @Override
-    protected Map<String, Object> getShowActionParams() {
-        [listType: params.listType]
+    private void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.not.found.message',
+                    args: [message(code: 'organization.label'), params.id]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NOT_FOUND }
+        }
     }
 }

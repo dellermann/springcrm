@@ -1,12 +1,10 @@
 <html>
   <head>
-    <meta name="layout" content="main"/>
     <meta name="stylesheet" content="invoicing-transaction"/>
   </head>
 
   <body>
-    <g:applyLayout name="list"
-      model="[list: invoiceInstanceList, type: 'invoice']">
+    <g:applyLayout name="list" model="[list: invoiceList, type: 'invoice']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>
@@ -35,58 +33,59 @@
             </tr>
           </thead>
           <tbody>
-          <g:each in="${invoiceInstanceList}" status="i" var="invoiceInstance">
+          <g:each var="invoice" in="${invoiceList}" status="i">
             <tr>
               <td class="col-type-id invoice-number">
-                <g:link action="show" id="${invoiceInstance.id}">
-                  <g:fieldValue bean="${invoiceInstance}" field="fullNumber"/>
+                <g:link action="show" id="${invoice.id}">
+                  <g:fullNumber bean="${invoice}"/>
                 </g:link>
               </td>
               <td class="col-type-string invoice-subject">
-                <g:link action="show" id="${invoiceInstance.id}">
+                <g:link action="show" id="${invoice.id}">
                   <g:nl2br
-                    value="${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}"/>
+                    value="${invoice.subject.replaceAll(~/_{2,}/, ' ')}"/>
                 </g:link>
               </td>
               <td class="col-type-ref invoice-organization">
                 <g:link controller="organization" action="show"
-                  id="${invoiceInstance.organization?.id}">
-                  <g:fieldValue bean="${invoiceInstance}" field="organization"/>
+                  id="${invoice.organization?.id}">
+                  <g:fieldValue bean="${invoice}" field="organization"/>
                 </g:link>
               </td>
-              <td class="col-type-status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}">
-                <g:fieldValue bean="${invoiceInstance}" field="stage"/>
+              <td class="col-type-status invoice-stage payment-state
+                  payment-state-${invoice?.paymentStateColor}">
+                <g:fieldValue bean="${invoice}" field="stage"/>
               </td>
               <td class="col-type-date invoice-doc-date">
-                <g:formatDate date="${invoiceInstance?.docDate}"
+                <g:formatDate date="${invoice?.docDate}"
                   formatName="default.format.date"/>
               </td>
               <td class="col-type-date invoice-due-date-payment">
-                <g:formatDate date="${invoiceInstance?.dueDatePayment}"
+                <g:formatDate date="${invoice?.dueDatePayment}"
                   formatName="default.format.date"/>
               </td>
               <td class="col-type-date invoice-payment-date">
-                <g:formatDate date="${invoiceInstance?.paymentDate}"
+                <g:formatDate date="${invoice?.paymentDate}"
                   formatName="default.format.date"/>
               </td>
               <td class="col-type-currency invoice-total">
-                <g:formatCurrency number="${invoiceInstance?.total}"
+                <g:formatCurrency number="${invoice?.total}"
                   displayZero="true" external="true"/>
               </td>
-              <td
-                class="col-type-currency invoice-closing-balance balance-state balance-state-${invoiceInstance?.balanceColor}">
-                <g:formatCurrency number="${invoiceInstance?.closingBalance}"
+              <td class="col-type-currency invoice-closing-balance balance-state
+                  balance-state-${invoice?.balanceColor}">
+                <g:formatCurrency number="${invoice?.closingBalance}"
                   displayZero="true" external="true"/>
               </td>
               <td class="col-actions">
                 <g:if test="${session.credential.admin ||
-                    invoiceInstance.stage.id < 902}">
-                <g:button action="edit" id="${invoiceInstance.id}"
+                    invoice.stage.id < 902}">
+                <g:button action="edit" id="${invoice.id}"
                   color="success" size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
                 </g:if>
                 <g:else>
-                <g:button action="editPayment" id="${invoiceInstance.id}"
+                <g:button action="editPayment" id="${invoice.id}"
                   color="success" size="xs" icon="pencil-square-o"
                   message="invoicingTransaction.button.editPayment.label"/>
                 </g:else>
@@ -99,11 +98,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${invoiceInstanceTotal}" maxsteps="3"
+            <g:paginate total="${invoiceCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${invoiceInstanceTotal}"/>
+            <g:paginate total="${invoiceCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXML.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import groovy.transform.TypeCheckingMode
 import org.amcworld.springcrm.Client
 import org.amcworld.springcrm.InvoicingItem
 import org.amcworld.springcrm.InvoicingTransaction
+import org.amcworld.springcrm.SeqNumberService
 import org.amcworld.springcrm.User
 import org.apache.commons.io.output.StringBuilderWriter
 import org.apache.commons.logging.Log
@@ -39,7 +40,7 @@ import org.apache.commons.logging.LogFactory
  * invoicing transactions to XML.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.4
  */
 @CompileStatic
@@ -75,6 +76,8 @@ class InvoicingTransactionXML extends XML {
      * The service used to convert Markdown text to HTML.
      */
     MarkdownService markdownService
+
+    SeqNumberService seqNumberService
 
 
     //-- Constructors ---------------------------
@@ -208,7 +211,7 @@ class InvoicingTransactionXML extends XML {
      * @param user          the currently logged in user
      * @return              the collected data
      */
-    private static Map<String, Object> collectData(
+    private Map<String, Object> collectData(
         InvoicingTransaction transaction, User user
     ) {
         [
@@ -217,7 +220,7 @@ class InvoicingTransactionXML extends XML {
             organization: transaction.organization,
             person: transaction.person,
             user: new User(user),
-            fullNumber: transaction.fullNumber,
+            fullNumber: seqNumberService.getFullNumber(transaction),
             taxRates: transaction.taxRateSums,
             values: [
                 subtotalNet: transaction.subtotalNet,

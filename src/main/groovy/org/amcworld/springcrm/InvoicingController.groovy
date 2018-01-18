@@ -1,7 +1,7 @@
 /*
  * InvoicingController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * invoicing transactions.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  * @since   2.2
  */
 class InvoicingController<T extends InvoicingTransaction>
@@ -40,6 +40,7 @@ class InvoicingController<T extends InvoicingTransaction>
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
+    SeqNumberService seqNumberService
 
 
     //-- Constructors ---------------------------
@@ -64,7 +65,7 @@ class InvoicingController<T extends InvoicingTransaction>
      * @return      the model for the view
      */
     def editPayment(Long id) {
-        [(domainInstanceName): getDomainInstance(id)]
+        respond getDomainInstance(id)
     }
 
     /**
@@ -96,7 +97,7 @@ class InvoicingController<T extends InvoicingTransaction>
             order('number', 'desc')
         }
 
-        [(getDomainInstanceName('List')): list]
+        respond list
     }
 
     /**
@@ -183,7 +184,7 @@ class InvoicingController<T extends InvoicingTransaction>
         )
 
         StringBuilder buf = new StringBuilder(label)
-        buf << ' ' << instance.fullNumber
+        buf << ' ' << seqNumberService.getFullNumber(instance)
         if (params.duplicate) {
             buf << '' << message(code: 'invoicingTransaction.duplicate')
         }

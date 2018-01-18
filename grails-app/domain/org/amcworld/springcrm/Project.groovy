@@ -1,7 +1,7 @@
 /*
  * Project.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
+
 
 /**
  * The class {@code Project} represents a project with several project phases
@@ -27,9 +30,10 @@ package org.amcworld.springcrm
  * documents etc.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.0
  */
+@EqualsAndHashCode(includes = ['id'])
 class Project implements NumberedDomain {
 
     //-- Constants ----------------------------------
@@ -53,19 +57,19 @@ class Project implements NumberedDomain {
         sort 'title'
         description type: 'text'
     }
-    static transients = ['fullNumber']
 
 
     //-- Fields ---------------------------------
 
-    String title
+    Date dateCreated
     String description
+    ObjectId id
+    Date lastUpdated
     Organization organization
     Person person
     ProjectPhase phase = ProjectPhase.planning
     ProjectStatus status
-    Date dateCreated
-    Date lastUpdated
+    String title
 
 
     //-- Constructors ---------------------------
@@ -81,16 +85,6 @@ class Project implements NumberedDomain {
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof Project && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
 
     @Override
     String toString() {

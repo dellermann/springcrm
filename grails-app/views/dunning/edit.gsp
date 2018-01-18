@@ -1,20 +1,18 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[message(code: 'dunning.label'), dunningInstance.fullNumber]" />
-      - <g:message code="dunning.plural" />
+        args="[message(code: 'dunning.label'), fullNumber]"/>
+      - <g:message code="dunning.plural"/>
     </title>
-    <meta name="stylesheet" content="invoicing-transaction" />
+    <meta name="stylesheet" content="invoicing-transaction"/>
   </head>
 
   <body>
-    <g:applyLayout name="edit"
-      model="[type: 'dunning', instance: dunningInstance]" />
+    <g:applyLayout name="edit" model="[type: 'dunning', instance: dunning]"/>
 
     <content tag="scripts">
-      <asset:javascript src="invoicing-transaction-form" />
+      <asset:javascript src="invoicing-transaction-form"/>
       <asset:script>//<![CDATA[
         new SPRINGCRM.InvoicingTransaction(
           $("#dunning-form"), {

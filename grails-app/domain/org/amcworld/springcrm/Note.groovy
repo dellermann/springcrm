@@ -1,7 +1,7 @@
 /*
  * Note.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,18 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
+
 
 /**
  * The class {@code Note} represents a note.
  *
  * @author	Daniel Ellermann
  * @author	Philip Drozd
- * @version 2.1
+ * @version 3.0
  */
+@EqualsAndHashCode(includes = ['id'])
 class Note implements NumberedDomain {
 
     //-- Constants ----------------------------------
@@ -51,15 +55,15 @@ class Note implements NumberedDomain {
         content type: 'text'
         title index: 'title'
     }
-    static transients = ['fullNumber']
 
 
     //-- Fields ---------------------------------
 
-    String title
     String content
     Date dateCreated
+    ObjectId id
     Date lastUpdated
+    String title
 
 
     //-- Constructors ---------------------------
@@ -75,16 +79,6 @@ class Note implements NumberedDomain {
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof Note && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
 
     @Override
     String toString() {

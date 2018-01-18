@@ -1,7 +1,7 @@
 /*
  * Work.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,15 @@
 
 package org.amcworld.springcrm
 
-import org.grails.datastore.gorm.GormEntity
-
 
 /**
  * The class {@code Work} represents a work from the service catalog.
  *
  * @author	Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @see     Product
  */
-class Work extends SalesItem implements GormEntity<Work> {
+class Work extends SalesItem {
 
     //-- Constants ----------------------------------
 

@@ -1,7 +1,7 @@
 /*
  * Address.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,21 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+
 
 /**
  * The class {@code Address} represents an address for organizations, persons,
  * invoices etc.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 3.0
  * @since   1.4
  */
+@EqualsAndHashCode()
 class Address {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         street nullable: true, widget: 'textarea'
@@ -44,14 +47,14 @@ class Address {
     static transients = ['empty']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    String street = ''
+    String country = ''
+    String location = ''
     String poBox = ''
     String postalCode = ''
-    String location = ''
     String state = ''
-    String country = ''
+    String street = ''
 
 
     //-- Constructors ---------------------------
@@ -102,17 +105,6 @@ class Address {
         location = ''
         state = ''
         country = ''
-    }
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof Address &&
-            obj.street == street &&
-            obj.poBox == poBox &&
-            obj.postalCode == postalCode &&
-            obj.location == location &&
-            obj.state == state &&
-            obj.country == country
     }
 
     @Override

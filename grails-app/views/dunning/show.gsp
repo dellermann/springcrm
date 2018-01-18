@@ -1,26 +1,25 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.show.label"
-        args="[message(code: 'dunning.label'), dunningInstance.fullNumber]" />
-      - <g:message code="dunning.plural" />
+        args="[message(code: 'dunning.label'), fullNumber]"/>
+      - <g:message code="dunning.plural"/>
     </title>
-    <meta name="stylesheet" content="invoicing-transaction" />
+    <meta name="stylesheet" content="invoicing-transaction"/>
   </head>
 
   <body>
-    <g:applyLayout name="show" model="[instance: dunningInstance]">
+    <g:applyLayout name="show" model="[instance: dunning]">
       <content tag="actionBarStart">
         <g:applyLayout name="invoicingTransactionPrintActionBar"
-          model="[id: dunningInstance.id]" />
+          model="[id: dunning.id]"/>
       </content>
       <content tag="actionMenu">
         <g:ifModuleAllowed modules="CREDIT_MEMO">
         <li role="menuitem">
           <g:link controller="creditMemo" action="create"
-            params="[dunning: dunningInstance?.id]">
-            <g:message code="invoice.button.createCreditMemo" />
+            params="[dunning: dunning?.id]">
+            <g:message code="invoice.button.createCreditMemo"/>
           </g:link>
         </li>
         </g:ifModuleAllowed>
@@ -29,119 +28,116 @@
       <section>
         <header>
           <h3><g:message
-            code="invoicingTransaction.fieldset.general.label" /></h3>
+            code="invoicingTransaction.fieldset.general.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${dunningInstance}" property="number" />
-            <f:display bean="${dunningInstance}" property="subject" />
-            <f:display bean="${dunningInstance}" property="organization" />
-            <f:display bean="${dunningInstance}" property="person" />
-            <f:display bean="${dunningInstance}" property="invoice" />
-            <f:display bean="${dunningInstance}" property="stage" />
-            <f:display bean="${dunningInstance}" property="level" />
-            <f:display bean="${dunningInstance}" property="createUser" />
+            <f:display bean="${dunning}" property="number"/>
+            <f:display bean="${dunning}" property="subject"/>
+            <f:display bean="${dunning}" property="organization"/>
+            <f:display bean="${dunning}" property="person"/>
+            <f:display bean="${dunning}" property="invoice"/>
+            <f:display bean="${dunning}" property="stage"/>
+            <f:display bean="${dunning}" property="level"/>
+            <f:display bean="${dunning}" property="createUser"/>
           </div>
           <div class="column">
-            <f:display bean="${dunningInstance}" property="docDate" />
-            <f:display bean="${dunningInstance}" property="dueDatePayment" />
-            <f:display bean="${dunningInstance}" property="shippingDate" />
-            <f:display bean="${dunningInstance}" property="carrier" />
-            <f:display bean="${dunningInstance}" property="paymentDate" />
-            <f:display bean="${dunningInstance}" property="paymentAmount" />
-            <f:display bean="${dunningInstance}" property="paymentMethod" />
-            <f:display bean="${dunningInstance}" property="closingBalance" />
+            <f:display bean="${dunning}" property="docDate"/>
+            <f:display bean="${dunning}" property="dueDatePayment"/>
+            <f:display bean="${dunning}" property="shippingDate"/>
+            <f:display bean="${dunning}" property="carrier"/>
+            <f:display bean="${dunning}" property="paymentDate"/>
+            <f:display bean="${dunning}" property="paymentAmount"/>
+            <f:display bean="${dunning}" property="paymentMethod"/>
+            <f:display bean="${dunning}" property="closingBalance"/>
           </div>
         </div>
       </section>
       <section class="column-group">
-        <f:display bean="${dunningInstance}" property="billingAddr"
-          title="${message(code: 'invoicingTransaction.fieldset.billingAddr.label')}" />
-        <f:display bean="${dunningInstance}" property="shippingAddr"
-          title="${message(code: 'invoicingTransaction.fieldset.shippingAddr.label')}" />
+        <f:display bean="${dunning}" property="billingAddr"
+          title="${message(code: 'invoicingTransaction.fieldset.billingAddr.label')}"/>
+        <f:display bean="${dunning}" property="shippingAddr"
+          title="${message(code: 'invoicingTransaction.fieldset.shippingAddr.label')}"/>
       </section>
       <section>
         <header>
           <h3><g:message
-            code="invoicingTransaction.fieldset.header.label" /></h3>
+            code="invoicingTransaction.fieldset.header.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${dunningInstance}" property="headerText" />
+            <f:display bean="${dunning}" property="headerText"/>
           </div>
         </div>
       </section>
       <section>
         <header>
-          <h3><g:message code="dunning.fieldset.items.label" /></h3>
+          <h3><g:message code="dunning.fieldset.items.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
-            <g:set var="invoicingTransaction" value="${dunningInstance}" />
+            <g:set var="invoicingTransaction" value="${dunning}"/>
             <g:applyLayout name="invoicingItemsShow"
-              params="[className: 'dunning']" />
+              params="[className: 'dunning']"/>
           </div>
         </div>
       </section>
       <section>
         <header>
           <h3><g:message
-            code="invoicingTransaction.fieldset.footer.label" /></h3>
+            code="invoicingTransaction.fieldset.footer.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${dunningInstance}" property="footerText" />
-            <f:display bean="${dunningInstance}"
-              property="termsAndConditions" />
+            <f:display bean="${dunning}" property="footerText"/>
+            <f:display bean="${dunning}" property="termsAndConditions"/>
           </div>
         </div>
       </section>
-      <g:if test="${dunningInstance?.notes}">
+      <g:if test="${dunning?.notes}">
       <section>
         <header>
           <h3><g:message
-            code="invoicingTransaction.fieldset.notes.label" /></h3>
+            code="invoicingTransaction.fieldset.notes.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${dunningInstance}" property="notes" />
+            <f:display bean="${dunning}" property="notes"/>
           </div>
         </div>
       </section>
       </g:if>
 
-      <g:set var="loadParams" value="dunning=${dunningInstance.id}" />
+      <g:set var="loadParams" value="dunning=${dunning.id}"/>
       <g:ifModuleAllowed modules="CREDIT_MEMO">
       <g:applyLayout name="remoteList"
-        model="[
-          controller: 'creditMemo', createParams: [dunning: dunningInstance.id]
-        ]" />
+        model="[controller: 'creditMemo', createParams: [dunning: dunning.id]]"
+        />
       </g:ifModuleAllowed>
     </g:applyLayout>
 
     <content tag="toolbar">
       <g:button action="index" color="default" class="hidden-xs"
-        icon="list" message="default.button.list.label" />
+        icon="list" message="default.button.list.label"/>
       <g:button action="create" color="success" class="hidden-xs"
-        icon="plus-circle" message="default.button.create.label" />
+        icon="plus-circle" message="default.button.create.label"/>
       <g:if test="${session.credential.admin ||
-          dunningInstance.stage.id < 2202}">
-      <g:button action="edit" id="${dunningInstance?.id}" color="success"
-        icon="pencil-square-o" message="default.button.edit.label" />
+          dunning.stage.id < 2202}">
+      <g:button action="edit" id="${dunning?.id}" color="success"
+        icon="pencil-square-o" message="default.button.edit.label"/>
       </g:if>
       <g:else>
-      <g:button action="editPayment" id="${dunningInstance?.id}"
+      <g:button action="editPayment" id="${dunning?.id}"
         color="success" icon="pencil-square-o"
-        message="invoicingTransaction.button.editPayment.label" />
+        message="invoicingTransaction.button.editPayment.label"/>
       </g:else>
-      <g:button action="copy" id="${dunningInstance?.id}" color="primary"
-        class="hidden-xs" icon="copy" message="default.button.copy.label" />
-      <g:if test="${session.credential.admin ||
-          dunningInstance.stage.id < 2202}">
-      <g:button action="delete" id="${dunningInstance?.id}" color="danger"
+      <g:button action="copy" id="${dunning?.id}" color="primary"
+        class="hidden-xs" icon="copy" message="default.button.copy.label"/>
+      <g:if test="${session.credential.admin || dunning.stage.id < 2202}">
+      <g:button action="delete" id="${dunning?.id}" color="danger"
         class="hidden-xs btn-action-delete" icon="trash"
         message="default.button.delete.label" aria-haspopup="true"
-        aria-owns="confirm-modal" />
+        aria-owns="confirm-modal"/>
       </g:if>
       <button type="button" class="btn btn-default visible-xs-inline-block"
         data-toggle="dropdown" aria-haspopup="true"
@@ -153,33 +149,32 @@
         <li role="menuitem">
           <g:link action="create">
             <i class="fa fa-plus-circle"></i>
-            <g:message code="default.button.create.label" />
+            <g:message code="default.button.create.label"/>
           </g:link>
         </li>
         <li role="menuitem">
-          <g:link action="copy" id="${dunningInstance?.id}">
+          <g:link action="copy" id="${dunning?.id}">
             <i class="fa fa-copy"></i>
-            <g:message code="default.button.copy.label" />
+            <g:message code="default.button.copy.label"/>
           </g:link>
         </li>
         <g:if test="${session.credential.admin ||
-            dunningInstance.stage.id < 2202}">
+            dunning.stage.id < 2202}">
         <li role="menuitem">
-          <g:link action="delete" id="${dunningInstance?.id}"
-            class="btn-action-delete" aria-haspopup="true"
-            aria-owns="confirm-modal">
+          <g:link action="delete" id="${dunning?.id}" class="btn-action-delete"
+            aria-haspopup="true" aria-owns="confirm-modal">
             <i class="fa fa-trash"></i>
-            <g:message code="default.button.delete.label" />
+            <g:message code="default.button.delete.label"/>
           </g:link>
         </li>
         </g:if>
         <g:applyLayout name="invoicingTransactionPrintToolbar"
-          model="[id: dunningInstance.id]" />
+          model="[id: dunning.id]"/>
       </ul>
     </content>
 
     <content tag="scripts">
-      <asset:javascript src="show" />
+      <asset:javascript src="show"/>
     </content>
   </body>
 </html>

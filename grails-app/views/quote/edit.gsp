@@ -1,20 +1,18 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[message(code: 'quote.label'), quoteInstance.fullNumber]" /> -
-      <g:message code="quote.plural" />
+        args="[message(code: 'quote.label'), fullNumber]"/> -
+      <g:message code="quote.plural"/>
     </title>
-    <meta name="stylesheet" content="invoicing-transaction" />
+    <meta name="stylesheet" content="invoicing-transaction"/>
   </head>
 
   <body>
-    <g:applyLayout name="edit"
-      model="[type: 'quote', instance: quoteInstance]" />
+    <g:applyLayout name="edit" model="[type: 'quote', instance: quote]"/>
 
     <content tag="scripts">
-      <asset:javascript src="invoicing-transaction-form" />
+      <asset:javascript src="invoicing-transaction-form"/>
       <asset:script>//<![CDATA[
         new SPRINGCRM.InvoicingTransaction(
           $("#quote-form"), {

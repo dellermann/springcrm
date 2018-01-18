@@ -1,12 +1,8 @@
 <%@ page import="org.amcworld.springcrm.Note" %>
 
 <html>
-  <head>
-    <meta name="layout" content="main"/>
-  </head>
-
   <body>
-    <g:applyLayout name="list" model="[list: noteInstanceList, type: 'note']">
+    <g:applyLayout name="list" model="[list: noteList, type: 'note']">
       <div class="visible-xs">
         <g:letterBar clazz="${Note}" property="title" numLetters="5"
           separator="-"/>
@@ -37,37 +33,37 @@
             </tr>
           </thead>
           <tbody>
-            <g:each in="${noteInstanceList}" status="i" var="noteInstance">
+            <g:each var="note" in="${noteList}" status="i">
             <tr>
               <td class="col-type-id note-number">
-                <g:link action="show" id="${noteInstance.id}">
-                  <g:fieldValue bean="${noteInstance}" field="fullNumber"/>
+                <g:link action="show" id="${note.id}">
+                  <g:fullNumber bean="${note}"/>
                 </g:link>
               </td>
               <td class="col-type-string note-title">
-                <g:link action="show" id="${noteInstance.id}">
-                  <g:fieldValue bean="${noteInstance}" field="title"/>
+                <g:link action="show" id="${note.id}">
+                  <g:fieldValue bean="${note}" field="title"/>
                 </g:link>
               </td>
               <g:ifModuleAllowed modules="CONTACT">
                 <td class="col-type-ref note-organization">
                   <g:link controller="organization" action="show"
-                    id="${noteInstance.organization?.id}">
-                    <g:fieldValue bean="${noteInstance}" field="organization"/>
+                    id="${note.organization?.id}">
+                    <g:fieldValue bean="${note}" field="organization"/>
                   </g:link>
                 </td>
               </g:ifModuleAllowed>
               <g:ifModuleAllowed modules="CONTACT">
                 <td class="col-type-ref note-person">
                   <g:link controller="person" action="show"
-                    id="${noteInstance.person?.id}">
-                    <g:fieldValue bean="${noteInstance}" field="person"/>
+                    id="${note.person?.id}">
+                    <g:fieldValue bean="${note}" field="person"/>
                   </g:link>
                 </td>
               </g:ifModuleAllowed>
               <td class="col-actions">
-                <g:button action="edit" id="${noteInstance.id}"
-                  color="success" size="xs" icon="pencil-square-o"
+                <g:button action="edit" id="${note.id}" color="success"
+                  size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
               </td>
             </tr>
@@ -78,11 +74,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${noteInstanceTotal}" maxsteps="3"
+            <g:paginate total="${noteCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${noteInstanceTotal}"/>
+            <g:paginate total="${noteCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

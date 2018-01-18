@@ -2,12 +2,11 @@
 
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <title><g:message code="report.salesJournal.title" /></title>
-    <meta name="stylesheet" content="report-sales-journal" />
+    <title><g:message code="report.salesJournal.title"/></title>
+    <meta name="stylesheet" content="report-sales-journal"/>
     <meta name="caption"
-      content="${message(code: 'report.salesJournal.title')}" />
-    <meta name="noSubcaption" content="true" />
+      content="${message(code: 'report.salesJournal.title')}"/>
+    <meta name="noSubcaption" content="true"/>
   </head>
 
   <body>
@@ -30,12 +29,12 @@
       /></button>
     </content>
 
-    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/flashMessage"/>
     <div class="btn-group month-year-selector" role="group"
       aria-label="${message(code: 'report.salesJournal.monthYearSelector.label')}">
       <g:monthBar action="salesJournal"
         params="[sort: params.sort, order: params.order]"
-        activeMonth="${activeMonth}" />
+        activeMonth="${activeMonth}"/>
       <g:link action="salesJournal"
         params="[sort: params.sort, order: params.order]"
         class="btn btn-default${(activeMonth == 0) ? ' active' : ''} btn-month btn-whole-year"
@@ -59,80 +58,163 @@
     </div>
     <h2>
       <g:if test="${activeMonth}">
-      <g:month month="${activeMonth}" year="${activeYear}" />
+        <g:month month="${activeMonth}" year="${activeYear}"/>
       </g:if>
       <g:else>
-      <g:message code="report.salesJournal.yearlyOverview.label"
-        args="${[activeYear]}" />
+        <g:message code="report.salesJournal.yearlyOverview.label"
+          args="${[activeYear]}"/>
       </g:else>
     </h2>
 
     <div class="detail-view">
-      <g:if test="${invoicingTransactionInstanceList}">
+      <g:if test="${invoicingTransactionList}">
       <div class="table-responsive">
-        <table class="table data-table price-table report report-sales-journal">
-          <thead>
-            <tr>
-              <th colspan="4"><g:message code="report.salesJournal.invoiceDunningCreditMemo.label" /></th>
-              <th colspan="2"><g:message code="report.salesJournal.due.label" /></th>
-              <th colspan="2"><g:message code="report.salesJournal.payment.label" /></th>
-              <th colspan="2"><g:message code="report.salesJournal.balance.label" /></th>
+          <table class="table data-table price-table report
+            report-sales-journal">
+            <thead>
+              <tr>
+                <th colspan="4">
+                  <g:message code="report.salesJournal.invoiceDunningCreditMemo.label"/>
+                </th>
+                <th colspan="2">
+                  <g:message code="report.salesJournal.due.label"/>
+                </th>
+                <th colspan="2">
+                  <g:message code="report.salesJournal.payment.label"/>
+                </th>
+                <th colspan="2">
+                  <g:message code="report.salesJournal.balance.label"/>
+                </th>
+              </tr>
+              <tr>
+                <g:sortableColumn property="docDate"
+                  title="${message(code: 'invoice.docDate.label.short')}"/>
+                <g:sortableColumn property="number"
+                  title="${message(code: 'invoicingTransaction.number.label')}"/>
+                <th><g:message code="invoicingTransaction.organization.label"/></th>
+                <g:sortableColumn property="subject"
+                  title="${message(code: 'invoicingTransaction.subject.label')}"/>
+                <g:sortableColumn property="dueDatePayment"
+                  title="${message(code: 'report.salesJournal.date.label')}"/>
+                <g:sortableColumn property="total"
+                  title="${message(code: 'report.salesJournal.sum.label')}"/>
+                <g:sortableColumn property="paymentDate"
+                  title="${message(code: 'report.salesJournal.date.label')}"/>
+                <g:sortableColumn property="paymentAmount"
+                  title="${message(code: 'report.salesJournal.sum.label')}"/>
+                <th><g:message code="report.salesJournal.sum.label"/></th>
+                <g:sortableColumn property="stage"
+                  title="${message(code: 'invoice.stage.label.short')}"/>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr class="row-total">
+                <td colspan="4">
+                  <g:message code="report.salesJournal.total.label"/>
+                </td>
+                <td colspan="2" class="col-type-currency">
+                  <g:formatCurrency number="${total}" displayZero="true"
+                    external="true"/>
+                </td>
+                <td colspan="2" class="col-type-currency">
+                  <g:formatCurrency number="${totalPaymentAmount}"
+                    displayZero="true" external="true"/>
+                </td>
+                <td class="col-type-currency">
+                  <g:formatCurrency number="${totalPaymentAmount - total}"
+                    displayZero="true" external="true"/>
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+            <tbody>
+            <g:set var="group" value="I"/>
+            <g:each var="invoicingTransaction" in="${invoicingTransactionList}"
+              status="i">
+            <tr class="row-${GrailsNameUtils.getScriptName(invoicingTransaction.class)}${invoicingTransaction.type != group ? ' row-divider' : ''}">
+              <g:if test="${invoicingTransaction.type != group}"
+                ><g:set var="group" value="${invoicingTransaction.type}"
+              /></g:if>
+              <td class="col-type-date sales-journal-doc-date">
+                <g:formatDate date="${invoicingTransaction?.docDate}"
+                  formatName="default.format.date"/>
+              </td>
+              <td class="col-type-id sales-journal-number">
+                <g:link controller="${invoicingTransaction.type == 'I' ? 'invoice' : (invoicingTransaction.type == 'D' ? 'dunning' : 'creditMemo')}"
+                  action="show" id="${invoicingTransaction.id}">
+                  <g:fullNumber bean="${invoicingTransaction}"/>
+                </g:link>
+              </td>
+              <td class="col-type-ref sales-journal-organization">
+                <g:link controller="organization" action="show"
+                  id="${invoicingTransaction.organization?.id}">
+                  <g:fieldValue bean="${invoicingTransaction}"
+                    field="organization"/>
+                </g:link>
+              </td>
+              <td class="col-type-string sales-journal-subject">
+                <g:link controller="${invoicingTransaction.type == 'I' ? 'invoice' : (invoicingTransaction.type == 'D' ? 'dunning' : 'creditMemo')}"
+                  action="show" id="${invoicingTransaction.id}">
+                  ${invoicingTransaction.subject.replaceAll(~/_{2,}/, ' ')}
+                </g:link>
+              </td>
+              <td class="col-type-date sales-journal-due-date-payment">
+                <g:if test="${invoicingTransaction.type == 'C'}"
+                  >—</g:if
+                ><g:else
+                  ><g:formatDate date="${invoicingTransaction?.dueDatePayment}"
+                    formatName="default.format.date"
+                /></g:else>
+              </td>
+              <td class="col-type-currency sales-journal-total">
+                <g:if test="${invoicingTransaction.type == 'C'}">
+                  <g:formatCurrency number="${-invoicingTransaction?.total}"/>
+                </g:if>
+                <g:else>
+                  <g:formatCurrency number="${invoicingTransaction?.total}"
+                    displayZero="true" external="true"/>
+                </g:else>
+              </td>
+              <td class="col-type-date sales-journal-payment-date">
+                <g:formatDate date="${invoicingTransaction?.paymentDate}"
+                  formatName="default.format.date"/>
+              </td>
+              <td class="col-type-currency sales-journal-payment-amount">
+                <g:if test="${invoicingTransaction.type == 'C'}">
+                  <g:formatCurrency
+                    number="${-(invoicingTransaction?.paymentAmount ?: 0)}"
+                    displayZero="true" external="true"/>
+                </g:if>
+                <g:else>
+                  <g:formatCurrency
+                    number="${invoicingTransaction?.paymentAmount}"
+                    displayZero="true" external="true"/>
+                </g:else>
+              </td>
+              <td class="col-type-currency sales-journal-sum balance-state
+                  balance-state-${invoicingTransaction?.balanceColor}">
+                <g:formatCurrency number="${invoicingTransaction?.balance}"
+                  displayZero="true" external="true"/>
+              </td>
+              <td class="col-type-status sales-journal-stage payment-state
+                  payment-state-${invoicingTransaction?.paymentStateColor}">
+                <g:fieldValue bean="${invoicingTransaction}" field="stage"/>
+              </td>
             </tr>
-            <tr>
-              <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label.short')}" />
-              <g:sortableColumn property="number" title="${message(code: 'invoicingTransaction.number.label')}" />
-              <th><g:message code="invoicingTransaction.organization.label" /></th>
-              <g:sortableColumn property="subject" title="${message(code: 'invoicingTransaction.subject.label')}" />
-              <g:sortableColumn property="dueDatePayment" title="${message(code: 'report.salesJournal.date.label')}" />
-              <g:sortableColumn property="total" title="${message(code: 'report.salesJournal.sum.label')}" />
-              <g:sortableColumn property="paymentDate" title="${message(code: 'report.salesJournal.date.label')}" />
-              <g:sortableColumn property="paymentAmount" title="${message(code: 'report.salesJournal.sum.label')}" />
-              <th><g:message code="report.salesJournal.sum.label" /></th>
-              <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label.short')}" />
-            </tr>
-          </thead>
-          <tfoot>
-            <tr class="row-total">
-              <td colspan="4"><g:message code="report.salesJournal.total.label" /></td>
-              <td colspan="2" class="col-type-currency"><g:formatCurrency number="${total}" displayZero="true" external="true" /></td>
-              <td colspan="2" class="col-type-currency"><g:formatCurrency number="${totalPaymentAmount}" displayZero="true" external="true" /></td>
-              <td class="col-type-currency"><g:formatCurrency number="${totalPaymentAmount - total}" displayZero="true" external="true" /></td>
-              <td></td>
-            </tr>
-          </tfoot>
-          <tbody>
-          <g:set var="group" value="I" />
-          <g:each in="${invoicingTransactionInstanceList}" status="i"
-            var="invoicingTransactionInstance">
-          <tr class="row-${GrailsNameUtils.getScriptName(invoicingTransactionInstance.class)}${invoicingTransactionInstance.type != group ? ' row-divider' : ''}">
-            <g:if test="${invoicingTransactionInstance.type != group}"
-              ><g:set var="group" value="${invoicingTransactionInstance.type}"
-            /></g:if>
-            <td class="col-type-date sales-journal-doc-date"><g:formatDate date="${invoicingTransactionInstance?.docDate}" formatName="default.format.date" /></td>
-            <td class="col-type-id sales-journal-number"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : (invoicingTransactionInstance.type == 'D' ? 'dunning' : 'creditMemo')}" action="show" id="${invoicingTransactionInstance.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="fullNumber" /></g:link></td>
-            <td class="col-type-ref sales-journal-organization"><g:link controller="organization" action="show" id="${invoicingTransactionInstance.organization?.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="organization" /></g:link></td>
-            <td class="col-type-string sales-journal-subject"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : (invoicingTransactionInstance.type == 'D' ? 'dunning' : 'creditMemo')}" action="show" id="${invoicingTransactionInstance.id}">${invoicingTransactionInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link></td>
-            <td class="col-type-date sales-journal-due-date-payment"><g:if test="${invoicingTransactionInstance.type == 'C'}">—</g:if><g:else><g:formatDate date="${invoicingTransactionInstance?.dueDatePayment}" formatName="default.format.date" /></g:else></td>
-            <td class="col-type-currency sales-journal-total"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-invoicingTransactionInstance?.total}" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.total}" displayZero="true" external="true" /></g:else></td>
-            <td class="col-type-date sales-journal-payment-date"><g:formatDate date="${invoicingTransactionInstance?.paymentDate}" formatName="default.format.date" /></td>
-            <td class="col-type-currency sales-journal-payment-amount"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-(invoicingTransactionInstance?.paymentAmount ?: 0)}" displayZero="true" external="true" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.paymentAmount}" displayZero="true" external="true" /></g:else></td>
-            <td class="col-type-currency sales-journal-sum balance-state balance-state-${invoicingTransactionInstance?.balanceColor}"><g:formatCurrency number="${invoicingTransactionInstance?.balance}" displayZero="true" external="true" /></td>
-            <td class="col-type-status sales-journal-stage payment-state payment-state-${invoicingTransactionInstance?.paymentStateColor}"><g:fieldValue bean="${invoicingTransactionInstance}" field="stage" /></td>
-          </tr>
-          </g:each>
-          </tbody>
-        </table>
-      </div>
+            </g:each>
+            </tbody>
+          </table>
+        </div>
       </g:if>
       <g:else>
         <div class="well well-lg empty-list">
-          <p><g:message code="default.list.empty" /></p>
+          <p><g:message code="default.list.empty"/></p>
         </div>
       </g:else>
     </div>
 
     <content tag="scripts">
-      <asset:javascript src="report-time-span" />
+      <asset:javascript src="report-time-span"/>
     </content>
   </body>
 </html>

@@ -1,7 +1,7 @@
 /*
  * Person.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -28,8 +29,9 @@ import org.grails.datastore.gorm.GormEntity
  *
  * @author  Daniel Ellermann
  * @author 	Philip Drozd
- * @version 2.1
+ * @version 3.0
  */
+@EqualsAndHashCode(includes = ['id'])
 class Person implements GormEntity<Person>, NumberedDomain {
 
     //-- Constants ----------------------------------
@@ -79,47 +81,51 @@ class Person implements GormEntity<Person>, NumberedDomain {
         projects: Project
     ]
     static mapping = {
+        autowire true
         calls column: 'Person'
-        firstName index: 'first_name'
-        lastName index: 'last_name'
+        firstName index: true
+        lastName index: true
         notes type: 'text'
         sort 'lastName'
     }
-    static transients = ['fullNumber', 'fullName']
+    static transients = ['fullName']
 
 
     //-- Fields ---------------------------------
 
-    Organization organization
-    Salutation salutation
-    String title
-    String firstName
-    String lastName
-    Address mailingAddr
-    Address otherAddr
-    String phone
-    String phoneHome
-    String mobile
-    String fax
-    String phoneAssistant
-    String phoneOther
-    String email1
-    String email2
-    String jobTitle
-    String department
+    String assessmentNegative
+    String assessmentPositive
     String assistant
     Date birthday
-    byte [] picture
-    String notes
-    String assessmentPositive
-    String assessmentNegative
     Date dateCreated
+    String department
+    String email1
+    String email2
+    String fax
+    String firstName
+    String jobTitle
+    String lastName
     Date lastUpdated
+    Address mailingAddr
+    String mobile
+    String notes
+    Organization organization
+    Address otherAddr
+    String phone
+    String phoneAssistant
+    String phoneHome
+    String phoneOther
+    byte [] picture
+    Salutation salutation
+    String title
 
 
     //-- Constructors ---------------------------
 
-    Person() {}
+    Person() {
+        mailingAddr = new Address()
+        otherAddr = new Address()
+    }
 
     Person(Person p) {
         organization = p.organization
@@ -166,21 +172,12 @@ class Person implements GormEntity<Person>, NumberedDomain {
     //-- Public methods -------------------------
 
     @Override
-    boolean equals(Object obj) {
-        obj instanceof Person && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
-
-    @Override
     String toString() {
         StringBuilder s = new StringBuilder()
         if (lastName) s << lastName ?: ''
         if (lastName && firstName) s << ', '
         if (firstName) s << firstName ?: ''
+
         s.toString()
     }
 }

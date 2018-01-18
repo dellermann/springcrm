@@ -1,10 +1,11 @@
 import org.amcworld.springcrm.Product
 
 model {
-    Product productInstance
+    Product product
+    String fullNumber
 }
 
 json {
-    fullNumber productInstance.fullNumber
-    inventoryItem g.render(productInstance, [deep: true, excludes: 'pricing'])
+    fullNumber fullNumber
+    inventoryItem g.render(product, [deep: true, excludes: ['pricing']])
 }

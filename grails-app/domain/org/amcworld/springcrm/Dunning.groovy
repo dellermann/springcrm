@@ -1,7 +1,7 @@
 /*
  * Dunning.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,19 +22,17 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import com.mongodb.client.model.Filters
 import java.math.RoundingMode
-import org.grails.datastore.gorm.GormEntity
 
 
 /**
  * The class {@code Dunning} represents a reminder which belongs to an invoice.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class Dunning extends InvoicingTransaction
-    implements GormEntity<Dunning>, PayableAndDue
-{
+class Dunning extends InvoicingTransaction implements PayableAndDue {
 
     //-- Constants ----------------------------------
 
@@ -46,6 +44,7 @@ class Dunning extends InvoicingTransaction
         'shippingAddr.state', 'shippingAddr.country', 'headerText',
         'items.*name', 'items.*description', 'footerText', 'notes'
     ].asImmutable()
+    public static final String TYPE = 'D'
 
 
     //-- Class fields ---------------------------
@@ -60,6 +59,7 @@ class Dunning extends InvoicingTransaction
     static mapping = {
         stage column: 'dunning_stage_id'
     }
+    static nextNumberFilters = [Filters.eq('type', TYPE)]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'payable', 'paymentStateColor'
@@ -71,24 +71,14 @@ class Dunning extends InvoicingTransaction
     def userService
 
     /**
-     * The level of this reminder (1st reminder, 2nd reminder etc.).
-     */
-    DunningLevel level
-
-    /**
-     * The stage of this reminder.
-     */
-    DunningStage stage
-
-    /**
      * The due date of payment.
      */
     Date dueDatePayment
 
     /**
-     * The date of payment.
+     * The level of this reminder (1st reminder, 2nd reminder etc.).
      */
-    Date paymentDate
+    DunningLevel level
 
     /**
      * The payment amount.
@@ -96,9 +86,19 @@ class Dunning extends InvoicingTransaction
     BigDecimal paymentAmount = ZERO
 
     /**
+     * The date of payment.
+     */
+    Date paymentDate
+
+    /**
      * The payment method.
      */
     PaymentMethod paymentMethod
+
+    /**
+     * The stage of this reminder.
+     */
+    DunningStage stage
 
 
     //-- Constructors ---------------------------
@@ -108,7 +108,7 @@ class Dunning extends InvoicingTransaction
      */
     Dunning() {
         super()
-        type = 'D'
+        type = TYPE
     }
 
     /**
@@ -131,7 +131,7 @@ class Dunning extends InvoicingTransaction
     Dunning(Invoice i) {
         super(i)
         userService = i.userService
-        type = 'D'
+        type = TYPE
         invoice = i
         headerText = ''
         footerText = ''

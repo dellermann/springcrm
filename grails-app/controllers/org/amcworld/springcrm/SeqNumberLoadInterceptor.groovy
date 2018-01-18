@@ -1,7 +1,7 @@
 /*
  * SeqNumberLoadInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import groovy.transform.CompileStatic
  * displayed.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
@@ -47,7 +47,7 @@ class SeqNumberLoadInterceptor implements Interceptor {
      * Creates a new instance of the interceptor.
      */
     SeqNumberLoadInterceptor() {
-        match action: ~/(create|copy|edit|save|update)/
+        match action: ~/(create|copy|edit|editPayment|find|get|save|update)/
     }
 
 
@@ -58,6 +58,10 @@ class SeqNumberLoadInterceptor implements Interceptor {
      * available sequence number to the instance which is stored in the model
      * and adds the following data to the model:
      * <ul>
+     *   <li>{@code fullNumber}. the full number of the domain model
+     *   instance</li>
+     *   <li>{@code seqNumberService}. the instance of the
+     *   {@code SeqNumberService} class</li>
      *   <li>{@code seqNumberPrefix}. the prefix of the sequence number</li>
      *   <li>{@code seqNumberSuffix}. the suffix of the sequence number</li>
      * </ul>
@@ -70,14 +74,21 @@ class SeqNumberLoadInterceptor implements Interceptor {
             SeqNumber seqNumber =
                 seqNumberService.loadSeqNumber(controllerName)
             if (seqNumber) {
-                if (actionName == 'create' || actionName == 'copy') {
-                    def inst = model["${controllerName}Instance".toString()]
-                    if (inst instanceof NumberedDomain) {
-                        NumberedDomain nd = (NumberedDomain) inst
+                def inst = model[controllerName]
+                NumberedDomain nd = inst instanceof NumberedDomain \
+                    ? (NumberedDomain) inst
+                    : null
+                if (nd != null) {
+                    if (actionName == 'create' || actionName == 'copy') {
                         nd.number = seqNumberService.nextNumber(controllerName)
                     }
+                    model.fullNumber = seqNumberService.getFullNumber(nd)
                 }
 
+                // XXX we must add the instance of SeqNumberService to the
+                // model because GSON files don't support dependency injection,
+                // yet.
+                model.seqNumberService = seqNumberService
                 model.seqNumberPrefix = seqNumber.prefix
                 model.seqNumberSuffix = seqNumber.suffix
             }

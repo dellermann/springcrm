@@ -1,12 +1,10 @@
 <html>
   <head>
-    <meta name="layout" content="main"/>
     <meta name="stylesheet" content="helpdesk"/>
   </head>
 
   <body>
-    <g:applyLayout name="list"
-      model="[list: ticketInstanceList, type: 'ticket']">
+    <g:applyLayout name="list" model="[list: ticketList, type: 'ticket']">
       <g:if test="${!mailSystemConfigured}">
       <div class="flash-message form-warning-hint">
         <p
@@ -36,42 +34,42 @@
             </tr>
           </thead>
           <tbody>
-            <g:each in="${ticketInstanceList}" status="i" var="ticketInstance">
+            <g:each var="ticket" in="${ticketList}" status="i">
             <tr>
               <td class="col-type-string ticket-number">
-                <g:link action="show" id="${ticketInstance.id}">
-                  <g:fieldValue bean="${ticketInstance}" field="fullNumber"/>
+                <g:link action="show" id="${ticket.id}">
+                  <g:fullNumber bean="${ticket}"/>
                 </g:link>
               </td>
               <td class="col-type-string ticket-subject">
-                <g:link action="show" id="${ticketInstance.id}">
-                  <g:fieldValue bean="${ticketInstance}" field="subject"/>
+                <g:link action="show" id="${ticket.id}">
+                  <g:fieldValue bean="${ticket}" field="subject"/>
                 </g:link>
               </td>
               <td class="col-type-ref ticket-helpdesk">
                 <g:if test="${session.credential.checkAllowedControllers(['helpdesk'] as Set)}">
                 <g:link controller="helpdesk" action="show"
-                  id="${ticketInstance.helpdesk.id}">
-                  <g:fieldValue bean="${ticketInstance}" field="helpdesk.name"/>
+                  id="${ticket.helpdesk.id}">
+                  <g:fieldValue bean="${ticket}" field="helpdesk.name"/>
                 </g:link>
                 </g:if>
                 <g:else>
-                  <g:fieldValue bean="${ticketInstance}" field="helpdesk.name"/>
+                  <g:fieldValue bean="${ticket}" field="helpdesk.name"/>
                 </g:else>
               </td>
-              <td class="col-type-status ticket-stage ticket-stage-${ticketInstance.stage}">
-                <g:message code="ticket.stage.${ticketInstance.stage}"
-                  default="${ticketInstance.stage.toString()}"/>
+              <td class="col-type-status ticket-stage ticket-stage-${ticket.stage}">
+                <g:message code="ticket.stage.${ticket.stage}"
+                  default="${ticket.stage.toString()}"/>
               </td>
               <td class="col-type-string ticket-customer-name">
-                <g:fieldValue bean="${ticketInstance}" field="customerName"/>
+                <g:fieldValue bean="${ticket}" field="customerName"/>
               </td>
               <td class="col-type-date ticket-date-created">
-                <g:formatDate date="${ticketInstance.dateCreated}"
+                <g:formatDate date="${ticket.dateCreated}"
                   formatName="default.format.datetime"/>
               </td>
               <td class="col-actions">
-                <g:button action="edit" id="${ticketInstance.id}"
+                <g:button action="edit" id="${ticket.id}"
                   color="success" size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
               </td>
@@ -83,11 +81,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${ticketInstanceTotal}" maxsteps="3"
+            <g:paginate total="${ticketCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${ticketInstanceTotal}"/>
+            <g:paginate total="${ticketCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

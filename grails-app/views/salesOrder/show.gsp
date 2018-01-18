@@ -1,9 +1,8 @@
 <html>
   <head>
-    <meta name="layout" content="main"/>
     <title>
       <g:message code="invoicingTransaction.show.label"
-        args="[message(code: 'salesOrder.label'), salesOrderInstance.fullNumber]"/> -
+        args="[message(code: 'salesOrder.label'), fullNumber]"/> -
       <g:message code="salesOrder.plural"/>
     </title>
     <meta name="stylesheet" content="sales-order"/>
@@ -11,20 +10,20 @@
 
   <body>
     <g:applyLayout name="show"
-      model="[formId: 'sales-order-show', instance: salesOrderInstance]">
+      model="[formId: 'sales-order-show', instance: salesOrder]">
       <content tag="toolbarItems">
         <g:applyLayout name="invoicingTransactionPrintToolbar"
-          model="[id: salesOrderInstance.id]"/>
+          model="[id: salesOrder.id]"/>
       </content>
       <content tag="actionBarStart">
         <g:applyLayout name="invoicingTransactionPrintActionBar"
-          model="[id: salesOrderInstance.id]"/>
+          model="[id: salesOrder.id]"/>
       </content>
       <content tag="actionMenu">
         <g:ifModuleAllowed modules="INVOICE">
         <li role="menuitem">
           <g:link controller="invoice" action="create"
-            params="[salesOrder: salesOrderInstance?.id]">
+            params="[salesOrder: salesOrder?.id]">
             <g:message code="salesOrder.button.createInvoice"/>
           </g:link>
         </li>
@@ -38,33 +37,33 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${salesOrderInstance}" property="number"/>
-            <f:display bean="${salesOrderInstance}" property="subject"/>
-            <f:display bean="${salesOrderInstance}" property="organization"/>
-            <f:display bean="${salesOrderInstance}" property="person"/>
+            <f:display bean="${salesOrder}" property="number"/>
+            <f:display bean="${salesOrder}" property="subject"/>
+            <f:display bean="${salesOrder}" property="organization"/>
+            <f:display bean="${salesOrder}" property="person"/>
             <g:ifModuleAllowed modules="QUOTE">
-            <f:display bean="${salesOrderInstance}" property="quote"/>
+            <f:display bean="${salesOrder}" property="quote"/>
             </g:ifModuleAllowed>
-            <f:display bean="${salesOrderInstance}" property="stage"/>
-            <f:display bean="${salesOrderInstance}" property="createUser"/>
+            <f:display bean="${salesOrder}" property="stage"/>
+            <f:display bean="${salesOrder}" property="createUser"/>
           </div>
           <div class="column">
-            <f:display bean="${salesOrderInstance}" property="orderDate"/>
-            <f:display bean="${salesOrderInstance}" property="orderMethod"/>
-            <f:display bean="${salesOrderInstance}" property="orderDocument"/>
-            <f:display bean="${salesOrderInstance}" property="signature"/>
-            <f:display bean="${salesOrderInstance}" property="docDate"/>
-            <f:display bean="${salesOrderInstance}" property="dueDate"/>
-            <f:display bean="${salesOrderInstance}" property="shippingDate"/>
-            <f:display bean="${salesOrderInstance}" property="carrier"/>
-            <f:display bean="${salesOrderInstance}" property="deliveryDate"/>
+            <f:display bean="${salesOrder}" property="orderDate"/>
+            <f:display bean="${salesOrder}" property="orderMethod"/>
+            <f:display bean="${salesOrder}" property="orderDocument"/>
+            <f:display bean="${salesOrder}" property="signature"/>
+            <f:display bean="${salesOrder}" property="docDate"/>
+            <f:display bean="${salesOrder}" property="dueDate"/>
+            <f:display bean="${salesOrder}" property="shippingDate"/>
+            <f:display bean="${salesOrder}" property="carrier"/>
+            <f:display bean="${salesOrder}" property="deliveryDate"/>
           </div>
         </div>
       </section>
       <section class="column-group">
-        <f:display bean="${salesOrderInstance}" property="billingAddr"
+        <f:display bean="${salesOrder}" property="billingAddr"
           title="${message(code: 'invoicingTransaction.fieldset.billingAddr.label')}"/>
-        <f:display bean="${salesOrderInstance}" property="shippingAddr"
+        <f:display bean="${salesOrder}" property="shippingAddr"
           title="${message(code: 'invoicingTransaction.fieldset.shippingAddr.label')}"/>
       </section>
       <section>
@@ -74,7 +73,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${salesOrderInstance}" property="headerText"/>
+            <f:display bean="${salesOrder}" property="headerText"/>
           </div>
         </div>
       </section>
@@ -84,7 +83,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <g:set var="invoicingTransaction" value="${salesOrderInstance}"/>
+            <g:set var="invoicingTransaction" value="${salesOrder}"/>
             <g:applyLayout name="invoicingItemsShow"
               params="[className: 'salesOrder']"/>
           </div>
@@ -97,12 +96,12 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${salesOrderInstance}" property="footerText"/>
-            <f:display bean="${salesOrderInstance}" property="termsAndConditions"/>
+            <f:display bean="${salesOrder}" property="footerText"/>
+            <f:display bean="${salesOrder}" property="termsAndConditions"/>
           </div>
         </div>
       </section>
-      <g:if test="${salesOrderInstance?.notes}">
+      <g:if test="${salesOrder.notes}">
       <section>
         <header>
           <h3><g:message
@@ -110,18 +109,17 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${salesOrderInstance}" property="notes"/>
+            <f:display bean="${salesOrder}" property="notes"/>
           </div>
         </div>
       </section>
       </g:if>
 
-      <g:set var="loadParams" value="salesOrder=${salesOrderInstance.id}"/>
+      <g:set var="loadParams" value="salesOrder=${salesOrder.id}"/>
       <g:ifModuleAllowed modules="INVOICE">
       <g:applyLayout name="remoteList"
         model="[
-          controller: 'invoice',
-          createParams: [salesOrder: salesOrderInstance.id]
+          controller: 'invoice', createParams: [salesOrder: salesOrder.id]
         ]"/>
       </g:ifModuleAllowed>
       <g:render template="signatureDialog"/>
