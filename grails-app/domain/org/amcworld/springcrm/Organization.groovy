@@ -249,6 +249,7 @@ class Organization implements NumberedDomain {
         if (res.length() > 40) {
             res = name.substring(0, 40) + '…'
         }
+
         res
     }
 

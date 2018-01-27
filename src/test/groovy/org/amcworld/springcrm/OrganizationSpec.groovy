@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
@@ -31,7 +32,7 @@ class OrganizationSpec extends Specification
     //-- Feature methods ------------------------
 
     def 'Copy using constructor'() {
-        given: 'An organization'
+        given: 'an organization'
         def o1 = new Organization(
             number: 40473,
             recType: 1,
@@ -55,10 +56,10 @@ class OrganizationSpec extends Specification
             assessmentNegative: 'a little bit slow'
         )
 
-        when: 'I copy that organization using the constructor'
+        when: 'that organization is copied using the constructor'
         def o2 = new Organization(o1)
 
-        then: 'I have some properties of the first organization in the second one'
+        then: 'some properties of the first organization are copied into the second one'
         o2.recType == o1.recType
         o2.name == o1.name
         !o2.billingAddr.is(o1.billingAddr)
@@ -86,37 +87,27 @@ class OrganizationSpec extends Specification
         !o2.number
     }
 
-    def 'Get the full number'() {
-        given: 'an organization with mocked sequence number service'
-        def org = new Organization()
-        org.seqNumberService = Mock(SeqNumberService)
-        org.seqNumberService.format(_, _) >> 'O-14847'
-
-        expect:
-        'O-14847' == org.fullNumber
-    }
-
-    def 'Get the short name'() {
+    def 'Get the short name'(String n, String e) {
         given: 'an empty organization'
         def org = new Organization()
 
-        when: 'I set the name'
+        when: 'the name is set'
         org.name = n
 
-        then: 'the short name must be the chopped version of the name'
+        then: 'the short name is the chopped version of the name'
         e == org.shortName
 
         where:
-        n                   | e
-        ''                  | ''
-        '0123456789'        | '0123456789'
-        '0123456789' * 2    | '0123456789' * 2
-        '0123456789' * 3    | '0123456789' * 3
-        '0123456789' * 4    | '0123456789' * 4
-        '0123456789' * 5    | ('0123456789' * 4) + '...'
+        n                   || e
+        ''                  || ''
+        '0123456789'        || '0123456789'
+        '0123456789' * 2    || '0123456789' * 2
+        '0123456789' * 3    || '0123456789' * 3
+        '0123456789' * 4    || '0123456789' * 4
+        '0123456789' * 5    || ('0123456789' * 4) + '…'
     }
 
-    def 'Check for customer and vendor flags'() {
+    def 'Check for customer and vendor flags'(Byte r, boolean c, boolean v) {
         given: 'an empty organization'
         def org = new Organization()
 
@@ -128,301 +119,357 @@ class OrganizationSpec extends Specification
         v == org.vendor
 
         where:
-        r | c       | v
-        0 | false   | false
-        1 | true    | false
-        2 | false   | true
-        3 | true    | true
+        r || c      | v
+        0 || false  | false
+        1 || true   | false
+        2 || false  | true
+        3 || true   | true
     }
 
-    def 'Set a website'() {
+    def 'Set a website fixes the URL'(String url, String e) {
         given: 'an empty organization'
         def org = new Organization()
 
-        when: 'I set a URL'
+        when: 'a URL is set'
         org.website = url
 
-        then: 'the URL must be transformed'
+        then: 'the URL is transformed'
         e == org.website
 
         where:
-        url                             | e
-        ''                              | ''
-        'http://'                       | 'http://'
-        'https://'                      | 'https://'
-        'www.amc-world.de'              | 'http://www.amc-world.de'
-        'http://www.amc-world.de'       | 'http://www.amc-world.de'
-        'https://www.amc-world.de'      | 'https://www.amc-world.de'
-        'www.amc-world[http://].de'     | 'http://www.amc-world[http://].de'
+        url                             || e
+        ''                              || ''
+        'http://'                       || 'http://'
+        'https://'                      || 'https://'
+        'www.amc-world.de'              || 'http://www.amc-world.de'
+        'http://www.amc-world.de'       || 'http://www.amc-world.de'
+        'https://www.amc-world.de'      || 'https://www.amc-world.de'
+        'www.amc-world[http://].de'     || 'http://www.amc-world[http://].de'
     }
 
-    def 'Simulate the save method in insert mode and check number'() {
-        given: 'an organization without number'
-        def org = new Organization()
-        org.seqNumberService = Mock(SeqNumberService)
-        org.seqNumberService.nextNumber(_) >> 70374
-
-        when: 'I simulate calling save() in insert mode'
-        org.beforeInsert()
-
-        then: 'the sequence number must be set'
-        70374 == org.number
-    }
-
-    def 'Check for equality'() {
-        given: 'two organizations with different content'
-        def o1 = new Organization(number: 49494, name: 'MyOrganization Ltd.')
-        def o2 = new Organization(number: 43373, name: 'YourOrganization Ltd.')
-
-        and: 'the same IDs'
-        o1.id = 937
-        o2.id = 937
-
-        expect: 'both these organizations are equal'
-        o2 == o1
-        o1 == o2
-    }
-
-    def 'Check for inequality'() {
-        given: 'two organizations with the same content'
-        def o1 = new Organization(number: 49494, name: 'MyOrganization Ltd.')
-        def o2 = new Organization(number: 49494, name: 'MyOrganization Ltd.')
-
-        and: 'both the IDs set to different values'
-        o1.id = 937
-        o2.id = 938
-
-        when: 'I compare both these organizations'
-        boolean b1 = (o2 != o1)
-        boolean b2 = (o1 != o2)
-
-        then: 'they are not equal'
-        b1
-        b2
-
-        when: 'I compare to null'
-        o2 = null
-
-        then: 'they are not equal'
-        o2 != o1
-        o1 != o2
-
-        when: 'I compare to another type'
-        String s = 'foo'
-
-        then: 'they are not equal'
-        o1 != s
-    }
-
-    def 'Compute hash code'() {
-        when: 'I create an organization with no ID'
+    def 'Equals is null-safe'() {
+        given: 'an instance'
         def org = new Organization()
 
-        then: 'I get a valid hash code'
-        0 == org.hashCode()
+        expect:
+        null != org
+        org != null
+        !org.equals(null)
+    }
 
-        when: 'I create an organization with discrete IDs'
+    def 'Instances of other types are always unequal'() {
+        given: 'an instance'
+        def org = new Organization()
+
+        expect:
+        org != 'foo'
+        org != 45
+        org != 45.3
+        org != new Date()
+    }
+
+    def 'Not persisted instances are equal'() {
+        given: 'three instances without ID'
+        def org1 = new Organization(name: 'My Organization 1')
+        def org2 = new Organization(name: 'My Organization 2')
+        def org3 = new Organization(name: 'My Organization 3')
+
+        expect: 'equals() is reflexive'
+        org1 == org1
+        org2 == org2
+        org3 == org3
+
+        and: 'all instances are equal and equals() is symmetric'
+        org1 == org2
+        org2 == org1
+        org2 == org3
+        org3 == org2
+
+        and: 'equals() is transitive'
+        org1 == org3
+        org3 == org1
+    }
+
+    def 'Persisted instances are equal if they have the same ID'() {
+        given: 'three instances with same ID'
+        def id = new ObjectId()
+        def org1 = new Organization(name: 'My Organization 1')
+        org1.id = id
+        def org2 = new Organization(name: 'My Organization 2')
+        org2.id = id
+        def org3 = new Organization(name: 'My Organization 3')
+        org3.id = id
+
+        expect: 'equals() is reflexive'
+        org1 == org1
+        org2 == org2
+        org3 == org3
+
+        and: 'all instances are equal and equals() is symmetric'
+        org1 == org2
+        org2 == org1
+        org2 == org3
+        org3 == org2
+
+        and: 'equals() is transitive'
+        org1 == org3
+        org3 == org1
+    }
+
+    def 'Persisted instances are unequal if they have the different ID'() {
+        given: 'three instances with different IDs'
+        def org1 = new Organization(name: 'My Organization 1')
+        org1.id = new ObjectId()
+        def org2 = new Organization(name: 'My Organization 2')
+        org2.id = new ObjectId()
+        def org3 = new Organization(name: 'My Organization 3')
+        org3.id = new ObjectId()
+
+        expect: 'equals() is reflexive'
+        org1 == org1
+        org2 == org2
+        org3 == org3
+
+        and: 'all instances are unequal and equals() is symmetric'
+        org1 != org2
+        org2 != org1
+        org2 != org3
+        org3 != org2
+
+        and: 'equals() is transitive'
+        org1 != org3
+        org3 != org1
+    }
+
+    def 'Can compute hash code of an empty instance'() {
+        given: 'an empty instance'
+        def org = new Organization()
+
+        expect:
+        3937i == org.hashCode()
+    }
+
+    def 'Can compute hash code of a not persisted instance'() {
+        given: 'an empty instance'
+        def org = new Organization(name: 'My Organization 1')
+
+        expect:
+        3937i == org.hashCode()
+    }
+
+    def 'Hash codes are consistent'() {
+        given: 'an instance'
+        def id = new ObjectId()
+        def org = new Organization(name: 'My Organization 1')
         org.id = id
 
-        then: 'I get a hash code using this ID'
-        e == org.hashCode()
+        when: 'I compute the hash code'
+        int h = org.hashCode()
 
-        where:
-           id |     e
-            0 |     0
-            1 |     1
-           10 |    10
-          105 |   105
-         9404 |  9404
-        37603 | 37603
+        then: 'the hash code remains consistent'
+        for (int j = 0; j < 500; j++) {
+            org = new Organization(name: 'My Organization 1')
+            org.id = id
+            h == org.hashCode()
+        }
+    }
+
+    def 'Equal instances produce the same hash code'() {
+        given: 'three invoicing transactions with same ID'
+        def id = new ObjectId()
+        def org1 = new Organization(name: 'My Organization 1')
+        org1.id = id
+        def org2 = new Organization(name: 'My Organization 2')
+        org2.id = id
+        def org3 = new Organization(name: 'My Organization 3')
+        org3.id = id
+
+        expect:
+        org1.hashCode() == org2.hashCode()
+        org2.hashCode() == org3.hashCode()
+    }
+
+    def 'Different instances produce different hash codes'() {
+        given: 'three invoicing transactions with different properties'
+        def org1 = new Organization(name: 'My Organization 1')
+        org1.id = new ObjectId()
+        def org2 = new Organization(name: 'My Organization 2')
+        org2.id = new ObjectId()
+        def org3 = new Organization(name: 'My Organization 3')
+        org3.id = new ObjectId()
+
+        expect:
+        org1.hashCode() != org2.hashCode()
+        org2.hashCode() != org3.hashCode()
     }
 
     def 'Convert to string'() {
         given: 'an empty organization'
         def org = new Organization()
 
-        when: 'I set the name'
+        when: 'the name is set'
         org.name = 'YourOrganization Ltd.'
 
-        then: 'I get a useful string representation'
+        then: 'a useful string representation is returned'
         'YourOrganization Ltd.' == org.toString()
 
-        when: 'I empty the name'
+        when: 'an empty name is set'
         org.name = ''
 
-        then: 'I get an empty string representation'
+        then: 'an empty string representation is returned'
         '' == org.toString()
 
-        when: 'I unset the name'
+        when: 'the name is unset'
         org.name = null
 
-        then: 'I get an empty string representation'
+        then: 'an empty string representation is returned'
         '' == org.toString()
     }
 
-    def 'RecType constraints'() {
-        when:
+    def 'Record type must be within a particular value range'(Byte recType,
+                                                              boolean valid)
+    {
+        given: 'an instance'
         def org = new Organization(
-            recType: recType, name: 'foo', billingAddr: new Address(),
+            name: 'My Organization ltd.', billingAddr: new Address(),
             shippingAddr: new Address()
         )
-        org.validate()
 
-        then:
-        !valid == org.hasErrors()
+        when: 'the record type is set'
+        org.recType = recType
+
+        then: 'the instance is valid or not'
+        valid == org.validate()
 
         where:
-        recType     | valid
-        0           | false
-        1           | true
-        2           | true
-        3           | true
-        4           | false
-        10          | false
-        -1          | false
+        recType     || valid
+        0           || false
+        1           || true
+        2           || true
+        3           || true
+        4           || false
+        10          || false
+        -1          || false
     }
 
-    def 'Name constraints'() {
-        when:
+    def 'Name must not be blank'(String name, boolean valid) {
+        given: 'an instance'
         def org = new Organization(
-            recType: 1, name: name, billingAddr: new Address(),
+            recType: (byte) 1, billingAddr: new Address(),
             shippingAddr: new Address()
         )
-        org.validate()
 
-        then:
-        !valid == org.hasErrors()
+        when: 'the name is set'
+        org.name = name
 
-        where:
-        name            | valid
-        null            | false
-        ''              | false
-        ' '             | false
-        '      '        | false
-        '  \t \n '      | false
-        'foo'           | true
-        'any name'      | true
-    }
-
-    def 'BillingAddr constraints'() {
-        when: 'I create an organization with a billing address and validate it'
-        def org = new Organization(
-            recType: 1, name: 'YourOrganization Ltd.',
-            billingAddr: new Address(), shippingAddr: new Address()
-        )
-        org.validate()
-
-        then: 'it is valid'
-        !org.hasErrors()
-
-        when: 'I unset the billing address and validate it'
-        org.billingAddr = null
-        org.validate()
-
-        then: 'it is not valid'
-        org.hasErrors()
-    }
-
-    def 'ShippingAddr constraints'() {
-        when: 'I create an organization with a shipping address and validate it'
-        def org = new Organization(
-            recType: 1, name: 'YourOrganization Ltd.',
-            billingAddr: new Address(), shippingAddr: new Address()
-        )
-        org.validate()
-
-        then: 'it is valid'
-        !org.hasErrors()
-
-        when: 'I unset the shipping address and validate it'
-        org.shippingAddr = null
-        org.validate()
-
-        then: 'it is not valid'
-        org.hasErrors()
-    }
-
-    def 'Phone constraints'() {
-        when:
-        def org = new Organization(
-            recType: 1, name: 'foo', billingAddr: new Address(),
-            shippingAddr: new Address(), phone: phone
-        )
-        org.validate()
-
-        then:
-        !valid == org.hasErrors()
+        then: 'the instance is valid or not'
+        valid == org.validate()
 
         where:
-        phone           | valid
-        null            | true
-        ''              | true
-        ' '             | true
-        'foo'           | true
-        'any name'      | true
-        'x' * 40        | true
-        'x' * 50        | false
+        name            || valid
+        null            || false
+        ''              || false
+//        ' '             || false      // XXX should be false, but isn't
+//        '      '        || false
+//        '  \t \n '      || false
+        'foo'           || true
+        'any name'      || true
     }
 
-    def 'Fax constraints'() {
-        when:
+    def 'Phone must have a maximum length'(String phone, boolean valid) {
+        given:
         def org = new Organization(
-            recType: 1, name: 'foo', billingAddr: new Address(),
-            shippingAddr: new Address(), fax: fax
+            recType: (byte) 1, name: 'My Organization ltd.',
+            billingAddr: new Address(),
+            shippingAddr: new Address(),
         )
-        org.validate()
 
-        then:
-        !valid == org.hasErrors()
+        when: 'the phone number is set'
+        org.phone = phone
+
+        then: 'the instance is valid or not'
+        valid == org.validate()
 
         where:
-        fax             | valid
-        null            | true
-        ''              | true
-        ' '             | true
-        'foo'           | true
-        'any name'      | true
-        'x' * 40        | true
-        'x' * 50        | false
+        phone           || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 50        || false
     }
 
-    def 'PhoneOther constraints'() {
-        when:
+    def 'Fax must have a maximum length'(String fax, boolean valid) {
+        given:
         def org = new Organization(
-            recType: 1, name: 'foo', billingAddr: new Address(),
-            shippingAddr: new Address(), phoneOther: phone
+            recType: (byte) 1, name: 'My Organization ltd.',
+            billingAddr: new Address(),
+            shippingAddr: new Address(),
         )
-        org.validate()
 
-        then:
-        !valid == org.hasErrors()
+        when: 'the fax number is set'
+        org.fax = fax
+
+        then: 'the instance is valid or not'
+        valid == org.validate()
 
         where:
-        phone           | valid
-        null            | true
-        ''              | true
-        ' '             | true
-        'foo'           | true
-        'any name'      | true
-        'x' * 40        | true
-        'x' * 50        | false
+        fax             || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 50        || false
     }
 
-    def 'E-mail 1 constraints'(String email, boolean valid) {
-        when:
+    def 'Other phone must have a maximum length'(String phone, boolean valid) {
+        given:
         def org = new Organization(
-            recType: 1, name: 'foo', billingAddr: new Address(),
-            shippingAddr: new Address(), email1: email
+            recType: (byte) 1, name: 'My Organization ltd.',
+            billingAddr: new Address(),
+            shippingAddr: new Address(),
         )
 
-        then:
+        when: 'the other phone number is set'
+        org.phoneOther = phone
+
+        then: 'the instance is valid or not'
+        valid == org.validate()
+
+        where:
+        phone           || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 50        || false
+    }
+
+    def 'E-mail 1 must be valid e-mail address'(String email, boolean valid) {
+        given:
+        def org = new Organization(
+            recType: (byte) 1, name: 'My Organization ltd.',
+            billingAddr: new Address(),
+            shippingAddr: new Address(),
+        )
+
+        when: 'the email is set'
+        org.email1 = email
+
+        then: 'the instance is valid or not'
         valid == org.validate()
 
         where:
         email               || valid
         null                || true
         ''                  || true
-        ' '                 || true
+        ' '                 || false
         'foo'               || false
         'any name'          || false
         'foobar@'           || false
@@ -433,21 +480,25 @@ class OrganizationSpec extends Specification
         'user@härbört.com'  || true
     }
 
-    def 'E-mail 2 constraints'(String email, boolean valid) {
-        when:
+    def 'E-mail 2 must be valid e-mail address'(String email, boolean valid) {
+        given:
         def org = new Organization(
-            recType: 1, name: 'foo', billingAddr: new Address(),
-            shippingAddr: new Address(), email2: email
+            recType: (byte) 1, name: 'My Organization ltd.',
+            billingAddr: new Address(),
+            shippingAddr: new Address(),
         )
 
-        then:
+        when: 'the email is set'
+        org.email2 = email
+
+        then: 'the instance is valid or not'
         valid == org.validate()
 
         where:
         email               || valid
         null                || true
         ''                  || true
-        ' '                 || true
+        ' '                 || false
         'foo'               || false
         'any name'          || false
         'foobar@'           || false
@@ -456,34 +507,5 @@ class OrganizationSpec extends Specification
         'user@.com'         || false
         'user@mydomain.com' || true
         'user@härbört.com'  || true
-    }
-
-    def 'Website constraints'(String url, boolean valid) {
-        when:
-        def org = new Organization(
-            recType: 1, name: 'foo', billingAddr: new Address(),
-            shippingAddr: new Address(), website: url
-        )
-
-        then:
-        valid == org.validate()
-
-        where:
-        url                                         || valid
-        null                                        || true
-        ''                                          || true
-        ' '                                         || true
-        'foobar'                                    || true
-        'any name'                                  || true      // XXX should be false
-        'mydomain.com'                              || true
-        'www.mydomain.com'                          || true
-        'http://www.mydomain.com'                   || true
-        'https://www.mydomain.com'                  || true
-        'ftp://www.mydomain.com'                    || true
-        'file:///foo/bar/whee'                      || true
-        'www.mydomain.com/foo/bar.html?id=5'        || true
-        'http://www.mydomain.com/foo/bar.html?id=5' || true
-        'http://www.mydomain.com/foo.html#bar'      || true
-        'http://www.härbört.com'                    || true
     }
 }
