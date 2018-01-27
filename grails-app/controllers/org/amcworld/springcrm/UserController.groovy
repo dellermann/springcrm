@@ -1,7 +1,7 @@
 /*
  * UserController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,7 +95,7 @@ class UserController {
             Number num =
                 userService.countByUsernameLessThan(params.letter.toString())
             params.sort = 'username'
-            params.offset = Math.floor(num.toDouble() / max) * max
+            params.offset = (int) (Math.floor(num.toDouble() / max) * max)
         }
 
         respond(
@@ -262,10 +262,9 @@ class UserController {
     }
 
     def show(String id) {
-        respond(
-            id == null ? null : userService.get(new ObjectId(id)),
-            model: [disableDelete: userService.isOnlyAdmin(currentUser)]
-        )
+        User user = id == null ? null : userService.get(new ObjectId(id))
+
+        respond user, model: [disableDelete: userService.isOnlyAdmin(user)]
     }
 
     @Secured('isAuthenticated()')
@@ -284,7 +283,7 @@ class UserController {
             return
         }
 
-        bindData user, params, [exclude: ['password']] //, 'authorities']]
+        bindData user, params, [exclude: ['password']]
         user.markDirty 'authorities'
 
         String password = params.password
@@ -309,7 +308,7 @@ class UserController {
                     code: 'default.updated.message',
                     args: [message(code: 'user.label'), user]
                 ) as Object
-                redirect action: 'index', method: 'GET'
+                redirect user
             }
             '*' { respond user, [status: OK] }
         }
