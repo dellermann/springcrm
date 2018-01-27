@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import com.mongodb.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Accumulators
 import com.mongodb.client.model.Aggregates
@@ -28,6 +29,7 @@ import grails.core.ArtefactHandler
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.services.Service
+import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import org.bson.conversions.Bson
 import org.grails.core.artefact.DomainClassArtefactHandler
@@ -93,6 +95,9 @@ abstract class SeqNumberService implements ISeqNumberService {
 
     @Autowired
     GrailsApplication grailsApplication
+
+    @Autowired(required = false)
+    MongoClient mongo
 
 
     //-- Public methods -------------------------
@@ -285,14 +290,14 @@ abstract class SeqNumberService implements ISeqNumberService {
      * Obtains the name of the domain model which is associated to the given
      * class.
      *
-     * @param cls   the given class
+     * @param clazz the given class
      * @return      the associated domain model name; {@code null} if no domain
      *              model with the given class exists
      * @since 2.1
      */
-    private String classToDomainName(Class cls) {
-        ArtefactHandler handler = grailsApplication.getArtefactType(cls)
-        GrailsClass gc = grailsApplication.getArtefact(handler.type, cls.name)
+    private String classToDomainName(Class clazz) {
+        ArtefactHandler handler = grailsApplication.getArtefactType(clazz)
+        GrailsClass gc = grailsApplication.getArtefact(handler.type, clazz.name)
 
         gc?.logicalPropertyName
     }
@@ -306,11 +311,9 @@ abstract class SeqNumberService implements ISeqNumberService {
      * @since 2.1
      */
     private Class<?> domainNameToClass(String domainName) {
-        GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName(
-            DomainClassArtefactHandler.TYPE, domainName
-        )
-
-        gc?.clazz
+        grailsApplication.getArtefactByLogicalPropertyName(
+                DomainClassArtefactHandler.TYPE, domainName
+            )?.clazz
     }
 
     /**
@@ -319,8 +322,12 @@ abstract class SeqNumberService implements ISeqNumberService {
      * @param clazz the given domain model class
      * @return      the MongoDB collection
      */
-    private static MongoCollection getCollection(Class<?> clazz) {
-        (MongoCollection) clazz.getMethod('getCollection')
-            .invoke(null)
+    private MongoCollection getCollection(Class<?> clazz) {
+        mongo.getDatabase(
+                grailsApplication.config.getProperty(
+                    'grails.mongodb.databaseName'
+                )
+            )
+            .getCollection(GrailsNameUtils.getLogicalName(clazz, ''))
     }
 }

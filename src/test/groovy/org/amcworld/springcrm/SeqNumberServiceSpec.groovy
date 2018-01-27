@@ -20,17 +20,27 @@
 
 package org.amcworld.springcrm
 
+import com.github.fakemongo.Fongo
+import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
+import java.beans.Introspector
+import org.grails.datastore.mapping.services.Service
 import spock.lang.Specification
 
 
 class SeqNumberServiceSpec extends Specification
-    implements ServiceUnitTest<SeqNumberService>
+    implements ServiceUnitTest<SeqNumberService>, DataTest
 {
 
     //-- Fixture methods ------------------------
 
     def setup() {
+        Fongo fongo = new Fongo('mongo test server')
+        service.mongo = fongo.mongo
+
+        mockDomains(
+            CreditMemo, Dunning, Invoice, Organization, Quote, SalesOrder
+        )
         mockDomain SeqNumber, [
             new SeqNumber(controllerName: 'invoice', prefix: 'R', suffix: 'M'),
             new SeqNumber(controllerName: 'organization', prefix: 'O')
@@ -67,12 +77,10 @@ class SeqNumberServiceSpec extends Specification
         and: 'an already existing sequence number'
         SeqNumber seqNumber = service.loadSeqNumber('invoice')
         seqNumber.startValue = start
-        seqNumber.save()
+        seqNumber.save flush: true
 
-        and: 'a user with mocked settings'
+        and: 'a user'
         User user = makeUser()
-        UserSettings settings = Mock()
-        user.settings = settings
 
         expect: 'the sequence number scheme is suitable'
         service.checkNumberScheme()
@@ -107,19 +115,22 @@ class SeqNumberServiceSpec extends Specification
         !service.checkNumberScheme()
     }
 
-    def 'Don\'t show again hint for this year'(int year, boolean res) {
+    def 'Do not show again hint for this year'(int year, boolean res) {
         given: 'a user with mocked settings'
         User user = makeUser()
+        user.addToAuthorities(
+            new RoleGroup(
+                name: 'Admin', authorities: [new Role(authority: 'ROLE_ADMIN')]
+            )
+        )
+        user.save failOnError: true
 
         /* leave sequence number for invoices at start value 10000 */
 
         when:
         Date d = new Date()
-        d.set(date: 31, month: Calendar.MARCH, year: year)
-        new UserSetting(
-                user: user, name: 'seqNumberHintYear', value: d.format('YYYY')
-            ).save failOnError: true
-        user.afterLoad()
+        d.set date: 31, month: Calendar.MARCH, year: year
+        user.settings.seqNumberHintYear = d.format('YYYY')
 
         then:
         res == service.getShowHint(user)
@@ -136,21 +147,16 @@ class SeqNumberServiceSpec extends Specification
         9999i                           || false
     }
 
-    def 'Don\'t show again hint for non-admins'(int year) {
+    def 'Do not show again hint for non-admins'(int year) {
         given: 'a non-admin user with mocked settings'
         User user = makeUser()
-//        user.admin = false
-        user.save failOnError: true
 
         /* leave sequence number for invoices at start value 10000 */
 
         when:
         Date d = new Date()
-        d.set(date: 31, month: Calendar.MARCH, year: year)
-        new UserSetting(
-                user: user, name: 'seqNumberHintYear', value: d.format('YYYY')
-            ).save failOnError: true
-        user.afterLoad()
+        d.set date: 31, month: Calendar.MARCH, year: year
+        user.settings.seqNumberHintYear = d.format('YYYY')
 
         then:
         !service.getShowHint(user)
@@ -194,6 +200,7 @@ class SeqNumberServiceSpec extends Specification
                 controllerName: 'dunning', prefix: 'D', startValue: otherStart
             )
         ]
+        SeqNumber.count()       // XXX needed to persist above sequence numbers
         /* leave sequence number for invoices at start value 10000 */
 
         when: 'I obtain the fixed sequence numbers'
@@ -218,14 +225,11 @@ class SeqNumberServiceSpec extends Specification
     def 'Store year for sequence number hint'() {
         given: 'a user with mocked settings'
         User user = makeUser()
-        UserSettings settings = Mock()
+        Map settings = Mock()
         user.settings = settings
 
-        and: 'a credential of that user'
-        Credential cred = new Credential(user)
-
         when: 'I store the year'
-        service.dontShowAgain = cred
+        service.dontShowAgain = user
 
         then: 'the current year has been stored'
         1 * settings.put('seqNumberHintYear', new Date().format('YYYY'))
@@ -234,14 +238,11 @@ class SeqNumberServiceSpec extends Specification
     def 'Store never show again for sequence number hint'() {
         given: 'a user with mocked settings'
         User user = makeUser()
-        UserSettings settings = Mock()
+        Map settings = Mock()
         user.settings = settings
 
-        and: 'a credential of that user'
-        Credential cred = new Credential(user)
-
         when: 'I store the selection'
-        service.neverShowAgain = cred
+        service.neverShowAgain = user
 
         then: 'a year in the future has been stored'
         1 * settings.put('seqNumberHintYear', '9999')
@@ -268,15 +269,15 @@ class SeqNumberServiceSpec extends Specification
         10000 == sn.startValue
         99999 == sn.endValue
 
-        when: 'I load a sequence number by a controller class'
-        sn = service.loadSeqNumber(InvoiceController)
-
-        then: 'I get a valid sequence number object'
-        'invoice' == sn.controllerName
-        'R' == sn.prefix
-        'M' == sn.suffix
-        10000 == sn.startValue
-        99999 == sn.endValue
+//        when: 'I load a sequence number by a controller class'
+//        sn = service.loadSeqNumber(InvoiceController)
+//
+//        then: 'I get a valid sequence number object'
+//        'invoice' == sn.controllerName
+//        'R' == sn.prefix
+//        'M' == sn.suffix
+//        10000 == sn.startValue
+//        99999 == sn.endValue
     }
 
     def 'Load sequence number of an unknown class'() {
@@ -285,46 +286,20 @@ class SeqNumberServiceSpec extends Specification
     }
 
     def 'Get next default sequence number'() {
-        when: 'I retrieve the next sequence number by an artifact type'
-        int n = service.nextNumber('invoice')
-
-        then: 'I get a valid sequence number'
-        10000 == n
-
-        when: 'I retrieve the next sequence number by a domain model class'
-        n = service.nextNumber(Invoice)
-
-        then: 'I get a valid sequence number'
-        10000 == n
-
-        when: 'I retrieve the next sequence number by a controller class'
-        n = service.nextNumber(InvoiceController)
-
-        then: 'I get a valid sequence number'
-        10000 == n
+        expect:
+        10000 == service.nextNumber('invoice')
+        10000 == service.nextNumber(Invoice)
+//        10000 == service.nextNumber(InvoiceController)
     }
 
     def 'Get next sequence number'() {
         given: 'an organization with a particular sequence number'
         createOrganization()
 
-        when: 'I retrieve the next sequence number by an artifact type'
-        int n = service.nextNumber('organization')
-
-        then: 'I get a valid sequence number after the given one'
-        40000 == n
-
-        when: 'I retrieve the next sequence number by a domain model class'
-        n = service.nextNumber(Organization)
-
-        then: 'I get a valid sequence number after the given one'
-        40000 == n
-
-        when: 'I retrieve the next sequence number by a controller class'
-        n = service.nextNumber(OrganizationController)
-
-        then: 'I get a valid sequence number after the given one'
-        40000 == n
+        expect:
+        40000 == service.nextNumber('organization')
+        40000 == service.nextNumber(Organization)
+//        40000 == service.nextNumber(OrganizationController)
     }
 
     def 'Get next sequence number using maxNumber method'() {
@@ -333,177 +308,39 @@ class SeqNumberServiceSpec extends Specification
         Quote quote = createQuote(org)
         createInvoice org, quote
 
-        when: 'I retrieve the next sequence number by an artifact type'
-        int n = service.nextNumber('invoice')
-
-        then: 'I get a valid sequence number after the given one'
-        14001 == n
-
-        when: 'I retrieve the next sequence number by a domain model class'
-        n = service.nextNumber(Invoice)
-
-        then: 'I get a valid sequence number'
-        14001 == n
-
-        when: 'I retrieve the next sequence number by a controller class'
-        n = service.nextNumber(InvoiceController)
-
-        then: 'I get a valid sequence number'
-        14001 == n
-    }
-
-    def 'Get next full number with prefix'() {
-        given: 'an organization with a particular sequence number'
-        createOrganization()
-
-        when: 'I retrieve the next full number by an artifact type'
-        String s = service.nextFullNumber('organization')
-
-        then: 'I get a valid full number with prefix'
-        'O-40000' == s
-
-        when: 'I retrieve the next full number by a domain model class'
-        s = service.nextFullNumber(Organization)
-
-        then: 'I get a valid full number with prefix'
-        'O-40000' == s
-
-        when: 'I retrieve the next full number by a controller class'
-        s = service.nextFullNumber(OrganizationController)
-
-        then: 'I get a valid full number with prefix'
-        'O-40000' == s
-    }
-
-    def 'Get next full number with prefix and suffix'() {
-        given: 'an invoice with a particular sequence number'
-        createInvoice()
-
-        when: 'I retrieve the next full number by an artifact type'
-        String s = service.nextFullNumber('invoice')
-
-        then: 'I get a valid full number with prefix'
-        'R-14001-M' == s
-
-        when: 'I retrieve the next full number by a domain model class'
-        s = service.nextFullNumber(Invoice)
-
-        then: 'I get a valid full number with prefix'
-        'R-14001-M' == s
-
-        when: 'I retrieve the next full number by a controller class'
-        s = service.nextFullNumber(InvoiceController)
-
-        then: 'I get a valid full number with prefix'
-        'R-14001-M' == s
-    }
-
-    def 'Format a number with prefix'() {
         expect:
-        s == service.format('organization', n)
-        s == service.format(Organization, n)
-        s == service.format(OrganizationController, n)
-
-        where:
-            n || s
-            0 || 'O-0'
-            1 || 'O-1'
-           10 || 'O-10'
-         1005 || 'O-1005'
-        10000 || 'O-10000'
-        10608 || 'O-10608'
-        39999 || 'O-39999'
-        99999 || 'O-99999'
+        14001 == service.nextNumber('invoice')
+        14001 == service.nextNumber(Invoice)
+//        14001 == service.nextNumber(InvoiceController)
     }
 
-    def 'Format a number with prefix and suffix'() {
-        expect:
-        s == service.format('invoice', n)
-        s == service.format(Invoice, n)
-        s == service.format(InvoiceController, n)
+    def 'Get the full number'() {
+        given: 'an organization'
+        Organization org = createOrganization()
 
-        where:
-            n || s
-            0 || 'R-0-M'
-            1 || 'R-1-M'
-           10 || 'R-10-M'
-         1005 || 'R-1005-M'
-        10000 || 'R-10000-M'
-        10608 || 'R-10608-M'
-        39999 || 'R-39999-M'
-        99999 || 'R-99999-M'
+        expect:
+        'O-39999' == service.getFullNumber(org)
     }
 
-    def 'Format a prefix sequence number with prefix only'() {
-        expect:
-        s == service.formatWithPrefix('organization', n)
-        s == service.formatWithPrefix(Organization, n)
-        s == service.formatWithPrefix(OrganizationController, n)
 
-        where:
-            n || s
-            0 || 'O-0'
-            1 || 'O-1'
-           10 || 'O-10'
-         1005 || 'O-1005'
-        10000 || 'O-10000'
-        10608 || 'O-10608'
-        39999 || 'O-39999'
-        99999 || 'O-99999'
-    }
+    //-- Public methods -------------------------
 
-    def 'Format a prefix/suffix sequence number with prefix only'() {
-        expect:
-        s == service.formatWithPrefix('invoice', n)
-        s == service.formatWithPrefix(Invoice, n)
-        s == service.formatWithPrefix(InvoiceController, n)
-
-        where:
-            n || s
-            0 || 'R-0'
-            1 || 'R-1'
-           10 || 'R-10'
-         1005 || 'R-1005'
-        10000 || 'R-10000'
-        10608 || 'R-10608'
-        39999 || 'R-39999'
-        99999 || 'R-99999'
-    }
-
-    def 'Format a prefix sequence number with suffix only'() {
-        expect:
-        s == service.formatWithSuffix('organization', n)
-        s == service.formatWithSuffix(Organization, n)
-        s == service.formatWithSuffix(OrganizationController, n)
-
-        where:
-            n || s
-            0 || '0'
-            1 || '1'
-           10 || '10'
-         1005 || '1005'
-        10000 || '10000'
-        10608 || '10608'
-        39999 || '39999'
-        99999 || '99999'
-    }
-
-    def 'Format a prefix/suffix sequence number with suffix only'() {
-        expect:
-        s == service.formatWithSuffix('invoice', n)
-        s == service.formatWithSuffix(Invoice, n)
-        s == service.formatWithSuffix(InvoiceController, n)
-
-        where:
-            n || s
-            0 || '0-M'
-            1 || '1-M'
-           10 || '10-M'
-         1005 || '1005-M'
-        10000 || '10000-M'
-        10608 || '10608-M'
-        39999 || '39999-M'
-        99999 || '99999-M'
+    /*
+     * XXX moved down from DataTest because line
+     *
+     *      Service service = (Service)dataStore.getService(serviceClass)
+     *
+     * throws a NoSuchMethodError when calling getService().  I really don't
+     * know why.
+     */
+    void mockDataService(Class<?> serviceClass) {
+        Service service = (Service)dataStore.getService(serviceClass)
+        String serviceName = Introspector.decapitalize(serviceClass.simpleName)
+        if(!applicationContext.containsBean(serviceName)) {
+            applicationContext.beanFactory.autowireBean(service)
+            service.setDatastore(dataStore)
+            applicationContext.beanFactory.registerSingleton(serviceName, service)
+        }
     }
 
 
@@ -525,7 +362,7 @@ class SeqNumberServiceSpec extends Specification
 
         mockDomain Invoice, [invoice]
 
-        invoice
+        invoice.save flush: true
     }
 
     private Organization createOrganization() {
@@ -536,28 +373,28 @@ class SeqNumberServiceSpec extends Specification
 
         mockDomain Organization, [org]
 
-        org
+        org.save flush: true
     }
 
     private Quote createQuote(Organization org = createOrganization()) {
-        def q = new Quote(
+        def quote = new Quote(
             number: 29999, subject: 'Foo', organization: org,
             docDate: new Date(), stage: new QuoteStage(name: 'delivered'),
             billingAddr: new Address(), shippingAddr: new Address(),
             items: []
         )
-        q.items << new InvoicingItem(
+        quote.items << new InvoicingItem(
             number: 'P-10000', quantity: 4, unit: 'pcs.',
             name: 'books', unitPrice: 44.99, tax: 19
         )
 
-        mockDomain Quote, [q]
+        mockDomain Quote, [quote]
 
-        q
+        quote.save flush: true
     }
 
     private User makeUser() {
-        def u = new User(
+        User user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -566,11 +403,10 @@ class SeqNumberServiceSpec extends Specification
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-            admin: true
+            email: 'j.smith@example.com'
         )
-        u.id = 1704L
+        mockDomain User, [user]
 
-        u.save failOnError: true
+        user
     }
 }
