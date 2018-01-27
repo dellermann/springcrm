@@ -77,10 +77,11 @@ trait NumberedDomain {
 
         if (seqNumber) {
             StringBuilder s = new StringBuilder()
-            if (withPrefix) s << seqNumber.prefix
-            if (s) s << '-'
+            if (withPrefix && seqNumber.prefix) {
+                s << seqNumber.prefix << '-'
+            }
             s << number
-            if (withSuffix && seqNumber.suffix != '') {
+            if (withSuffix && seqNumber.suffix) {
                 s << '-' << seqNumber.suffix
             }
             s.toString()
