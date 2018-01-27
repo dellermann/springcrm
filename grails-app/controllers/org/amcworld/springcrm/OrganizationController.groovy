@@ -105,31 +105,31 @@ class OrganizationController {
     }
 
     def getPhoneNumbers(String id) {
-        Organization organizationInstance =
-            organizationService.get(new ObjectId(id))
-        if (organizationInstance == null) {
-            return
+        Map res = null
+        Organization organization = id == null ? null
+            : organizationService.get(new ObjectId(id))
+        if (organization != null) {
+            List<String> phoneNumbers = [
+                    organization.phone,
+                    organization.phoneOther,
+                    organization.fax
+                ]
+                .findAll({ it })
+                .unique()
+            res = [phoneNumbers: phoneNumbers]
         }
 
-        List<String> phoneNumbers = [
-                organizationInstance.phone,
-                organizationInstance.phoneOther,
-                organizationInstance.fax
-            ]
-            .findAll({ it != '' })
-            .unique()
-
-        respond phoneNumbers: phoneNumbers
+        respond res
     }
 
     def getTermOfPayment(String id) {
         int termOfPayment =
-            ConfigHolder.instance['termOfPayment'].toType(Integer) ?: 14
+            ConfigHolder.instance['termOfPayment']?.toType(Integer) ?: 14
 
-        Organization organizationInstance =
-            organizationService.get(new ObjectId(id))
-        if (organizationInstance?.termOfPayment != null) {
-            termOfPayment = organizationInstance.termOfPayment
+        Organization organization = id == null ? null
+            : organizationService.get(new ObjectId(id))
+        if (organization?.termOfPayment != null) {
+            termOfPayment = organization.termOfPayment
         }
 
         respond termOfPayment: termOfPayment
@@ -149,7 +149,7 @@ class OrganizationController {
                 num = organizationService.countByNameLessThan(letter)
             }
             params.sort = 'name'
-            params.offset = Math.floor(num.toDouble() / max) * max
+            params.offset = (int) (Math.floor(num.toDouble() / max) * max)
         }
 
         List<Organization> list
