@@ -1,7 +1,7 @@
 /*
  * ConfigController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import groovy.transform.CompileStatic
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
 class ConfigController implements Controller {
 
@@ -48,6 +48,7 @@ class ConfigController implements Controller {
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     SeqNumberService seqNumberService
     UserService userService
 
@@ -63,9 +64,8 @@ class ConfigController implements Controller {
 
                 [cc, cc + ((cc == sym) ? '' : " (${sym})")]
             }
-        ConfigHolder holder = ConfigHolder.instance
-        String currentCurrency = holder['currency'].toString()
-        int termOfPayment = holder['termOfPayment'].toType(Integer)
+        String currentCurrency = configService.getString('currency')
+        int termOfPayment = configService.getInteger('termOfPayment')
 
         [
             currencies: currencies.sort { a, b -> a.key <=> b.key },
@@ -108,12 +108,11 @@ class ConfigController implements Controller {
     }
 
     def save() {
-        def configHolder = ConfigHolder.instance
         params.config.each {
             String key = it.key
             String value = it.value
             if (key.startsWith('_')) {
-                configHolder.setConfig key.substring(1), 'false'
+                configService.store key.substring(1), false
             } else if ((key != 'ldapBindPasswd' && key != 'mailPassword')
                        || value)    // issue #35
             {
@@ -121,11 +120,11 @@ class ConfigController implements Controller {
                     value = value ?: '389'                      // issue #35
                 } else if (key == 'mailUseConfig') {
                     if (value == 'null') {
-                        configHolder.removeConfig key
+                        configService.delete key
                         return
                     }
                 }
-                configHolder.setConfig key, value
+                configService.store key, value
             }
         }
 
@@ -201,20 +200,19 @@ class ConfigController implements Controller {
             } catch (NumberFormatException ignored) { /* ignored */ }
         }
 
-        def configHolder = ConfigHolder.instance
         if (params.workIdDunningCharge) {
-            configHolder.setConfig(
-                'workIdDunningCharge', params.workIdDunningCharge.toString()
+            configService.store(
+                'workIdDunningCharge', params.workIdDunningCharge
             )
         } else {
-            configHolder.removeConfig 'workIdDunningCharge'
+            configService.delete 'workIdDunningCharge'
         }
         if (params.workIdDefaultInterest) {
-            configHolder.setConfig(
-                'workIdDefaultInterest', params.workIdDefaultInterest.toString()
+            configService.store(
+                'workIdDefaultInterest', params.workIdDefaultInterest
             )
         } else {
-            configHolder.removeConfig 'workIdDefaultInterest'
+            configService.delete 'workIdDefaultInterest'
         }
 
         if (hasErrors) {
@@ -246,9 +244,9 @@ class ConfigController implements Controller {
     }
 
     def show() {
-        List<Config> configData = ConfigHolder.instance.allConfig
+        List<Config> configData = configService.list()
         Map<String, String> config = [: ]
-        configData.each { config[it.name] = it.value }
+        configData.each { config[it.id] = it.value }
 
         render view: params.page, model: [configData: config]
     }
@@ -283,13 +281,11 @@ class ConfigController implements Controller {
         (Class<SelValue>) cls
     }
 
-    private static Map<String, Object> \
-        prepareLoadSeqNumberModel(List<SeqNumber> list)
+    private Map<String, Object> prepareLoadSeqNumberModel(List<SeqNumber> list)
     {
-        ConfigHolder ch = ConfigHolder.instance
-        Long id = ch['workIdDunningCharge']?.toType(Long)
+        Long id = configService.getLong('workIdDunningCharge')
         Work workDunningCharge = Work.read(id)
-        id = ch['workIdDefaultInterest']?.toType(Long)
+        id = configService.getLong('workIdDefaultInterest')
         Work workDefaultInterest = Work.read(id)
 
         [

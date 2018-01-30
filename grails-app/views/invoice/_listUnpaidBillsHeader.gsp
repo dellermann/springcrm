@@ -1,5 +1,4 @@
 <%@ page import="java.math.BigDecimal" %>
-<%@ page import="org.amcworld.springcrm.ConfigHolder" %>
 
 <div id="unpaid-bills-settings-dialog" class="modal fade" tabindex="-1"
   role="dialog" aria-labelledby="unpaid-bills-settings-dialog-title">
@@ -24,11 +23,7 @@
             ><g:message code="invoice.unpaidBills.settings.minimum.label"
             /></label>
             <div class="input-group">
-              <g:set var="minDefault" value="${
-                BigDecimal.ONE.movePointLeft(
-                  ConfigHolder.instance['numFractionDigitsExt']?.toType(Integer) ?: 2i
-                )
-              }"/>
+              <g:set var="minDefault" value="${numFractionDigitsExt}"/>
               <g:set var="min" value="${user.settings.unpaidBillsMinimum}"/>
               <input type="text" id="unpaid-bills-settings-minimum"
                 name="minimum"

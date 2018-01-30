@@ -426,7 +426,6 @@ class InvoicingTransaction implements NumberedDomain {
      * computes the total value.
      */
     def beforeInsert() {
-        NumberedDomain.super.beforeInsert()
         total = computeTotal()
     }
 

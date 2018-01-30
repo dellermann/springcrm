@@ -70,6 +70,7 @@ class ViewTagLib implements TagLibrary {
     //-- Fields ---------------------------------
 
     CalendarEventService calendarEventService
+    ConfigService configService
     SeqNumberService seqNumberService
     UserService userService
 
@@ -866,7 +867,7 @@ class ViewTagLib implements TagLibrary {
      * @since           1.3
      */
     protected Currency getCurrency(Locale locale) {
-        String currencyId = ConfigHolder.instance['currency'] as String
+        String currencyId = configService.getString('currency')
 
         /* fix for old currency symbols in table config */
         if (!currencyId || currencyId.length() != 3) {

@@ -31,6 +31,7 @@ class DunningController extends InvoicingController<Dunning> {
 
     //-- Class fields ---------------------------
 
+    ConfigService configService
     SeqNumberService seqNumberService
 
 
@@ -173,10 +174,10 @@ class DunningController extends InvoicingController<Dunning> {
      *                          of the work
      * @since 2.2
      */
-    private static void addWorkItem(Dunning dunningInstance, String name) {
-        Config workId = ConfigHolder.instance.getConfig(name)
+    private void addWorkItem(Dunning dunningInstance, String name) {
+        Long workId = configService.getLong(name)
         if (workId != null) {
-            Work work = Work.get(workId.toType(Long))
+            Work work = Work.get(workId)
             if (work != null) {
                 dunningInstance.addToItems workToItem(work)
             }

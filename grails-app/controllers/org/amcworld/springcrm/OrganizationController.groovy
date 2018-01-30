@@ -47,6 +47,7 @@ class OrganizationController {
 
     //-- Fields -------------------------------------
 
+    ConfigService configService
     OrganizationService organizationService
 
 
@@ -123,8 +124,7 @@ class OrganizationController {
     }
 
     def getTermOfPayment(String id) {
-        int termOfPayment =
-            ConfigHolder.instance['termOfPayment']?.toType(Integer) ?: 14
+        int termOfPayment = configService.getInteger('termOfPayment') ?: 14i
 
         Organization organization = id == null ? null
             : organizationService.get(new ObjectId(id))

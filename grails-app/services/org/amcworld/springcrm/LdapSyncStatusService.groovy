@@ -1,5 +1,5 @@
 /*
- * Config.groovy
+ * LdapSyncStatusService.groovy
  *
  * Copyright (c) 2011-2018, Daniel Ellermann
  *
@@ -20,42 +20,36 @@
 
 package org.amcworld.springcrm
 
-import groovy.transform.EqualsAndHashCode
+import grails.gorm.services.Service
+import org.bson.types.ObjectId
 
 
 /**
- * The class {@code Config} represents a system configuration information.
+ * The interface {@code LdapSyncStatusService} contains general methods to
+ * handle synchronization states with LDAP in the underlying data store.
  *
  * @author  Daniel Ellermann
  * @version 3.0
+ * @since   3.0
  */
-@EqualsAndHashCode(includes = ['id'])
-class Config {
-
-    //-- Class fields ---------------------------
-
-    static constraints = {
-        value nullable: true
-    }
-
-
-    //-- Fields ---------------------------------
-
-    /**
-     * The ID of the configuration value.
-     */
-    String id
-
-    /**
-     * The string representation of the value of the configuration setting.
-     */
-    String value
-
+@Service(LdapSyncStatus)
+interface LdapSyncStatusService {
 
     //-- Public methods -------------------------
 
-    @Override
-    String toString() {
-        value
-    }
+    /**
+     * Gets the LDAP sync status by the given ID of the synchronized item.
+     *
+     * @param id    the given ID
+     * @return      the sync status or {@code null} if no such status exist
+     */
+    LdapSyncStatus findByItemId(ObjectId id)
+
+    /**
+     * Saves the given LDAP sync status.
+     *
+     * @param status    the given LDAP sync status
+     * @return          the saved instance
+     */
+    LdapSyncStatus save(LdapSyncStatus status)
 }

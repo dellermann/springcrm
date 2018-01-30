@@ -1,7 +1,7 @@
 /*
  * LdapSyncStatus.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -28,36 +30,44 @@ import org.grails.datastore.gorm.GormEntity
  * a content item with LDAP.
  *
  * @author	Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
+@EqualsAndHashCode(includes = ['itemId'])
 class LdapSyncStatus implements GormEntity<LdapSyncStatus> {
 
     //-- Class fields ---------------------------
 
     static constraints = {}
     static mapping = {
-        itemId index: 'item_id'
+        itemId index: true, indexAttributes: [unique: true, dropDups: true]
     }
 
 
     //-- Fields ---------------------------------
 
-    Long itemId
+    /**
+     * The distinguished name (DN) of the item which was synchronized with
+     * LDAP.
+     */
     String dn
+
+    /**
+     * The ID of the LDAP synchronization status instance.
+     */
+    ObjectId id
+
+    /**
+     * The ID of the item which was synchronized with LDAP.
+     */
+    ObjectId itemId
+
+    /**
+     * The timestamp of the last synchronization.
+     */
     Date lastSync = new Date()
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof LdapSyncStatus && obj.itemId == itemId
-    }
-
-    @Override
-    int hashCode() {
-        (itemId ?: 0L) as int
-    }
 
     @Override
     String toString() {

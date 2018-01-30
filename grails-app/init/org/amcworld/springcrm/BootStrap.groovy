@@ -1,7 +1,7 @@
 /*
  * BootStrap.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ class BootStrap {
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     SimpleMappingExceptionResolver exceptionHandler
 //    GoogleContactSyncTask googleContactSyncTask
     GrailsApplication grailsApplication
@@ -55,8 +56,8 @@ class BootStrap {
         installService.installRoles()
 
         /* start tasks */
-        Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')
-        long interval = (config ? (config.value as Long) : 5L) * 60000L
+        long interval =
+            (configService.getLong('syncContactsFrequency') ?: 5L) * 60000L
         Timer timer = new Timer('tasks')
 //        timer.schedule googleContactSyncTask, interval, interval
         InstallerDisableTask installDisableTask =

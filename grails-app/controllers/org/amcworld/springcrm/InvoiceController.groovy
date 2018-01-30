@@ -31,6 +31,7 @@ class InvoiceController extends InvoicingController<Invoice> {
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     UserService userService
 
 
@@ -142,7 +143,11 @@ class InvoiceController extends InvoicingController<Invoice> {
         List<Invoice> invoiceInstanceList =
             invoicingTransactionService.findUnpaidBills(credential)
 
-        [(getDomainInstanceName('List')): invoiceInstanceList]
+        [
+            (getDomainInstanceName('List')): invoiceInstanceList,
+            numFractionDigitsExt:
+                configService.getInteger('numFractionDigitsExt')
+        ]
     }
 
     def print(Long id, String template) {

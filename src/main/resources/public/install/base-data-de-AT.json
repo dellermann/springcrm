@@ -1082,22 +1082,22 @@
   ],
   "config": [
     {
-      "name": "baseDataLocale",
+      "_id": "baseDataLocale",
       "version": { "$numberLong": "0" },
       "value": "de-AT"
     },
     {
-      "name": "currency",
+      "_id": "currency",
       "version": { "$numberLong": "0" },
       "value": "EUR"
     },
     {
-      "name": "numFractionDigits",
+      "_id": "numFractionDigits",
       "version": { "$numberLong": "0" },
       "value": "2"
     },
     {
-      "name": "numFractionDigitsExt",
+      "_id": "numFractionDigitsExt",
       "version": { "$numberLong": "0" },
       "value": "2"
     }

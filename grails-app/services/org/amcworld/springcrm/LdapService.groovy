@@ -20,8 +20,8 @@
 
 package org.amcworld.springcrm
 
+import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 import javax.naming.NameAlreadyBoundException
 import org.amcworld.springcrm.ldap.LdapFactory
 import org.apache.directory.groovyldap.LDAP
@@ -35,16 +35,14 @@ import org.apache.directory.groovyldap.LDAP
  * @version 3.0
  */
 @CompileStatic
+@Transactional(readOnly = false)
 class LdapService {
-
-    //-- Class fields ---------------------------
-
-    static transactional = false
-
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     LdapFactory ldapFactory
+    LdapSyncStatusService ldapSyncStatusService
 
 
     //-- Public methods -------------------------
@@ -52,13 +50,13 @@ class LdapService {
     /**
      * Deletes the given person from the LDAP directory.
      *
-     * @param p the person to delete
+     * @param person    the person to delete
      */
-    void delete(Person p) {
+    void delete(Person person) {
         LDAP ldap = getLdap()
-        if (ldap) {
-            LdapSyncStatus status = getByPerson(p)
-            if (status) {
+        if (ldap != null) {
+            LdapSyncStatus status = getByPerson(person)
+            if (status != null) {
                 if (ldap.exists(status.dn)) {
                     log.debug "Deleting DN ${status.dn} from LDAP..."
                     ldap.delete status.dn
@@ -72,26 +70,24 @@ class LdapService {
      * Saves the given person to the LDAP directory.  The method either creates
      * or updates an entry in the directory.
      *
-     * @param p the person to save
+     * @param person    the person to save
      */
-    void save(Person p) {
+    void save(Person person) {
         LDAP ldap = getLdap()
-        if (ldap) {
+        if (ldap != null) {
             if (log.debugEnabled) {
-                log.debug "Exporting person ${p} to LDAP..."
+                log.debug "Exporting person ${person} to LDAP..."
             }
-            LdapSyncStatus status = getByPerson(p)
-            if (status) {
-                if (ldap.exists(status.dn)) {
-                    if (log.debugEnabled) {
-                        log.debug "DN ${status.dn} already exists -> delete it."
-                    }
-                    ldap.delete status.dn
+            LdapSyncStatus status = getByPerson(person)
+            if (status == null) {
+                status = new LdapSyncStatus(itemId: person.id)
+            } else if (ldap.exists(status.dn)) {
+                if (log.debugEnabled) {
+                    log.debug "DN ${status.dn} already exists -> delete it."
                 }
-            } else {
-                status = createByPerson(p)
+                ldap.delete status.dn
             }
-            def attrs = convertPersonToAttrs(p)
+            Map<String, Object> attrs = convertPersonToAttrs(person)
             StringBuilder dn
             for (int i = 1; i < 10000; i++) {    // 10000 => emergency abort
                 dn = new StringBuilder('cn=')
@@ -99,19 +95,19 @@ class LdapService {
                 if (i > 1) {
                     dn << ' ' << i
                 }
-                dn << ',' << config['ldapContactDn']?.toString()
+                dn << ',' << configService.getString('ldapContactDn')
                 try {
                     if (log.debugEnabled) {
                         log.debug "Trying to save DN ${dn} to LDAP..."
                     }
                     ldap.add dn.toString(), attrs
                     status.dn = dn.toString()
-                    status.save flush: true
+                    ldapSyncStatusService.save status
                     break
                 } catch (NameAlreadyBoundException ignored) { /* ignored */ }
             }
             if (log.debugEnabled) {
-                log.debug "Successfully exported person ${p} to LDAP."
+                log.debug "Successfully exported person ${person} to LDAP."
             }
         }
     }
@@ -123,101 +119,107 @@ class LdapService {
      * Converts the given person to an attribute map which can be transferred
      * to the LDAP directory.
      *
-     * @param p the person to convert
-     * @return  the attribute map containing the person property values
-     *          suitable for LDAP
+     * @param person    the person to convert
+     * @return          the attribute map containing the person property values
+     *                  suitable for LDAP
      */
-    private static Map convertPersonToAttrs(Person p) {
-        def attrs = [
-            cn: "${p.lastName} ${p.firstName}".toString(),
-            displayname: "${p.firstName} ${p.lastName}".toString(),
-            givenname: p.firstName,
-            o: p.organization.name,
+    private static Map<String, Object> convertPersonToAttrs(Person person) {
+        Map<String, Object> attrs = [
+            cn: "${person.lastName} ${person.firstName}".toString(),
+            displayname: "${person.firstName} ${person.lastName}".toString(),
+            givenname: person.firstName,
+            o: person.organization.name,
             objectclass: ['top', 'inetOrgPerson'],
-            sn: p.lastName
-        ]
-        if (p.title) {
-            attrs.title = p.title
+            sn: person.lastName
+        ] as Map<String, Object>
+        if (person.title) {
+            attrs.title = person.title
         }
-        if (p.organization.industry) {
-            attrs.businesscategory = p.organization.industry.name
+        if (person.organization.industry) {
+            attrs.businesscategory = person.organization.industry.name
         }
-        List<String> l = new ArrayList<String>()
-        if (p.fax) {
-            l.add p.fax
+        List<String> list = new ArrayList<String>()
+        if (person.fax) {
+            list.add person.fax
         }
-        if (p.organization.fax && p.organization.fax != p.fax) {
-            l.add p.organization.fax
+        if (person.organization.fax && person.organization.fax != person.fax) {
+            list.add person.organization.fax
         }
-        if (!l.isEmpty()) {
-            attrs.facsimiletelephonenumber = l.unique {
+        if (!list.isEmpty()) {
+            attrs.facsimiletelephonenumber = list.unique {
                 it.replaceAll ~/\D/, ''
             }
         }
-        if (p.phoneHome) {
-            attrs.homephone = p.phoneHome
+        if (person.phoneHome) {
+            attrs.homephone = person.phoneHome
         }
-        if (p.mailingAddr.location) {
-            attrs.l = p.mailingAddr.location
+        if (person.mailingAddr.location) {
+            attrs.l = person.mailingAddr.location
         }
-        if (p.organization.website) {
-            attrs.labeleduri = p.organization.website
+        if (person.organization.website) {
+            attrs.labeleduri = person.organization.website
         }
-        l = new ArrayList<String>()
-        if (p.email1) {
-            l.add p.email1
+        list = new ArrayList<String>()
+        if (person.email1) {
+            list.add person.email1
         }
-        if (p.organization.email1 && p.organization.email1 != p.email1) {
-            l.add p.organization.email1
+        if (person.organization.email1
+            && person.organization.email1 != person.email1)
+        {
+            list.add person.organization.email1
         }
-        if (p.email2) {
-            l.add p.email2
+        if (person.email2) {
+            list.add person.email2
         }
-        if (p.organization.email2 && p.organization.email2 != p.email2) {
-            l.add p.organization.email2
+        if (person.organization.email2
+            && person.organization.email2 != person.email2)
+        {
+            list.add person.organization.email2
         }
-        if (!l.empty) {
-            attrs.mail = l.unique()
+        if (!list.empty) {
+            attrs.mail = list.unique()
         }
-        if (p.mobile) {
-            attrs.mobile = p.mobile
+        if (person.mobile) {
+            attrs.mobile = person.mobile
         }
-        if (p.department) {
-            attrs.ou = p.department
+        if (person.department) {
+            attrs.ou = person.department
         }
-        String s = p.mailingAddr
+        String s = person.mailingAddr
         if (s) {
             attrs.postaladdress = s
         }
-        if (p.mailingAddr.postalCode) {
-            attrs.postalcode = p.mailingAddr.postalCode
+        if (person.mailingAddr.postalCode) {
+            attrs.postalcode = person.mailingAddr.postalCode
         }
-        if (p.mailingAddr.poBox) {
-            attrs.postofficebox = p.mailingAddr.poBox
+        if (person.mailingAddr.poBox) {
+            attrs.postofficebox = person.mailingAddr.poBox
         }
-        if (p.mailingAddr.state) {
-            attrs.st = p.mailingAddr.state
+        if (person.mailingAddr.state) {
+            attrs.st = person.mailingAddr.state
         }
-        if (p.mailingAddr.street) {
-            attrs.street = p.mailingAddr.street
+        if (person.mailingAddr.street) {
+            attrs.street = person.mailingAddr.street
         }
-        l = new ArrayList<String>()
-        if (p.phone) {
-            l.add p.phone
+        list = new ArrayList<String>()
+        if (person.phone) {
+            list.add person.phone
         }
-        if (p.organization.phone && p.organization.phone != p.phone) {
-            l.add p.organization.phone
-        }
-        if (p.phoneOther) {
-            l.add p.phoneOther
-        }
-        if (p.organization.phoneOther
-            && p.organization.phoneOther != p.phoneOther)
+        if (person.organization.phone
+            && person.organization.phone != person.phone)
         {
-            l.add p.organization.phoneOther
+            list.add person.organization.phone
         }
-        if (!l.empty) {
-            attrs.telephonenumber = l.unique {
+        if (person.phoneOther) {
+            list.add person.phoneOther
+        }
+        if (person.organization.phoneOther
+            && person.organization.phoneOther != person.phoneOther)
+        {
+            list.add person.organization.phoneOther
+        }
+        if (!list.empty) {
+            attrs.telephonenumber = list.unique {
                 it.replaceAll ~/\D/, ''
             }
         }
@@ -226,37 +228,14 @@ class LdapService {
     }
 
     /**
-     * Creates an LDAP sync status by the given person.
-     *
-     * @param p the given person
-     * @return  the created sync status
-     * @since   2.1
-     */
-    @CompileStatic(TypeCheckingMode.SKIP)
-    private static LdapSyncStatus createByPerson(Person p) {
-        new LdapSyncStatus(itemId: p.id)
-    }
-
-    /**
      * Gets the LDAP sync status by the given person.
      *
-     * @param p the given person
-     * @return  the sync status or {@code null} if no such status exist
-     * @since   2.1
+     * @param person    the given person
+     * @return          the sync status or {@code null} if no such status exist
+     * @since 2.1
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
-    private static LdapSyncStatus getByPerson(Person p) {
-        LdapSyncStatus.findByItemId p.id
-    }
-
-    /**
-     * Gets the configuration data from the application wide configuration
-     * holder.
-     *
-     * @return  the configuration holder
-     */
-    private static ConfigHolder getConfig() {
-        ConfigHolder.instance
+    private LdapSyncStatus getByPerson(Person person) {
+        ldapSyncStatusService.findByItemId person.id
     }
 
     /**
@@ -268,15 +247,15 @@ class LdapService {
      *          configured
      */
     private LDAP getLdap() {
-        String host = config['ldapHost']?.toString()
+        String host = configService.getString('ldapHost')
         if (!host) {
             return null
         }
 
         ldapFactory.newLdap(
-            host, config['ldapBindDn']?.toString(),
-            config['ldapBindPasswd']?.toString(),
-            config['ldapPort']?.toType(Integer)
+            host, configService.getString('ldapBindDn'),
+            configService.getString('ldapBindPasswd'),
+            configService.getInteger('ldapPort')
         )
     }
 }

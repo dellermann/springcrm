@@ -25,8 +25,7 @@ import static org.amcworld.springcrm.google.SyncSource.LOCAL
 import com.google.api.client.auth.oauth2.Credential
 import com.google.gdata.client.GoogleService
 import groovy.transform.CompileStatic
-import org.amcworld.springcrm.Config
-import org.amcworld.springcrm.ConfigHolder
+import org.amcworld.springcrm.ConfigService
 import org.amcworld.springcrm.GoogleDataSyncStatus
 import org.amcworld.springcrm.GoogleOAuthService
 import org.amcworld.springcrm.Organization
@@ -63,6 +62,8 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
 
 
     //-- Fields ---------------------------------
+
+    ConfigService configService
 
     /**
      * The OAuth service to authenticate at Google.
@@ -363,11 +364,12 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
      * @return              the configuration value
      */
     @CompileStatic
-    protected static boolean getBooleanSystemConfig(
-        String key, boolean defaultValue = false
-    ) {
-        Config config = getSystemConfig(key)
-        (config == null) ? defaultValue : config.toType(Boolean)
+    protected boolean getBooleanSystemConfig(String key,
+                                             boolean defaultValue = false)
+    {
+        Boolean b = configService.getBoolean(key)
+
+        b == null ? defaultValue : b
     }
 
     /**
@@ -414,18 +416,6 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
      * @since               2.0
      */
     protected abstract GoogleService getService(Credential credential)
-
-    /**
-     * Gets the system configuration object with the given key.
-     *
-     * @param key   the given key
-     * @return      the configuration object; {@code null} if no configuration
-     *              for the given key exists
-     */
-    @CompileStatic
-    private static Config getSystemConfig(String key) {
-        ConfigHolder.instance.getConfig key
-    }
 
     /**
      * Gets the URL of the given Google entry.

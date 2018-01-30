@@ -37,13 +37,49 @@ interface RoleGroupService {
 
     //-- Public methods -------------------------
 
+    /**
+     * Counts the user groups.
+     *
+     * @return  the number of user groups
+     */
     Long count()
 
+    /**
+     * Deletes the user group with the given ID.
+     *
+     * @param id    the ID of the user group
+     */
     RoleGroup delete(ObjectId id)
 
+    /**
+     * Finds the user group which belongs to the given role.
+     *
+     * @param role  the given role
+     * @return      the user group or {@code null} if no such user group exists
+     */
+    RoleGroup findByAuthorities(Role role)
+
+    /**
+     * Gets the user group with the given ID.
+     *
+     * @param id    the ID of the user group
+     * @return      the user group or {@code null} if no such user group exists
+     */
     RoleGroup get(ObjectId id)
 
+    /**
+     * Retrieves a list of all user groups.
+     *
+     * @param args  any arguments used for retrieving the user groups
+     * @return      a list of user groups
+     */
     List<RoleGroup> list(Map args)
 
+    /**
+     * Saves the given user group.
+     *
+     * @param user  the user group which should be saved
+     * @return      the saved user group
+     */
     RoleGroup save(RoleGroup roleGroup)
 }

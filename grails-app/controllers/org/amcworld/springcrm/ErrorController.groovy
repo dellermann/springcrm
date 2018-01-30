@@ -1,7 +1,7 @@
 /*
  * ErrorController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ class ErrorController implements Controller {
     //-- Fields ---------------------------------
 
     CloseableHttpClient httpClient
+    ConfigService configService
     SpringSecurityService springSecurityService
 
 
@@ -61,28 +62,29 @@ class ErrorController implements Controller {
     }
 
     def ldapPerson(String type, String origAction, Long personId) {
-        ConfigHolder ch = ConfigHolder.instance
         String msg = null
         switch (type) {
         case 'communication':
             msg = message(
                 code: 'error.ldap.person.description.communicate', args: [
-                    ch['ldapHost'].value, ch['ldapPort'].value
+                    configService.getString('ldapHost'),
+                    configService.getInteger('ldapPort')
                 ]
             )
             break
         case 'nameNotFound':
             msg = message(
                 code: 'error.ldap.person.description.nameNotFound', args: [
-                    ch['ldapContactDn'].value
+                    configService.getString('ldapContactDn')
                 ]
             )
             break
         case 'authentication':
             msg = message(
                 code: 'error.ldap.person.description.authentication', args: [
-                    ch['ldapHost'].value, ch['ldapBindDn'].value,
-                    ch['ldapContactDn'].value
+                    configService.getString('ldapHost'),
+                    configService.getString('ldapBindDn'),
+                    configService.getString('ldapContactDn')
                 ]
             )
             break
@@ -101,7 +103,6 @@ class ErrorController implements Controller {
             )
             break
         case 'delete':
-            def id = params.id
             retryUrl = createLink(
                 controller: 'person', action: 'ldapdelete', id: personId
             )

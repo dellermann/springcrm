@@ -20,21 +20,14 @@
 
 package org.amcworld.springcrm
 
-import grails.artefact.Service
 import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.apache.commons.vfs2.FileObject
-import org.apache.commons.vfs2.FileSelectInfo
-import org.apache.commons.vfs2.FileSelector
-import org.apache.commons.vfs2.FileType
-import org.apache.commons.vfs2.NameScope
-import org.apache.commons.vfs2.Selectors
-import org.apache.commons.vfs2.VFS
+import org.apache.commons.vfs2.*
 
 
 @CompileStatic
-class DocumentService implements Service {
+class DocumentService {
 
     //-- Class fields ---------------------------
 
@@ -43,6 +36,7 @@ class DocumentService implements Service {
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     GrailsApplication grailsApplication
 
 
@@ -124,8 +118,7 @@ class DocumentService implements Service {
     * @see			#getRootPath()
     */
     FileObject getFolderOfOrganization(Organization org) {
-        String pathSpec =
-            ConfigHolder.instance['pathDocumentByOrg']?.value ?: '%o'
+        String pathSpec = configService.getString('pathDocumentByOrg') ?: '%o'
 
         // check the document placeholder of the organization
         FileObject folder

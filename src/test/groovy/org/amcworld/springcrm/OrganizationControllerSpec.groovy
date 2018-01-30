@@ -284,28 +284,43 @@ class OrganizationControllerSpec extends Specification
         OrganizationService service = Mock()
         controller.organizationService = service
 
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        controller.configService = configService
+
+        when: 'the action is executed without a configuration'
+        controller.getTermOfPayment null
+
+        then: 'the model is correct'
+        1 * configService.getInteger('termOfPayment') >> null
+        0 * service.get(_)
+        14i == model.termOfPayment
+
         when: 'the action is executed with a null domain'
         controller.getTermOfPayment null
 
         then: 'the model is correct'
+        1 * configService.getInteger('termOfPayment') >> 28i
         0 * service.get(_)
-        14i == model.termOfPayment
+        28i == model.termOfPayment
 
         when: 'the action is executed with a non-existing domain'
         response.reset()
         controller.getTermOfPayment new ObjectId().toString()
 
         then: 'the model is correct'
+        1 * configService.getInteger('termOfPayment') >> 28i
         0 * service.get(org.id)
-        14i == model.termOfPayment
+        28i == model.termOfPayment
 
         when: 'the action is executed with an existing domain'
         response.reset()
         controller.getTermOfPayment org.id.toString()
 
         then: 'the model is correct'
+        1 * configService.getInteger('termOfPayment') >> 28i
         1 * service.get(org.id) >> org
-        14i == model.termOfPayment
+        28i == model.termOfPayment
 
         when: 'the action is executed with a term of payment value'
         org.termOfPayment = 21i
@@ -313,6 +328,7 @@ class OrganizationControllerSpec extends Specification
         controller.getTermOfPayment org.id.toString()
 
         then: 'the model is correct'
+        1 * configService.getInteger('termOfPayment') >> 28i
         1 * service.get(org.id) >> org
         21i == model.termOfPayment
     }

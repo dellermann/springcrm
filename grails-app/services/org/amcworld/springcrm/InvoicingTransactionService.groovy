@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,13 +33,14 @@ import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
  * invoicing transactions such as quotes, sales order, invoices etc.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.2
  */
 class InvoicingTransactionService implements Service {
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     GrailsApplication grailsApplication
     InvoicingTransactionXMLFactory invoicingTransactionXMLFactory
 
@@ -113,8 +114,7 @@ class InvoicingTransactionService implements Service {
         String ord = settings.unpaidBillsOrder ?: 'desc'
         int max = (settings.unpaidBillsMax ?: '0') as int
 
-        Config conf = (Config) ConfigHolder.instance['numFractionDigitsExt']
-        int precision = conf?.toType(Integer) ?: 2i
+        int precision = configService.getInteger('numFractionDigitsExt') ?: 2i
         String setting = settings.unpaidBillsMinimum
         BigDecimal minimum = setting ? new BigDecimal(setting)
             : BigDecimal.ONE.movePointLeft(precision)

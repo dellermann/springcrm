@@ -125,15 +125,7 @@ endpoints:
 ---
 grails:
     gorm:
-        failOnError: false
-hibernate:
-    cache:
-        queries: false
-        use_second_level_cache: true
-        use_query_cache: false
-        # cache.provider_class: 'net.sf.ehcache.hibernate.EhCacheProvider'
-        region.factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
-        format_sql: true
+        failOnError: true
 
 endpoints:
     jmx:
@@ -157,6 +149,7 @@ endpoints:
 #   "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/springcrm"'
 grails:
     mongodb:
+        host: localhost
         port: 27017
         databaseName: springcrm
         engine: codec
@@ -165,14 +158,14 @@ grails:
                 version: false
 
 environments:
-    development:
-        grails:
-            mongodb:
-                host: localhost
     production:
         grails:
             mongodb:
                 host: mongodb
+    test:
+        grails:
+            mongodb:
+                databaseName: springcrm-test
 
 ---
 #================================================

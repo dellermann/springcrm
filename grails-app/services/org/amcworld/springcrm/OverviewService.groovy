@@ -61,7 +61,7 @@ class OverviewService {
      */
     @Transactional
     void dontShowAgain(User user) {
-        user.settings['changelogVersion'] =
+        user.settings.changelogVersion =
             grailsApplication.metadata.applicationVersion
         user.save flush: true
     }
@@ -101,7 +101,7 @@ class OverviewService {
      *              {@code false} otherwise
      */
     boolean showChangelog(User user) {
-        String version = user.settings['changelogVersion']?.toString()
+        String version = user.settings.changelogVersion?.toString()
         if (!version) {
             return true
         }

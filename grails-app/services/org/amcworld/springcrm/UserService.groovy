@@ -1,7 +1,7 @@
 /*
  * UserService.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,7 @@
 
 package org.amcworld.springcrm
 
-import com.mongodb.client.model.Filters
 import grails.gorm.services.Service
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import java.text.DecimalFormatSymbols
 import org.bson.types.ObjectId
@@ -49,6 +47,14 @@ interface IUserService {
     int count()
 
     /**
+     * Counts the users which belong to the given user group.
+     *
+     * @param roleGroup the given user group
+     * @return          the number of matching users
+     */
+    int countByAuthorities(RoleGroup roleGroup)
+
+    /**
      * Counts the users which username is alphabetically before the given
      * username.
      *
@@ -62,7 +68,7 @@ interface IUserService {
      *
      * @param id    the ID of the user
      */
-    void delete(ObjectId id)
+    User delete(ObjectId id)
 
     /**
      * Gets the user with the given ID.
@@ -75,7 +81,7 @@ interface IUserService {
     /**
      * Retrieves a list of all users.
      *
-     * @param args  any arguments used for retrieving the user
+     * @param args  any arguments used for retrieving the users
      * @return      a list of users
      */
     List<User> list(Map args)
@@ -99,7 +105,6 @@ interface IUserService {
  * @since   1.3
  */
 @Service(User)
-@Transactional
 abstract class UserService implements IUserService {
 
     //-- Constants ------------------------------
@@ -108,6 +113,12 @@ abstract class UserService implements IUserService {
 
 
     //-- Fields ---------------------------------
+
+    @Autowired
+    ConfigService configService
+
+    @Autowired
+    RoleGroupService roleGroupService
 
     @Autowired
     SpringSecurityService springSecurityService
@@ -143,6 +154,7 @@ abstract class UserService implements IUserService {
                 }
             }
         }
+
         res
     }
 
@@ -183,7 +195,7 @@ abstract class UserService implements IUserService {
     Currency getCurrency() {
         Currency currency = null
         try {
-            String currencyCode = ConfigHolder.instance['currency'] as String
+            String currencyCode = configService.getString('currency')
             if (currencyCode) {
                 currency = Currency.getInstance(currencyCode)
             }
@@ -258,7 +270,7 @@ abstract class UserService implements IUserService {
      */
     int getNumFractionDigits() {
         Integer numFractionDigits =
-            ConfigHolder.instance['numFractionDigits']?.toType(Integer)
+            configService.getInteger('numFractionDigits')
         try {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
@@ -279,7 +291,7 @@ abstract class UserService implements IUserService {
      */
     int getNumFractionDigitsExt() {
         Integer numFractionDigits =
-            ConfigHolder.instance['numFractionDigitsExt']?.toType(Integer)
+            configService.getInteger('numFractionDigitsExt')
         try {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
@@ -302,12 +314,9 @@ abstract class UserService implements IUserService {
      */
     boolean isOnlyAdmin(User user) {
         Role role = Role.findByAuthority('ROLE_ADMIN')
-        RoleGroup group = RoleGroup.find(Filters.eq('authorities', role.id))
-            .first()
-        if (!user.authorities.contains(group)) {
-            return false
-        }
+        RoleGroup group = roleGroupService.findByAuthorities(role)
 
-        User.count(Filters.eq('authorities', group.id)) == 1
+        user?.authorities?.contains(group) ? countByAuthorities(group) == 1
+            : false
     }
 }
