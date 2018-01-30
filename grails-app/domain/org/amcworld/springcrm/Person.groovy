@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -81,7 +82,6 @@ class Person implements GormEntity<Person>, NumberedDomain {
         projects: Project
     ]
     static mapping = {
-        autowire true
         calls column: 'Person'
         firstName index: true
         lastName index: true
@@ -103,6 +103,7 @@ class Person implements GormEntity<Person>, NumberedDomain {
     String email2
     String fax
     String firstName
+    ObjectId id
     String jobTitle
     String lastName
     Date lastUpdated
@@ -157,14 +158,13 @@ class Person implements GormEntity<Person>, NumberedDomain {
     //-- Properties -----------------------------
 
     String getFullName() {
-        String firstName = this.firstName?.trim()?:''
-        String lastName = this.lastName?.trim()?:''
+        String firstName = this.firstName?.trim() ?: ''
+        String lastName = this.lastName?.trim() ?: ''
 
-        StringBuilder buf = new StringBuilder (firstName)
-        if(firstName && lastName) {
-            buf << ' '
-        }
+        StringBuilder buf = new StringBuilder(firstName)
+        if (firstName && lastName) buf << ' '
         buf << lastName
+
         buf.toString()
     }
 
@@ -173,11 +173,13 @@ class Person implements GormEntity<Person>, NumberedDomain {
 
     @Override
     String toString() {
-        StringBuilder s = new StringBuilder()
-        if (lastName) s << lastName ?: ''
-        if (lastName && firstName) s << ', '
-        if (firstName) s << firstName ?: ''
+        String firstName = this.firstName?.trim() ?: ''
+        String lastName = this.lastName?.trim() ?: ''
 
-        s.toString()
+        StringBuilder buf = new StringBuilder(lastName)
+        if (lastName && firstName) buf << ', '
+        buf << firstName
+
+        buf.toString()
     }
 }

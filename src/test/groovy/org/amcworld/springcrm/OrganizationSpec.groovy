@@ -31,7 +31,7 @@ class OrganizationSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Copy using constructor'() {
+    void 'Copy using constructor'() {
         given: 'an organization'
         def o1 = new Organization(
             number: 40473,
@@ -87,7 +87,7 @@ class OrganizationSpec extends Specification
         !o2.number
     }
 
-    def 'Get the short name'(String n, String e) {
+    void 'Get the short name'(String n, String e) {
         given: 'an empty organization'
         def org = new Organization()
 
@@ -107,7 +107,7 @@ class OrganizationSpec extends Specification
         '0123456789' * 5    || ('0123456789' * 4) + '…'
     }
 
-    def 'Check for customer and vendor flags'(Byte r, boolean c, boolean v) {
+    void 'Check for customer and vendor flags'(Byte r, boolean c, boolean v) {
         given: 'an empty organization'
         def org = new Organization()
 
@@ -126,7 +126,7 @@ class OrganizationSpec extends Specification
         3 || true   | true
     }
 
-    def 'Set a website fixes the URL'(String url, String e) {
+    void 'Set a website fixes the URL'(String url, String e) {
         given: 'an empty organization'
         def org = new Organization()
 
@@ -147,7 +147,7 @@ class OrganizationSpec extends Specification
         'www.amc-world[http://].de'     || 'http://www.amc-world[http://].de'
     }
 
-    def 'Equals is null-safe'() {
+    void 'Equals is null-safe'() {
         given: 'an instance'
         def org = new Organization()
 
@@ -157,7 +157,7 @@ class OrganizationSpec extends Specification
         !org.equals(null)
     }
 
-    def 'Instances of other types are always unequal'() {
+    void 'Instances of other types are always unequal'() {
         given: 'an instance'
         def org = new Organization()
 
@@ -168,7 +168,7 @@ class OrganizationSpec extends Specification
         org != new Date()
     }
 
-    def 'Not persisted instances are equal'() {
+    void 'Not persisted instances are equal'() {
         given: 'three instances without ID'
         def org1 = new Organization(name: 'My Organization 1')
         def org2 = new Organization(name: 'My Organization 2')
@@ -190,7 +190,7 @@ class OrganizationSpec extends Specification
         org3 == org1
     }
 
-    def 'Persisted instances are equal if they have the same ID'() {
+    void 'Persisted instances are equal if they have the same ID'() {
         given: 'three instances with same ID'
         def id = new ObjectId()
         def org1 = new Organization(name: 'My Organization 1')
@@ -216,13 +216,13 @@ class OrganizationSpec extends Specification
         org3 == org1
     }
 
-    def 'Persisted instances are unequal if they have the different ID'() {
+    void 'Persisted instances are unequal if they have the different ID'() {
         given: 'three instances with different IDs'
         def org1 = new Organization(name: 'My Organization 1')
         org1.id = new ObjectId()
-        def org2 = new Organization(name: 'My Organization 2')
+        def org2 = new Organization(name: 'My Organization 1')
         org2.id = new ObjectId()
-        def org3 = new Organization(name: 'My Organization 3')
+        def org3 = new Organization(name: 'My Organization 1')
         org3.id = new ObjectId()
 
         expect: 'equals() is reflexive'
@@ -241,7 +241,7 @@ class OrganizationSpec extends Specification
         org3 != org1
     }
 
-    def 'Can compute hash code of an empty instance'() {
+    void 'Can compute hash code of an empty instance'() {
         given: 'an empty instance'
         def org = new Organization()
 
@@ -249,7 +249,7 @@ class OrganizationSpec extends Specification
         3937i == org.hashCode()
     }
 
-    def 'Can compute hash code of a not persisted instance'() {
+    void 'Can compute hash code of a not persisted instance'() {
         given: 'an empty instance'
         def org = new Organization(name: 'My Organization 1')
 
@@ -257,7 +257,7 @@ class OrganizationSpec extends Specification
         3937i == org.hashCode()
     }
 
-    def 'Hash codes are consistent'() {
+    void 'Hash codes are consistent'() {
         given: 'an instance'
         def id = new ObjectId()
         def org = new Organization(name: 'My Organization 1')
@@ -274,8 +274,8 @@ class OrganizationSpec extends Specification
         }
     }
 
-    def 'Equal instances produce the same hash code'() {
-        given: 'three invoicing transactions with same ID'
+    void 'Equal instances produce the same hash code'() {
+        given: 'three instances with same ID'
         def id = new ObjectId()
         def org1 = new Organization(name: 'My Organization 1')
         org1.id = id
@@ -289,8 +289,8 @@ class OrganizationSpec extends Specification
         org2.hashCode() == org3.hashCode()
     }
 
-    def 'Different instances produce different hash codes'() {
-        given: 'three invoicing transactions with different properties'
+    void 'Different instances produce different hash codes'() {
+        given: 'three instances with different properties'
         def org1 = new Organization(name: 'My Organization 1')
         org1.id = new ObjectId()
         def org2 = new Organization(name: 'My Organization 2')
@@ -303,31 +303,24 @@ class OrganizationSpec extends Specification
         org2.hashCode() != org3.hashCode()
     }
 
-    def 'Convert to string'() {
-        given: 'an empty organization'
-        def org = new Organization()
+    void 'Can convert to string'(String name, String e) {
+        given: 'an instance'
+        def org = new Organization(name: name)
 
-        when: 'the name is set'
-        org.name = 'YourOrganization Ltd.'
+        expect:
+        e == org.toString()
 
-        then: 'a useful string representation is returned'
-        'YourOrganization Ltd.' == org.toString()
-
-        when: 'an empty name is set'
-        org.name = ''
-
-        then: 'an empty string representation is returned'
-        '' == org.toString()
-
-        when: 'the name is unset'
-        org.name = null
-
-        then: 'an empty string representation is returned'
-        '' == org.toString()
+        where:
+        name            || e
+        null            || ''
+        ''              || ''
+        '  '            || ''
+        'MyData ltd.'   || 'MyData ltd.'
+        ' MyData ltd. ' || 'MyData ltd.'
     }
 
-    def 'Record type must be within a particular value range'(Byte recType,
-                                                              boolean valid)
+    void 'Record type must be within a particular value range'(Byte recType,
+                                                               boolean valid)
     {
         given: 'an instance'
         def org = new Organization(
@@ -352,7 +345,7 @@ class OrganizationSpec extends Specification
         -1          || false
     }
 
-    def 'Name must not be blank'(String name, boolean valid) {
+    void 'Name must not be blank'(String name, boolean valid) {
         given: 'an instance'
         def org = new Organization(
             recType: (byte) 1, billingAddr: new Address(),
@@ -369,15 +362,15 @@ class OrganizationSpec extends Specification
         name            || valid
         null            || false
         ''              || false
-//        ' '             || false      // XXX should be false, but isn't
-//        '      '        || false
-//        '  \t \n '      || false
+        ' '             || true
+        '      '        || true
+        '  \t \n '      || true
         'foo'           || true
         'any name'      || true
     }
 
-    def 'Phone must have a maximum length'(String phone, boolean valid) {
-        given:
+    void 'Phone must have a maximum length'(String phone, boolean valid) {
+        given: 'an instance'
         def org = new Organization(
             recType: (byte) 1, name: 'My Organization ltd.',
             billingAddr: new Address(),
@@ -398,11 +391,11 @@ class OrganizationSpec extends Specification
         'foo'           || true
         'any name'      || true
         'x' * 40        || true
-        'x' * 50        || false
+        'x' * 41        || false
     }
 
-    def 'Fax must have a maximum length'(String fax, boolean valid) {
-        given:
+    void 'Fax must have a maximum length'(String fax, boolean valid) {
+        given: 'an instance'
         def org = new Organization(
             recType: (byte) 1, name: 'My Organization ltd.',
             billingAddr: new Address(),
@@ -423,11 +416,11 @@ class OrganizationSpec extends Specification
         'foo'           || true
         'any name'      || true
         'x' * 40        || true
-        'x' * 50        || false
+        'x' * 41        || false
     }
 
-    def 'Other phone must have a maximum length'(String phone, boolean valid) {
-        given:
+    void 'Other phone must have a maximum length'(String phone, boolean valid) {
+        given: 'an instance'
         def org = new Organization(
             recType: (byte) 1, name: 'My Organization ltd.',
             billingAddr: new Address(),
@@ -448,11 +441,11 @@ class OrganizationSpec extends Specification
         'foo'           || true
         'any name'      || true
         'x' * 40        || true
-        'x' * 50        || false
+        'x' * 41        || false
     }
 
-    def 'E-mail 1 must be valid e-mail address'(String email, boolean valid) {
-        given:
+    void 'E-mail 1 must be valid e-mail address'(String email, boolean valid) {
+        given: 'an instance'
         def org = new Organization(
             recType: (byte) 1, name: 'My Organization ltd.',
             billingAddr: new Address(),
@@ -480,8 +473,8 @@ class OrganizationSpec extends Specification
         'user@härbört.com'  || true
     }
 
-    def 'E-mail 2 must be valid e-mail address'(String email, boolean valid) {
-        given:
+    void 'E-mail 2 must be valid e-mail address'(String email, boolean valid) {
+        given: 'an instance'
         def org = new Organization(
             recType: (byte) 1, name: 'My Organization ltd.',
             billingAddr: new Address(),

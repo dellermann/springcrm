@@ -114,7 +114,7 @@ class OrganizationController {
                     organization.phoneOther,
                     organization.fax
                 ]
-                .findAll({ it })
+                .findAll()
                 .unique()
             res = [phoneNumbers: phoneNumbers]
         }

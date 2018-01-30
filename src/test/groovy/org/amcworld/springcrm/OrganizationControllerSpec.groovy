@@ -43,7 +43,7 @@ class OrganizationControllerSpec extends Specification
 	//-- Feature methods ------------------------
 
     void 'The copy action returns the correct model and create view'() {
-        given: 'an organization'
+        given: 'an instance'
         Organization org = instance
 
         when: 'the action is executed'
@@ -169,14 +169,14 @@ class OrganizationControllerSpec extends Specification
         controller.find((Byte) null)
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
 
         when: 'the action is executed with a value of 0'
         controller.find((Byte) 0)
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
     }
 
@@ -327,7 +327,7 @@ class OrganizationControllerSpec extends Specification
 
         and: 'a service instance'
         OrganizationService service = Mock()
-        2 * service.count() >> 3
+        2 * service.count() >> list.size()
         2 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.organizationService = service
 
@@ -337,9 +337,9 @@ class OrganizationControllerSpec extends Specification
 		controller.index()
 
 		then: 'the model is correct'
-		3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-		3 == model.organizationCount
+        list.size() == model.organizationCount
 
 		when: 'the action is executed with general list type'
         params.max = 10
@@ -347,9 +347,9 @@ class OrganizationControllerSpec extends Specification
 		controller.index((byte) 0)
 
 		then: 'the model is correct'
-		3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-		3 == model.organizationCount
+        list.size() == model.organizationCount
 	}
 
     void 'The index action with type 1 returns the correct model'() {
@@ -363,7 +363,7 @@ class OrganizationControllerSpec extends Specification
         and: 'a service instance'
         def types = [(byte) 1, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
-        1 * service.countByRecTypeInList(types) >> 3
+        1 * service.countByRecTypeInList(types) >> list.size()
         1 * service.findAllByRecTypeInList(
             types, getParameterMap(max: 15, offset: 40)
         ) >> list
@@ -375,9 +375,9 @@ class OrganizationControllerSpec extends Specification
 		controller.index((byte) 1)
 
 		then: 'the model is correct'
-		3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-		3 == model.organizationCount
+        list.size() == model.organizationCount
 	}
 
     void 'The index action with type 2 returns the correct model'() {
@@ -391,7 +391,7 @@ class OrganizationControllerSpec extends Specification
         and: 'a service instance'
         def types = [(byte) 2, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
-        1 * service.countByRecTypeInList(types) >> 3
+        1 * service.countByRecTypeInList(types) >> list.size()
         1 * service.findAllByRecTypeInList(
             types, getParameterMap(max: 15, offset: 40)
         ) >> list
@@ -403,9 +403,9 @@ class OrganizationControllerSpec extends Specification
 		controller.index((byte) 2)
 
 		then: 'the model is correct'
-		3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-		3 == model.organizationCount
+        list.size() == model.organizationCount
 	}
 
     void 'The index action with letter returns the correct model'() {
@@ -419,7 +419,7 @@ class OrganizationControllerSpec extends Specification
         and: 'a service instance'
         OrganizationService service = Mock()
         2 * service.countByNameLessThan('E') >>> [45, 40]
-        2 * service.count() >> 3
+        2 * service.count() >> list.size()
         2 * service.list(
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'name')
         ) >> list
@@ -432,9 +432,9 @@ class OrganizationControllerSpec extends Specification
         controller.index()
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-        3 == model.organizationCount
+        list.size() == model.organizationCount
 
         when: 'the action is executed with general list type'
         params.max = 10
@@ -442,9 +442,9 @@ class OrganizationControllerSpec extends Specification
         controller.index((byte) 0)
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-        3 == model.organizationCount
+        list.size() == model.organizationCount
     }
 
     void 'The index action with letter and type 1 returns the correct model'() {
@@ -459,7 +459,7 @@ class OrganizationControllerSpec extends Specification
         def types = [(byte) 1, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
         2 * service.countByNameLessThanAndRecTypeInList('E', types) >>> [45, 40]
-        2 * service.countByRecTypeInList(types) >> 3
+        2 * service.countByRecTypeInList(types) >> list.size()
         2 * service.findAllByRecTypeInList(
             types,
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'name')
@@ -473,9 +473,9 @@ class OrganizationControllerSpec extends Specification
         controller.index((byte) 1)
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-        3 == model.organizationCount
+        list.size() == model.organizationCount
 
         when: 'the action is executed again with list type 1'
         params.max = 10
@@ -483,9 +483,9 @@ class OrganizationControllerSpec extends Specification
         controller.index((byte) 1)
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-        3 == model.organizationCount
+        list.size() == model.organizationCount
     }
 
     void 'The index action with letter and type 2 returns the correct model'() {
@@ -500,7 +500,7 @@ class OrganizationControllerSpec extends Specification
         def types = [(byte) 2, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
         2 * service.countByNameLessThanAndRecTypeInList('E', types) >>> [45, 40]
-        2 * service.countByRecTypeInList(types) >> 3
+        2 * service.countByRecTypeInList(types) >> list.size()
         2 * service.findAllByRecTypeInList(
             types,
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'name')
@@ -514,9 +514,9 @@ class OrganizationControllerSpec extends Specification
         controller.index((byte) 2)
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-        3 == model.organizationCount
+        list.size() == model.organizationCount
 
         when: 'the action is executed again with list type 2'
         params.max = 10
@@ -524,9 +524,9 @@ class OrganizationControllerSpec extends Specification
         controller.index((byte) 2)
 
         then: 'the model is correct'
-        3 == model.organizationList.size()
+        list.size() == model.organizationList.size()
         list == (List) model.organizationList
-        3 == model.organizationCount
+        list.size() == model.organizationCount
     }
 
     void 'The save action correctly persists an instance'() {
@@ -611,7 +611,7 @@ class OrganizationControllerSpec extends Specification
         OrganizationService service = Mock()
         controller.organizationService = service
 
-        when: 'update is called for a domain instance that doesn\'t exist'
+        when: 'the action is called for a null instance'
 		request.contentType = FORM_CONTENT_TYPE
 		request.method = 'PUT'
 		controller.update null

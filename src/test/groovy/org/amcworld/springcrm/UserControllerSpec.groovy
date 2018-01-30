@@ -155,7 +155,7 @@ class UserControllerSpec extends Specification
 
         and: 'a service instance'
         UserService service = Mock()
-        1 * service.count() >> 3
+        1 * service.count() >> list.size()
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.userService = service
 
@@ -165,9 +165,9 @@ class UserControllerSpec extends Specification
 		controller.index()
 
 		then: 'the model is correct'
-		3 == model.userList.size()
+        list.size() == model.userList.size()
         list == (List) model.userList
-		3 == model.userCount
+        list.size() == model.userCount
 	}
 
     void 'The index action with letter returns the correct model'() {
@@ -181,7 +181,7 @@ class UserControllerSpec extends Specification
         and: 'a service instance'
         UserService service = Mock()
         1 * service.countByUsernameLessThan('E') >>> [45, 40]
-        1 * service.count() >> 3
+        1 * service.count() >> list.size()
         1 * service.list(
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'username')
         ) >> list
@@ -194,9 +194,9 @@ class UserControllerSpec extends Specification
         controller.index()
 
         then: 'the model is correct'
-        3 == model.userList.size()
+        list.size() == model.userList.size()
         list == (List) model.userList
-        3 == model.userCount
+        list.size() == model.userCount
     }
 
     void 'The save action correctly persists an instance'() {

@@ -24,6 +24,8 @@ import static org.springframework.http.HttpStatus.*
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
+import grails.web.RequestParameter
+import grails.web.http.HttpHeaders
 import javax.naming.AuthenticationException
 import javax.naming.CommunicationException
 import javax.naming.NameNotFoundException
@@ -68,7 +70,7 @@ class PersonController {
         }
 
         Person person = personService.delete new ObjectId(id)
-        if (ldapService) {
+        if (ldapService != null) {
             ldapService.delete person
         }
 
@@ -88,14 +90,15 @@ class PersonController {
         respond id == null ? null : personService.get(new ObjectId(id))
     }
 
-    def find(String organization) {
-        Organization org = organizationService.get(new ObjectId(organization))
+    def find(@RequestParameter('organization') String id) {
+        Organization org =
+            id == null ? null : organizationService.get(new ObjectId(id))
 
         respond personService.search(org, params.name?.toString())
     }
 
     def gdatasync() {
-        if (googleContactSync) {
+        if (googleContactSync != null) {
             googleContactSync.sync currentUser
             flash.message = message(
                 code: 'default.gdata.allsync.success', args: ['person.plural']
@@ -110,37 +113,41 @@ class PersonController {
     }
 
     def getPhoneNumbers(String id) {
-        Person person = personService.get(new ObjectId(id))
-        if (person == null) {
-            return
+        Map res = null
+        Person person = id == null ? null : personService.get(new ObjectId(id))
+        if (person != null) {
+            List<String> phoneNumbers = [
+                    person.phone,
+                    person.phoneHome,
+                    person.mobile,
+                    person.fax,
+                    person.phoneAssistant,
+                    person.phoneOther,
+                    person.organization.phone,
+                    person.organization.phoneOther,
+                    person.organization.fax
+                ]
+                .findAll()
+                .unique()
+            res = [phoneNumbers: phoneNumbers]
         }
 
-        List<String> phoneNumbers = [
-                person.phone,
-                person.phoneHome,
-                person.mobile,
-                person.fax,
-                person.phoneAssistant,
-                person.phoneOther,
-                person.organization.phone,
-                person.organization.phoneOther,
-                person.organization.fax
-            ]
-            .findAll({ it != '' })
-            .unique()
-
-        respond phoneNumbers: phoneNumbers
+        respond res
     }
 
     def getPicture(String id) {
-        Person person = personService.get(new ObjectId(id))
-        if (person != null) {
-            response.contentType = Magic.getMagicMatch(person.picture).mimeType
-            response.contentLength = person.picture.length
-            response.outputStream << person.picture
+        Person person = id == null ? null : personService.get(new ObjectId(id))
+        byte [] picture = person?.picture
+        if (picture == null) {
+            render status: NOT_FOUND
+            return
         }
 
-        null
+        /* Content-Length is not set by render() 😒 */
+        response.setHeader HttpHeaders.CONTENT_LENGTH, picture.length.toString()
+        render(
+            contentType: Magic.getMagicMatch(picture).mimeType, file: picture
+        )
     }
 
     def handleAuthenticationException(AuthenticationException ignore) {
@@ -161,7 +168,7 @@ class PersonController {
             int num =
                 personService.countByLastNameLessThan(params.letter.toString())
             params.sort = 'lastName'
-            params.offset = Math.floor(num.toDouble() / max) * max
+            params.offset = (int) (Math.floor(num.toDouble() / max) * max)
         }
 
         respond(
@@ -220,22 +227,21 @@ class PersonController {
         }
     }
 
-    def listEmbedded(String organization) {
+    def listEmbedded(@RequestParameter('organization') String id) {
         List<Person> list = null
-        int count = 0
-        Map<String, Object> linkParams = null
+        Map model = null
 
-        if (organization) {
-            Organization org =
-                organizationService.get(new ObjectId(organization))
-            if (org) {
-                list = personService.findAllByOrganization(org, params)
-                count = personService.countByOrganization(org)
-                linkParams = [organization: organization]
-            }
+        Organization organization =
+            id == null ? null : organizationService.get(new ObjectId(id))
+        if (organization != null) {
+            list = personService.findAllByOrganization(organization, params)
+            model = [
+                personCount: personService.countByOrganization(organization),
+                linkParams: [organization: id]
+            ]
         }
 
-        respond list, model: [personCount: count, linkParams: linkParams]
+        respond list, model: model
     }
 
     def save(Person person) {
@@ -312,7 +318,7 @@ class PersonController {
      * @since   3.0
      */
     private User getCurrentUser() {
-        userService.currentUser
+        userService.getCurrentUser()
     }
 
     /**
@@ -336,17 +342,13 @@ class PersonController {
      *
      * @param type  the type of exception that has been occurred
      */
-    private def handleLdapException(String type) {
-        Long origId
-        if (actionName == 'save') {
-            origId = ((Person) request['personInstance']).id
-        } else {
-            origId = params.id
-        }
+    private void handleLdapException(String type) {
+        String id = actionName == 'save' ? ((Person) request['person']).id
+            : params.id
 
         redirect(
             controller: 'error', action: 'ldapPerson',
-            params: [type: type, origAction: actionName, personId: origId]
+            params: [type: type, origAction: actionName, personId: id]
         )
     }
 
@@ -361,10 +363,8 @@ class PersonController {
      *              synchronization; {@code false} otherwise
      * @since       2.0
      */
-    private boolean isExcludeFromSync(Person p,
-                                      List<String> ids = excludeFromSyncValues)
-    {
-        ids.contains p.organization.rating?.id
+    private static boolean isExcludeFromSync(Person p, List<String> ids) {
+        p.organization.rating?.id?.toString() in ids
     }
 
     private void notFound() {

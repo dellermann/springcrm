@@ -171,6 +171,7 @@ dependencies {
     runtime 'net.sf.barcode4j:barcode4j-fop-ext-complete:2.0'
     runtime 'net.sf.offo:fop-hyph:1.2'
 
+    testCompile 'com.github.fakemongo:fongo:2.1.0'
     testCompile 'org.grails:grails-gorm-testing-support'
     testCompile 'org.grails:grails-web-testing-support'
     testCompile 'org.grails.plugins:geb'

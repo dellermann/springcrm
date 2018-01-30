@@ -127,10 +127,15 @@ abstract class PersonService implements IPersonService {
      *
      * @param organization  the given organization
      * @param term          the given search term
-     * @return              a list of matching persons
+     * @return              a list of matching persons or {@code null} if no
+     *                      organization has been specified
      */
     List<Person> search(Organization organization, String term) {
-        String pattern = Pattern.quote(term)
+        if (organization == null) {
+            return null
+        }
+
+        String pattern = term ? Pattern.quote(term) : '.*'
 
         Person.find(
                 Filters.and(

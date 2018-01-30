@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
@@ -28,439 +29,509 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
 
     //-- Feature methods ------------------------
 
-	def 'Copy using constructor'() {
-		given:
-		def p1 = new Person(
-			number: 10003,
-			organization: new Organization (recType: 1, name : 'YourOrganizationLtd'),
-			salutation: new Salutation (name: 'Herr', orderId: 10),
-			title: 'test',
-			firstName: 'foo',
-			lastName: 'bar',
-			mailingAddr: new Address(),
-			otherAddr: new Address(),
-			phone: '3030303',
-			phoneHome: '030330303',
-			mobile: '1944392',
-			fax: '8008088',
-			phoneAssistant: '2002002',
-			phoneOther: '10012100',
-			email1: 'info@yourorganization.example',
-			email2: 'office@yourorganization.example',
-			jobTitle: 'test title',
-			department: 'test department',
-			assistant: 'test assistant',
-			birthday: new Date(),
-			picture: 'foobar'.getBytes(),
-			notes: 'some notes',
-			assessmentPositive: 'friendly person',
-			assessmentNegative: 'a little bit slow'
-		)
+    void 'Copy using constructor works'() {
+        given:
+        def p1 = new Person(
+            number: 10003,
+            organization: new Organization(
+                recType: 1, name : 'YourOrganizationLtd'
+            ),
+            salutation: new Salutation(name: 'Herr', orderId: 10),
+            title: 'test',
+            firstName: 'foo',
+            lastName: 'bar',
+            mailingAddr: new Address(),
+            otherAddr: new Address(),
+            phone: '3030303',
+            phoneHome: '030330303',
+            mobile: '1944392',
+            fax: '8008088',
+            phoneAssistant: '2002002',
+            phoneOther: '10012100',
+            email1: 'info@yourorganization.example',
+            email2: 'office@yourorganization.example',
+            jobTitle: 'test title',
+            department: 'test department',
+            assistant: 'test assistant',
+            birthday: new Date(),
+            picture: 'foobar'.getBytes(),
+            notes: 'some notes',
+            assessmentPositive: 'friendly person',
+            assessmentNegative: 'a little bit slow'
+        )
 
-		when:
-		def p2 = new Person(p1)
+        when:
+        def p2 = new Person(p1)
 
-		then:
-		p2.organization == p1.organization
-		p2.salutation == p1.salutation
-		p2.title == p1.title
-		p2.firstName == p1.firstName
-		p2.lastName == p1.lastName
-		p2.mailingAddr == p1.mailingAddr
-		p2.otherAddr == p1.otherAddr
-		p2.phone == p1.phone
-		p2.phoneHome == p1.phoneHome
-		p2.mobile == p1.mobile
-		p2.fax == p1.fax
-		p2.phoneAssistant == p1.phoneAssistant
-		p2.phoneOther == p1.phoneOther
-		p2.email1 == p1.email1
-		p2.email2 == p1.email2
-		p2.jobTitle == p1.jobTitle
-		p2.department == p1.department
-		p2.assistant == p1.assistant
-		p2.birthday == p1.birthday
-		p2.picture == p1.picture
-		p2.notes == p1.notes
-		p2.assessmentPositive == p1.assessmentPositive
-		p2.assessmentNegative == p1.assessmentNegative
+        then:
+        p2.organization == p1.organization
+        p2.salutation == p1.salutation
+        p2.title == p1.title
+        p2.firstName == p1.firstName
+        p2.lastName == p1.lastName
+        p2.mailingAddr == p1.mailingAddr
+        p2.otherAddr == p1.otherAddr
+        p2.phone == p1.phone
+        p2.phoneHome == p1.phoneHome
+        p2.mobile == p1.mobile
+        p2.fax == p1.fax
+        p2.phoneAssistant == p1.phoneAssistant
+        p2.phoneOther == p1.phoneOther
+        p2.email1 == p1.email1
+        p2.email2 == p1.email2
+        p2.jobTitle == p1.jobTitle
+        p2.department == p1.department
+        p2.assistant == p1.assistant
+        p2.birthday == p1.birthday
+        p2.picture == p1.picture
+        p2.notes == p1.notes
+        p2.assessmentPositive == p1.assessmentPositive
+        p2.assessmentNegative == p1.assessmentNegative
 
-		and: 'some properties are unset'
-		0 == p2.number
-		null == p2.dateCreated
-		null == p2.lastUpdated
-	}
+        and: 'some properties are unset'
+        0 == p2.number
+        null == p2.dateCreated
+        null == p2.lastUpdated
+    }
 
-	def 'Get full name'() {
-		given:
-		def p = new Person()
+    void 'Can compute the full name'(String firstName, String lastName,
+                                     String result)
+    {
+        given:
+        def person = new Person()
 
-		when:
-		p.firstName = firstName
-		p.lastName = lastName
-		def fullName = p.getFullName()
+        when:
+        person.firstName = firstName
+        person.lastName = lastName
 
-		then:
-		result == fullName
+        then:
+        result == person.fullName
 
-		where:
-		firstName		| lastName		| result
-		null			| null			| ''
-		null			| 'Smith'		| 'Smith'
-		'John'			| null			| 'John'
-		'John'			| 'Smith'		| 'John Smith'
-		' '				| null			| ''
-		null			| ' '			| ''
-		'abc'*1000		| ' '			| 'abc'*1000
-		'abc'*1000		| 'abc'*1000	| 'abc'*1000+' '+'abc'*1000
-		',.-'			| ',.-'			| ',.- ,.-'
-		'10001'			| '202022'		| '10001 202022'
-		'user@mydomain' | ''			| 'user@mydomain'
-		'string123'		| '321string'	| 'string123 321string'
-	}
+        where:
+        firstName		| lastName		|| result
+        null			| null			|| ''
+        null			| 'Smith'		|| 'Smith'
+        'John'			| null			|| 'John'
+        'John'			| 'Smith'		|| 'John Smith'
+        ' '				| null			|| ''
+        null			| ' '			|| ''
+        'abc' * 1000	| ' '			|| 'abc' * 1000
+        'abc' * 1000	| 'abc'*1000	|| 'abc' * 1000 + ' ' + 'abc' * 1000
+        ',.-'			| ',.-'			|| ',.- ,.-'
+        '10001'			| '202022'		|| '10001 202022'
+        'user@mydomain' | ''			|| 'user@mydomain'
+        'string123'		| '321string'	|| 'string123 321string'
+    }
 
-	def 'Get the full number'() {
-		given: 'a person with mocked sequence number service'
-		def p = new Person()
-		p.seqNumberService = Mock(SeqNumberService)
-		p.seqNumberService.format(_, _) >> 'O-11332'
+    void 'Equals is null-safe'() {
+        given: 'an instance'
+        def person = new Person()
 
-		expect:
-		'O-11332' == p.fullNumber
-	}
+        expect:
+        null != person
+        person != null
+        !person.equals(null)
+    }
 
-	def 'Simulate the save method in insert mode and check number'() {
-		given: 'a person without number'
-		def p = new Person()
-		p.seqNumberService = Mock(SeqNumberService)
-		p.seqNumberService.nextNumber(_) >> 92283
+    void 'Instances of other types are always unequal'() {
+        given: 'an instance'
+        def person = new Person()
 
-		when: 'I simulate calling save() in insert mode'
-		p.beforeInsert()
+        expect:
+        person != 'foo'
+        person != 45
+        person != 45.3
+        person != new Date()
+    }
 
-		then: 'the sequence number must be set'
-		92283 == p.number
-	}
+    void 'Not persisted instances are equal'() {
+        given: 'three instances without ID'
+        def p1 = new Person(lastName: 'Name 1')
+        def p2 = new Person(lastName: 'Name 2')
+        def p3 = new Person(lastName: 'Name 3')
 
-	def 'Check for equality'() {
-		given: 'two objects with different properties'
-		def p1 = new Person (firstName: 'Ben', lastName: 'Rider')
-		def p2 = new Person (firstName: 'Tom', lastName: 'Riggins')
+        expect: 'equals() is reflexive'
+        p1 == p1
+        p2 == p2
+        p3 == p3
 
-		and: 'the same IDs'
-		p1.id = 10010
-		p2.id = 10010
+        and: 'all instances are equal and equals() is symmetric'
+        p1 == p2
+        p2 == p1
+        p2 == p3
+        p3 == p2
 
-		expect: 'both persons to be equal'
-		p1 == p2
-		p2 == p1
-	}
+        and: 'equals() is transitive'
+        p1 == p3
+        p3 == p1
+    }
 
-	def 'Check for inequality'() {
-		given: 'two objects with same properties'
-		def p1 = new Person (firstName: 'Ben', lastName: 'Rider')
-		def p2 = new Person (firstName: 'Ben', lastName: 'Rider')
+    void 'Persisted instances are equal if they have the same ID'() {
+        given: 'three instances with same ID'
+        def id = new ObjectId()
+        def p1 = new Person(lastName: 'Name 1')
+        p1.id = id
+        def p2 = new Person(lastName: 'Name 2')
+        p2.id = id
+        def p3 = new Person(lastName: 'Name 3')
+        p3.id = id
 
-		and: 'different IDs'
-		p1.id = 944
-		p2.id = 1003
+        expect: 'equals() is reflexive'
+        p1 == p1
+        p2 == p2
+        p3 == p3
 
-		when: 'I compare both these persons'
-		boolean b1 = (p1 != p2)
-		boolean b2 = (p2 != p1)
+        and: 'all instances are equal and equals() is symmetric'
+        p1 == p2
+        p2 == p1
+        p2 == p3
+        p3 == p2
 
-		then: 'they should not be equal'
-		b1
-		b2
+        and: 'equals() is transitive'
+        p1 == p3
+        p3 == p1
+    }
 
-		when:  'I compare with null'
-		p2 = null
+    void 'Persisted instances are unequal if they have the different ID'() {
+        given: 'three instances with different IDs'
+        def p1 = new Person(lastName: 'Name 1')
+        p1.id = new ObjectId()
+        def p2 = new Person(lastName: 'Name 1')
+        p2.id = new ObjectId()
+        def p3 = new Person(lastName: 'Name 1')
+        p3.id = new ObjectId()
 
-		then: 'they are not equal'
-		p1 != p2
-		p2 != p1
+        expect: 'equals() is reflexive'
+        p1 == p1
+        p2 == p2
+        p3 == p3
 
-		when: 'I compare to another type'
-		int i = 3
+        and: 'all instances are unequal and equals() is symmetric'
+        p1 != p2
+        p2 != p1
+        p2 != p3
+        p3 != p2
 
-		then: 'they are not equal'
-		p1 != i
-	}
+        and: 'equals() is transitive'
+        p1 != p3
+        p3 != p1
+    }
 
-	def 'Compute hash code'() {
-		when: 'I create a person with no ID'
-		def p = new Person()
+    void 'Can compute hash code of an empty instance'() {
+        given: 'an empty instance'
+        def person = new Person()
 
-		then: 'I get a valid hash code'
-		0 == p.hashCode()
+        expect:
+        3937i == person.hashCode()
+    }
 
-		when: 'I create a person with an ID'
-		p.id = id
+    void 'Can compute hash code of a not persisted instance'() {
+        given: 'an empty instance'
+        def person = new Person(lastName: 'Doe')
 
-		then: 'I get a hash code using this ID'
-		e == p.hashCode()
+        expect:
+        3937i == person.hashCode()
+    }
 
-		where:
-		        id 	|   	   e
-			     0 	|   	   0
-			     1 	|   	   1
-		        10 	|  		  10
-		       123 	|  		 123
-		      5324 	|  		5324
-		 	 12344 	| 	   12344
-		1023991929	| 1023991929
-	}
+    void 'Hash codes are consistent'() {
+        given: 'an instance'
+        def id = new ObjectId()
+        def person = new Person(lastName: 'Doe')
+        person.id = id
 
-	def 'Convert to string'() {
-		given: 'an empty person'
-		def p = new Person()
+        when: 'I compute the hash code'
+        int h = person.hashCode()
 
-		when: 'I set the first name'
-		p.firstName = 'Johan'
+        then: 'the hash code remains consistent'
+        for (int j = 0; j < 500; j++) {
+            person = new Person(lastName: 'Doe')
+            person.id = id
+            h == person.hashCode()
+        }
+    }
 
-		and: 'do not set the last name'
-		p.lastName = ''
+    void 'Equal instances produce the same hash code'() {
+        given: 'three instances with same ID'
+        def id = new ObjectId()
+        def p1 = new Person(lastName: 'Name 1')
+        p1.id = id
+        def p2 = new Person(lastName: 'Name 2')
+        p2.id = id
+        def p3 = new Person(lastName: 'Name 3')
+        p3.id = id
 
-		then:
-		'Johan' == p.toString()
+        expect:
+        p1.hashCode() == p2.hashCode()
+        p2.hashCode() == p3.hashCode()
+    }
 
-		when: 'I set the last name'
-		p.lastName = 'Doug'
+    void 'Different instances produce different hash codes'() {
+        given: 'three instances with different properties'
+        def p1 = new Person(lastName: 'Name 1')
+        p1.id = new ObjectId()
+        def p2 = new Person(lastName: 'Name 1')
+        p2.id = new ObjectId()
+        def p3 = new Person(lastName: 'Name 1')
+        p3.id = new ObjectId()
 
-		and: 'do not set the first name'
-		p.firstName = ''
+        expect:
+        p1.hashCode() != p2.hashCode()
+        p2.hashCode() != p3.hashCode()
+    }
 
-		then:
-		'Doug' == p.toString()
+    void 'Can convert to string'(String firstName, String lastName, String e) {
+        given: 'an instance'
+        def person = new Person(firstName: firstName, lastName: lastName)
 
-		when: 'I set the first name and the last name'
-		p.firstName = 'Tim'
-		p.lastName = 'Statter'
+        expect:
+        e == person.toString()
 
-		then:
-		'Statter, Tim' == p.toString()
-	}
+        where:
+        firstName   | lastName  || e
+        null        | null      || ''
+        null        | ''        || ''
+        null        | '  '      || ''
+        null        | 'Doe'     || 'Doe'
+        ''          | null      || ''
+        ''          | ''        || ''
+        ''          | '  '      || ''
+        ''          | 'Doe'     || 'Doe'
+        '  '        | null      || ''
+        '  '        | ''        || ''
+        '  '        | '  '      || ''
+        '  '        | 'Doe'     || 'Doe'
+        'John'      | null      || 'John'
+        'John'      | ''        || 'John'
+        'John'      | '  '      || 'John'
+        'John'      | 'Doe'     || 'Doe, John'
+    }
 
-	def 'title constraints'() {
-		when: 'I create a person with a title and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			title: title, firstName: 'John', lastName: 'Doe',
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
+    void 'First name must not be blank'(String firstName, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
 
-		then:
-		!valid == p.hasErrors()
+        when: 'the first name is set'
+        person.firstName = firstName
 
-		where:
-		title			| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'Title'			| true
-		'Title 1003'	| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
+        then: 'the instance is valid or not'
+        valid == person.validate()
 
-	def 'firstName constraints'() {
-		when: 'I create a person with a first name and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: firstName, lastName: 'Doe',
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
+        where:
+        firstName		|| valid
+        null			|| false
+        ''				|| false
+        ' '				|| true
+        '    '			|| true
+        ' \t \n'		|| true
+        1003			|| true
+        'John'			|| true
+        'Derk 1003'		|| true
+        'abc' * 100		|| true
+        'abc' * 1000	|| true
+    }
 
-		then:
-		!valid == p.hasErrors()
+    void 'The last name must not be blank'(String lastName, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
 
-		where:
-		firstName		| valid
-		null			| false
-		''				| false
-		' '				| false
-		'    '			| false
-		' \t \n'		| false
-		1003			| true
-		'John'			| true
-		'Derk 1003'		| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
+        when: 'the last name is set'
+        person.lastName = lastName
 
-	def 'lastName constraints'() {
-		when: 'I create a person with a last name and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: lastName,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
+        then: 'the instance is valid or not'
+        valid == person.validate()
 
-		then:
-		!valid == p.hasErrors()
+        where:
+        lastName		|| valid
+        null			|| false
+        ''				|| false
+        ' '				|| true
+        '    '			|| true
+        ' \t \n'		|| true
+        1003			|| true
+        'Doe'			|| true
+        'Derk 1003'		|| true
+        'abc'*100		|| true
+        'abc'*1000		|| true
+    }
 
-		where:
-		lastName		| valid
-		null			| false
-		''				| false
-		' '				| false
-		'    '			| false
-		' \t \n'		| false
-		1003			| true
-		'Doe'			| true
-		'Derk 1003'		| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
+    void 'Phone must have a maximum length'(String phone, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
 
-	def 'Phone constraints'() {
-		when: 'I create a person with a phone number and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', phone: phone,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
+        when: 'the phone number is set'
+        person.phone = phone
 
-		then:
-		!valid == p.hasErrors()
+        then: 'the instance is valid or not'
+        valid == person.validate()
 
-		where:
-		phone		| valid
-		null		| true
-		''			| true
-		' '			| true
-		'abc'		| true
-		'abc'*999	| false
-		0			| true
-		0133022		| true
-		'1'*40		| true
-		'1'*41		| false
-		'1'*999		| false
-	}
+        where:
+        phone           || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 41        || false
+    }
 
-	def 'Fax constraints'() {
-		when: 'I create a person with a fax number and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', fax: fax,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
+    void 'Mobile must have a maximum length'(String phone, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
 
-		then:
-		!valid == p.hasErrors()
+        when: 'the phone number is set'
+        person.mobile = phone
 
-		where:
-		fax 		| valid
-		null		| true
-		''			| true
-		' '			| true
-		'abc'		| true
-		'abc'*999	| false
-		0			| true
-		0133022		| true
-		'1'*40		| true
-		'1'*41		| false
-		'1'*999		| false
-	}
+        then: 'the instance is valid or not'
+        valid == person.validate()
 
-	def 'phoneAssistant constraints'() {
-		when: 'I create a person with a phone assistant number and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', phoneAssistant: phoneAssistant,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
+        where:
+        phone           || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 41        || false
+    }
 
-		then:
-		!valid == p.hasErrors()
+    void 'Fax must have a maximum length'(String phone, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
 
-		where:
-		phoneAssistant	| valid
-		null			| true
-		''				| true
-		' '				| true
-		'abc'			| true
-		'abc'*999		| false
-		0				| true
-		0133022			| true
-		'1'*40			| true
-		'1'*41			| false
-		'1'*999			| false
-	}
+        when: 'the fax number is set'
+        person.fax = phone
 
-	def 'phoneOther constraints'() {
-		when: 'I create a person with an other phone number and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', phoneOther: phoneOther,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
+        then: 'the instance is valid or not'
+        valid == person.validate()
 
-		then:
-		!valid == p.hasErrors()
+        where:
+        phone           || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 41        || false
+    }
 
-		where:
-		phoneOther		| valid
-		null			| true
-		''				| true
-		' '				| true
-		'abc'			| true
-		'abc'*999		| false
-		0				| true
-		0133022			| true
-		'1'*40			| true
-		'1'*41			| false
-		'1'*999			| false
-	}
+    void 'Assistant phone must have a maximum length'(String phone,
+                                                      boolean valid)
+    {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
 
-	def 'Email1 constraints'(String email, boolean valid) {
-		when: 'I create a person with an email1 and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', email1: email,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
+        when: 'the phone number is set'
+        person.phoneAssistant = phone
 
-		then:
-		valid == p.validate()
+        then: 'the instance is valid or not'
+        valid == person.validate()
 
-		where:
-		email               || valid
+        where:
+        phone           || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 41        || false
+    }
+
+    void 'Other phone must have a maximum length'(String phone, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
+
+        when: 'the phone number is set'
+        person.phoneOther = phone
+
+        then: 'the instance is valid or not'
+        valid == person.validate()
+
+        where:
+        phone           || valid
+        null            || true
+        ''              || true
+        ' '             || true
+        'foo'           || true
+        'any name'      || true
+        'x' * 40        || true
+        'x' * 41        || false
+    }
+
+    void 'E-mail 1 must be valid e-mail address'(String email, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
+
+        when: 'the email is set'
+        person.email1 = email
+
+        then: 'the instance is valid or not'
+        valid == person.validate()
+
+        where:
+        email               || valid
         null                || true
         ''                  || true
-        ' '                 || true
+        ' '                 || false
         'foo'               || false
         'any name'          || false
         'foobar@'           || false
@@ -469,27 +540,30 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'user@.com'         || false
         'user@mydomain.com' || true
         'user@härbört.com'  || true
-	}
+    }
 
-	def 'Email2 constraints'(String email, boolean valid) {
-		when: 'I create a person with an email2 and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', email2: email,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
+    void 'E-mail 2 must be valid e-mail address'(String email, boolean valid) {
+        given: 'an instance'
+        def person = new Person(
+            organization: new Organization(
+                recType: 1, name: 'foo', billingAddr: new Address(),
+                shippingAddr: new Address()
+            ),
+            firstName: 'John', lastName: 'Doe', mailingAddr: new Address(),
+            otherAddr: new Address()
+        )
 
-		then:
-		valid == p.validate()
+        when: 'the email is set'
+        person.email2 = email
 
-		where:
-		email               || valid
-		null                || true
+        then: 'the instance is valid or not'
+        valid == person.validate()
+
+        where:
+        email               || valid
+        null                || true
         ''                  || true
-        ' '                 || true
+        ' '                 || false
         'foo'               || false
         'any name'          || false
         'foobar@'           || false
@@ -498,112 +572,5 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'user@.com'         || false
         'user@mydomain.com' || true
         'user@härbört.com'  || true
-	}
-
-	def 'Job title constraints'() {
-		when: 'I create a person with a job title and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', jobTitle: jobTitle,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-
-		then:
-		valid == p.validate()
-
-		where:
-		jobTitle		|| valid
-		null			|| true
-		''				|| true
-		' '				|| true
-		1003			|| true
-		'Title'			|| true
-		'Title 1003'	|| true
-		'abc'*100		|| true
-		'abc'*1000		|| true
-	}
-
-	def 'Department constraints'() {
-		when: 'I create a person with a department and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', department: department,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
-
-		then:
-		!valid == p.hasErrors()
-
-		where:
-		department		| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'test'			| true
-		'test 1003'		| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
-
-	def 'Assistant constraints'() {
-		when: 'I create a person with an assistant and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', assistant: assistant,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
-
-		then:
-		!valid == p.hasErrors()
-
-		where:
-		assistant		| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'test'			| true
-		'test 1003'		| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
-
-	def 'Notes constraints'() {
-		when: 'I create a person with an assistant and validate it'
-		def p = new Person(
-			organization: new Organization(
-				recType: 1, name: 'foo', billingAddr: new Address(),
-				shippingAddr: new Address()
-			),
-			firstName: 'John', lastName: 'Doe', notes: notes,
-			mailingAddr: new Address(), otherAddr: new Address()
-		)
-		p.validate()
-
-		then:
-		!valid == p.hasErrors()
-
-		where:
-		notes			| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'test'			| true
-		'test 1003'		| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
+    }
 }

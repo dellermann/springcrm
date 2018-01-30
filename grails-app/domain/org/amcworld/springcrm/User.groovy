@@ -22,7 +22,6 @@ package org.amcworld.springcrm
 
 import grails.compiler.GrailsCompileStatic
 import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
 import org.bson.types.ObjectId
 
 
@@ -220,7 +219,7 @@ class User implements Serializable {
      * @since   3.0
      */
     boolean isAdministrator() {
-        authorities.any { it.administrators }
+        authorities ? authorities.any { it.administrators } : false
     }
 
 
