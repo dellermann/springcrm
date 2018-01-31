@@ -182,8 +182,8 @@
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-templates:2.4.13" level="project" />
     <orderEntry type="library" name="Gradle: javax.transaction:jta:1.1" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-databinding:3.3.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.grails:grails-web-url-mappings:3.3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.seleniumhq.selenium:selenium-remote-driver:2.53.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.grails:grails-web-url-mappings:3.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-mvc:3.3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: net.bytebuddy:byte-buddy:1.7.5" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-gsp:3.3.0" level="project" />
@@ -260,8 +260,8 @@
     <orderEntry type="library" name="Gradle: com.google.http-client:google-http-client:1.21.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: cglib:cglib-nodep:2.1_3" level="project" />
     <orderEntry type="library" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" level="project" />
-    <orderEntry type="library" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.apache.httpcomponents:httpmime:4.5.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: net.sourceforge.htmlunit:htmlunit-core-js:2.17" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-test:2.4.12" level="project" />

@@ -1,7 +1,7 @@
 /*
  * LoginInterceptor.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import com.mongodb.client.model.Filters
 import grails.artefact.Interceptor
 import groovy.transform.CompileStatic
 
@@ -38,6 +37,7 @@ class LoginInterceptor implements Interceptor {
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     InstallService installService
     int order = 30
 
@@ -57,21 +57,20 @@ class LoginInterceptor implements Interceptor {
 
     /**
      * Called before the action is executed.  The method redirects to the
-     * installer if the application has not been initialized yet and redirects to
-     * the login page if the user has no session.
+     * installer if the application has not been initialized yet and redirects
+     * to the login page if the user has no session.
      *
-     * @return  {@code true} to call the action of the controller; {@code false}
-     *          otherwise
+     * @return  {@code true} to call the action of the controller;
+     *          {@code false} otherwise
      */
     boolean before() {
-        Config config = Config.find(Filters.eq('name', 'installStatus'))
-            .first()
-        if (!config?.value) {
-            installService.enableInstaller()
-            redirect controller: 'install', action: 'index'
-            return false
+        if (configService.getInteger('installStatus')) {
+            return true
         }
 
-        true
+        installService.enableInstaller()
+        redirect controller: 'install', action: 'index'
+
+        false
     }
 }
