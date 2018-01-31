@@ -90,7 +90,7 @@ class InvoicingTransactionCreateUserInterceptorSpec extends Specification
 
         and: 'a credential'
         def user = makeUser()
-        session.credential = new Credential(user)
+//        session.credential = new Credential(user)
 
         when: 'I call the interceptor'
         interceptor.after()

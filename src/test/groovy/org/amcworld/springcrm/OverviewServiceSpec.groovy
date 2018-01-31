@@ -42,8 +42,8 @@ class OverviewServiceSpec extends Specification
 //        UserSettings settings = Mock()
 //        user.settings = settings
 
-        and: 'a credential of that user'
-        Credential cred = new Credential(user)
+//        and: 'a credential of that user'
+//        Credential cred = new Credential(user)
 
         when: 'I set the dont show again version'
         service.dontShowAgain(cred)
@@ -202,8 +202,8 @@ class OverviewServiceSpec extends Specification
             .save failOnError: true
         user.afterLoad()
 
-        and: 'a credential of that user'
-        Credential cred = new Credential(user)
+//        and: 'a credential of that user'
+//        Credential cred = new Credential(user)
 
         expect:
         b == service.showChangelog(cred)

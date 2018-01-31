@@ -238,16 +238,6 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
     }
 
     /**
-     * Gets the currently logged in user from the session context.
-     *
-     * @return  the credential representing the currently logged in user;
-     *          {@code null} if no user is logged in
-     */
-    protected Credential getCredential() {
-        session['credential'] as Credential
-    }
-
-    /**
      * Gets the domain model instance with the given ID.  If no such instance
      * exists the method stores an error message in the flash scope and
      * redirects to the index action.
@@ -442,7 +432,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @return  the user data
      */
     protected User getUser() {
-        credential.loadUser()
+        null
     }
 
     /**
@@ -452,7 +442,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *          {@code false} otherwise
      */
     protected boolean isAdmin() {
-        credential?.admin ?: false
+        false
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionCreateUserInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,11 +30,16 @@ import groovy.transform.CompileStatic
  * items.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
 class InvoicingTransactionCreateUserInterceptor implements Interceptor {
+
+    //-- Fields ---------------------------------
+
+    UserService userService
+
 
     //-- Constructors ---------------------------
 
@@ -61,10 +66,7 @@ class InvoicingTransactionCreateUserInterceptor implements Interceptor {
         def instance = model?.get("${controllerName}Instance".toString())
         if (instance instanceof InvoicingTransaction) {
             InvoicingTransaction ix = (InvoicingTransaction) instance
-            def credential = session.getAttribute('credential')
-            if (credential instanceof Credential) {
-                ix.createUser = ((Credential) credential).loadUser()
-            }
+            ix.createUser = userService.currentUser
         }
 
         true

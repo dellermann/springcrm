@@ -1,7 +1,7 @@
 /*
  * CalendarEventController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * is no Bootstrap compatible full calendar available.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class CalendarEventController {
 
@@ -45,6 +45,7 @@ class CalendarEventController {
     //-- Fields ---------------------------------
 
     CalendarEventService calendarEventService
+    UserService userService
     ValueConverter defaultDateConverter
 
 
@@ -293,7 +294,7 @@ class CalendarEventController {
         calendarEventInstance.save flush: true
         calendarEventService.saveReminders(
             params.reminders.toString().split(), calendarEventInstance,
-            ((Credential) session.credential).loadUser()
+            userService.currentUser
         )
 
         request.calendarEventInstance = calendarEventInstance
@@ -336,7 +337,7 @@ class CalendarEventController {
         calendarEventInstance.end = endDate
         calendarEventInstance.save()
         calendarEventService.updateReminders(
-            calendarEventInstance, ((Credential) session.credential).loadUser()
+            calendarEventInstance, userService.currentUser
         )
 
         render status: HttpServletResponse.SC_OK
