@@ -212,7 +212,18 @@ class PersonControllerSpec extends Specification
         1 * service.search(null, null) >> null
         404 == response.status
 
-        when: 'the action is executed with an existing ID and a null name'
+        when: 'the action is executed with an existing ID and an invalid name'
+        response.reset()
+        params.name = 'xxx'
+        controller.find org.id.toString()
+
+        then: 'the model is correct'
+        1 * organizationService.get(_) >> org
+        1 * service.search(org, 'xxx') >> []
+        null == model.personList
+        model.emptyCollection.empty
+
+        when: 'the action is executed with an existing ID and a name'
         response.reset()
         params.name = 'erso'
         controller.find org.id.toString()

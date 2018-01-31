@@ -4,7 +4,7 @@ model {
     List<Person> personList
 }
 
-json(personList) { Person p ->
-    id p.id
-    name p.fullName
+json(personList ?: Collections.EMPTY_LIST) { Person person ->
+    id person.id.toString()
+    name person.fullName
 }

@@ -159,23 +159,52 @@ class OrganizationControllerSpec extends Specification
 
         and: 'a service instance'
         OrganizationService service = Mock()
-        2 * service.findAllByNameLike(
-            '%niza%', getParameterMap(sort: 'name')
-        ) >> list
         controller.organizationService = service
 
+        when: 'the action is executed with a null value and an invalid name'
+        params.name = 'xxx'
+        controller.find((Byte) null)
+
+        then: 'the model is correct'
+        1 * service.findAllByNameLike(
+            '%xxx%', getParameterMap(sort: 'name')
+        ) >> []
+        null == model.organizationList
+        model.emptyCollection.empty
+
+        when: 'the action is executed with a value of 0 and an invalid name'
+        response.reset()
+        params.name = 'xxx'
+        controller.find((Byte) 0)
+
+        then: 'the model is correct'
+        1 * service.findAllByNameLike(
+            '%xxx%', getParameterMap(sort: 'name')
+        ) >> []
+        null == model.organizationList
+        model.emptyCollection.empty
+
         when: 'the action is executed with a null value'
+        response.reset()
         params.name = 'niza'
         controller.find((Byte) null)
 
         then: 'the model is correct'
+        1 * service.findAllByNameLike(
+            '%niza%', getParameterMap(sort: 'name')
+        ) >> list
         list.size() == model.organizationList.size()
         list == (List) model.organizationList
 
         when: 'the action is executed with a value of 0'
+        response.reset()
+        params.name = 'niza'
         controller.find((Byte) 0)
 
         then: 'the model is correct'
+        1 * service.findAllByNameLike(
+            '%niza%', getParameterMap(sort: 'name')
+        ) >> list
         list.size() == model.organizationList.size()
         list == (List) model.organizationList
     }

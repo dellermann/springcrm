@@ -4,7 +4,7 @@ model {
     List<Organization> organizationList
 }
 
-json(organizationList) { Organization org ->
-    id org.id
+json(organizationList ?: Collections.EMPTY_LIST) { Organization org ->
+    id org.id.toString()
     name org.name
 }

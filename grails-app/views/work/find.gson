@@ -4,7 +4,7 @@ model {
     List<Work> workList
 }
 
-json(workList) { Work work ->
-    id work.id
+json(workList ?: Collections.EMPTY_LIST) { Work work ->
+    id work.id.toString()
     name work.name
 }
