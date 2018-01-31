@@ -1,7 +1,7 @@
 /*
  * SettingsInterceptorBase.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,11 +30,17 @@ import javax.servlet.http.HttpSession
  * interceptor classes which handle user settings.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
 class SettingsInterceptorBase implements Interceptor {
+
+    //-- Fields ---------------------------------
+
+    UserService userService
+    UserSettingService userSettingService
+
 
     //-- Non-public methods ---------------------
 
@@ -57,15 +63,14 @@ class SettingsInterceptorBase implements Interceptor {
      *                      parameters; {@code null} if no conversion should be
      *                      performed
      */
-    protected void exchangeSetting(Map<?, ?> params, String paramName,
-                                   Map<String, Object> settings,
-                                   String settingKey, Closure convert = null)
+    protected static void exchangeSetting(Map<?, ?> params, String paramName,
+                                          Map<String, String> settings,
+                                          String settingKey,
+                                          Closure convert = null)
     {
         if (params[paramName] == null) {
             def value = settings[settingKey]
-            if (convert != null) {
-                value = convert(value)
-            }
+            if (convert != null) value = convert(value)
             params[paramName] = value
         } else {
             settings[settingKey] = params[paramName]?.toString()
@@ -87,13 +92,57 @@ class SettingsInterceptorBase implements Interceptor {
      * @param session   the given session
      * @param attrName  the name of the attribute in the session
      */
-    protected void exchangeSetting(Map<?, ?> params, String paramName,
-                                   HttpSession session, String attrName)
+    protected static void exchangeSetting(Map<?, ?> params, String paramName,
+                                          HttpSession session, String attrName)
     {
         if (params[paramName] == null) {
             params[paramName] = session.getAttribute(attrName)
         } else {
             session.setAttribute attrName, params[paramName]
+        }
+    }
+
+    /**
+     * Gets the currently logged in user.
+     *
+     * @return  the currently logged in user
+     * @since   3.0
+     */
+    protected User getCurrentUser() {
+        userService.getCurrentUser()
+    }
+
+    /**
+     * Loads the settings with the given names of the currently logged in user.
+     *
+     * @param names the given setting names
+     * @return      the setting names and their values
+     * @since 3.0
+     */
+    protected Map<String, String> loadSettings(String... names) {
+        Map<String, String> res = new HashMap<>(names.length)
+        User user = currentUser
+        if (user != null) {
+            for (String name : names) {
+                res[name] = userSettingService.getString(user, name)
+            }
+        }
+
+        res
+    }
+
+    /**
+     * Stores the given settings for the currently logged in user.
+     *
+     * @param settings  the given settings
+     * @since 3.0
+     */
+    protected void storeSettings(Map<String, String> settings) {
+        User user = currentUser
+        if (user != null) {
+            for (Map.Entry<String, String> entry : settings.entrySet()) {
+                userSettingService.store user, entry.key, entry.value
+            }
         }
     }
 }

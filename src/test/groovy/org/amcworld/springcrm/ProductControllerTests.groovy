@@ -43,7 +43,7 @@ class ProductControllerTests {
 //		def seqNumber = new SeqNumber(controllerName:'product', nextNumber:10002, prefix:'P', suffix:'')
 //		mockDomain(SeqNumber, [seqNumber])
 
-		controller.seqNumberService = new SeqNumberService()
+//		controller.seqNumberService = new SeqNumberService()
     }
 
     void testIndex() {

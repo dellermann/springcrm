@@ -48,6 +48,7 @@ class UserController {
 
     GoogleOAuthService googleOAuthService
     UserService userService
+    UserSettingService userSettingService
 
 
     //-- Public methods -------------------------
@@ -142,14 +143,16 @@ class UserController {
 
     @Secured('isAuthenticated()')
     def settingsControl() {
-        respond saveType: currentUser.settings['saveType'] ?: 'saveAndClose'
+        respond(
+            saveType: userSettingService.getString(
+                currentUser, 'saveType', 'saveAndClose'
+            )
+        )
     }
 
     @Secured('isAuthenticated()')
     def settingsControlSave(String saveType) {
-        User user = getCurrentUser()
-        user.settings['saveType'] = saveType
-        userService.save user
+        userSettingService.store currentUser, 'saveType', saveType
 
         redirect action: 'settingsIndex'
     }
@@ -244,8 +247,7 @@ class UserController {
     @Secured('isAuthenticated()')
     def settingsSync() {
         List<Long> values =
-            currentUser.settings.excludeFromSync
-                ?.toString()
+            userSettingService.getString(currentUser, 'excludeFromSync')
                 ?.split(/,/)
                 ?.collect { it as Long }
 
@@ -254,9 +256,9 @@ class UserController {
 
     @Secured('isAuthenticated()')
     def settingsSyncSave() {
-        User user = currentUser
-        user.settings.excludeFromSync = params.excludeFromSync.join ','
-        userService.save user
+        userSettingService.store(
+            currentUser, 'excludeFromSync', params.excludeFromSync.join(',')
+        )
 
         redirect action: 'settingsIndex'
     }
@@ -269,9 +271,9 @@ class UserController {
 
     @Secured('isAuthenticated()')
     def storeSetting() {
-        User user = currentUser
-        user.settings.put params.key.toString(), params.value
-        userService.save user
+        userSettingService.store(
+            currentUser, params.key.toString(), params.value
+        )
 
         render status: OK
     }
@@ -346,12 +348,10 @@ class UserController {
     }
 
     private void setUserLocale(String locale = null) {
-        User user = currentUser
         if (locale) {
-            user.settings.locale = locale
-            userService.save user
+            userSettingService.store currentUser, 'locale', locale
         } else {
-            locale = user.settings.locale
+            locale = userSettingService.getString(currentUser, 'locale')
         }
         if (locale) {
             session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] =

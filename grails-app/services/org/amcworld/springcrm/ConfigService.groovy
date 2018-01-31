@@ -87,71 +87,95 @@ abstract class ConfigService implements IConfigService {
     /**
      * Gets the configuration with the given ID as boolean value.
      *
-     * @param id    the given ID
-     * @return      the boolean value or {@code null} if no such configuration
-     *              exists
+     * @param id        the given ID
+     * @param defValue  a default value which should be used if no such
+     *                  configuration exists or is unset
+     * @return          the boolean value or {@code null} if no such
+     *                  configuration exists or is unset and no default value
+     *                  has been specified
      */
-    Boolean getBoolean(String id) {
+    Boolean getBoolean(String id, Boolean defValue = null) {
         String value = get(id)?.value
 
-        value == null ? null : Boolean.valueOf(value)
+        value == null ? defValue : Boolean.valueOf(value)
     }
 
     /**
      * Gets the configuration with the given ID as calendar value.
      *
-     * @param id    the given ID
-     * @return      the calendar value or {@code null} if no such configuration
-     *              exists
+     * @param id        the given ID
+     * @param defValue  a default value which should be used if no such
+     *                  configuration exists or is unset
+     * @return          the calendar value or {@code null} if no such
+     *                  configuration exists or is unset and no default value
+     *                  has been specified
      */
-    Calendar getCalendar(String id) {
-        getDate(id)?.toCalendar()
+    Calendar getCalendar(String id, Calendar defValue = null) {
+        getDate(id)?.toCalendar() ?: defValue
     }
 
     /**
      * Gets the configuration with the given ID as date value.
      *
-     * @param id    the given ID
-     * @return      the date value or {@code null} if no such configuration
-     *              exists
+     * @param id        the given ID
+     * @param defValue  a default value which should be used if no such
+     *                  configuration exists or is unset
+     * @return          the date value or {@code null} if no such configuration
+     *                  exists or is unset and no default value has been
+     *                  specified
      */
-    Date getDate(String id) {
+    Date getDate(String id, Date defValue = null) {
         String value = get(id)?.value
 
-        value ? Date.parseToStringDate(value) : null
+        value ? Date.parseToStringDate(value) : defValue
     }
 
     /**
      * Gets the configuration with the given ID as integer value.
      *
-     * @param id    the given ID
-     * @return      the integer value or {@code null} if no such configuration
-     *              exists
+     * @param id        the given ID
+     * @param defValue  a default value which should be used if no such
+     *                  configuration exists or is unset
+     * @return          the integer value or {@code null} if no such
+     *                  configuration exists or is unset and no default value
+     *                  has been specified
      */
-    Integer getInteger(String id) {
-        get(id)?.value?.asType(Integer)
+    Integer getInteger(String id, Integer defValue = null) {
+        Integer res = get(id)?.value?.asType(Integer)
+
+        res == null ? defValue : res
     }
 
     /**
      * Gets the configuration with the given ID as long value.
      *
-     * @param id    the given ID
-     * @return      the long value or {@code null} if no such configuration
-     *              exists
+     * @param id        the given ID
+     * @param defValue  a default value which should be used if no such
+     *                  configuration exists or is unset
+     * @return          the long value or {@code null} if no such configuration
+     *                  exists or is unset and no default value
+     *                  has been specified
      */
-    Long getLong(String id) {
-        get(id)?.value?.asType(Long)
+    Long getLong(String id, Long defValue = null) {
+        Long res = get(id)?.value?.asType(Long)
+
+        res == null ? defValue : res
     }
 
     /**
      * Gets the configuration with the given ID as string value.
      *
-     * @param id    the given ID
-     * @return      the string value or {@code null} if no such configuration
-     *              exists
+     * @param id        the given ID
+     * @param defValue  a default value which should be used if no such
+     *                  configuration exists or is unset
+     * @return          the string value or {@code null} if no such
+     *                  configuration exists or is unset and no default value
+     *                  has been specified
      */
-    String getString(String id) {
-        get(id)?.toString()
+    String getString(String id, String defValue = null) {
+        String res = get(id)?.toString()
+
+        res == null ? defValue : res
     }
 
     /**

@@ -488,8 +488,8 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
 
     @Override
     protected boolean isExcluded(Person localEntry, User user) {
-        List<Long> ids =
-            user.settings.excludeFromSync?.split(/,/)?.collect { it as Long }
+        List<Long> ids = []
+//            user.settings.excludeFromSync?.split(/,/)?.collect { it as Long }
         if (ids == null) {
             return false
         }

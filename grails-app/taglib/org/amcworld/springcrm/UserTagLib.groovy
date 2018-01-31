@@ -1,7 +1,7 @@
 /*
  * UserTagLib.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.plugin.springsecurity.SpringSecurityService
-
 
 /**
  * The class {@code UserTagLib} represents tags for login.
@@ -33,7 +31,8 @@ class UserTagLib {
 
     //-- Fields ---------------------------------
 
-    SpringSecurityService springSecurityService
+    UserService userService
+    UserSettingService userSettingService
 
 
     //-- Public methods -------------------------
@@ -42,7 +41,7 @@ class UserTagLib {
      * Renders an area to display the currently logged in user.
      */
     def loginControl = {
-        User user = springSecurityService.currentUser as User
+        User user = userService.currentUser
         if (user != null) {
             out << '<small>' << user.fullName << ' [' << user.username <<
                 ']</small>'
@@ -63,10 +62,8 @@ class UserTagLib {
      * @attr key REQUIRED   the name of the user setting
      */
     def userSetting = { attrs, body ->
-        Map<String, Object> settings =
-            ((User) springSecurityService.currentUser)?.settings
-        if (settings) {
-            out << settings[attrs.key.toString()]
-        }
+        out << userSettingService.getString(
+            userService.currentUser, attrs.key.toString()
+        )
     }
 }

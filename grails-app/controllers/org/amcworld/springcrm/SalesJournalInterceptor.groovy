@@ -1,7 +1,7 @@
 /*
  * SalesJournalInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import groovy.transform.CompileStatic
  * sales journal.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
@@ -53,18 +53,12 @@ class SalesJournalInterceptor extends SettingsInterceptorBase {
      * @return  always {@code true}
      */
     boolean before() {
-        Credential credential = (Credential) session?.getAttribute('credential')
-        if (credential) {
-            Closure convert = { String s -> Integer.parseInt s }
-            exchangeSetting(
-                params, 'year', credential.settings, 'salesJournalYear',
-                convert
-            )
-            exchangeSetting(
-                params, 'month', credential.settings, 'salesJournalMonth',
-                convert
-            )
-        }
+        Map<String, String> settings =
+            loadSettings('salesJournalYear', 'salesJournalMonth')
+        Closure convert = { String s -> s as Integer }
+        exchangeSetting params, 'year', settings, 'salesJournalYear', convert
+        exchangeSetting params, 'month', settings, 'salesJournalMonth', convert
+        storeSettings settings
 
         true
     }

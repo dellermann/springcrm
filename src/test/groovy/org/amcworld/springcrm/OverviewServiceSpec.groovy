@@ -39,8 +39,8 @@ class OverviewServiceSpec extends Specification
 
         and: 'a user with mocked settings'
         User user = makeUser()
-        UserSettings settings = Mock()
-        user.settings = settings
+//        UserSettings settings = Mock()
+//        user.settings = settings
 
         and: 'a credential of that user'
         Credential cred = new Credential(user)

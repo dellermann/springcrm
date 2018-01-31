@@ -158,14 +158,14 @@ class AbstractUserCredentialDataStore
         Preconditions.checkNotNull key
         Preconditions.checkNotNull credential
 
-        UserSetting.withTransaction {
-            User user = getUser(key)
-            if (user) {
-                user.settings[SETTINGS_KEY] =
-                    convertCredentialToJson(credential)
-                user.save flush: true
-            }
-        }
+//        UserSetting.withTransaction {
+//            User user = getUser(key)
+//            if (user) {
+//                user.settings[SETTINGS_KEY] =
+//                    convertCredentialToJson(credential)
+//                user.save flush: true
+//            }
+//        }
 
         this
     }

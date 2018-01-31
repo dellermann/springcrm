@@ -124,7 +124,7 @@ class OrganizationController {
     }
 
     def getTermOfPayment(String id) {
-        int termOfPayment = configService.getInteger('termOfPayment') ?: 14i
+        int termOfPayment = configService.getInteger('termOfPayment', 14i)
 
         Organization organization = id == null ? null
             : organizationService.get(new ObjectId(id))

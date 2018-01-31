@@ -61,7 +61,6 @@ class User implements Serializable {
         fax nullable: true, maxSize: 40
         email blank: false, email: true
     }
-    static embedded = ['settings']
     static hasMany = [authorities: RoleGroup]
     static mapping = {
         sort 'username'
@@ -153,11 +152,6 @@ class User implements Serializable {
     String phoneHome
 
     /**
-     * The settings of this user.
-     */
-    Map<String, Object> settings = [: ]
-
-    /**
      * The user name of this user used for authentication.
      */
     String username
@@ -187,7 +181,6 @@ class User implements Serializable {
         email = user.email
         enabled = user.enabled
         authorities = user.authorities
-        settings = user.settings
     }
 
 

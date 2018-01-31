@@ -104,6 +104,7 @@ interface IUserService {
  * @version 3.0
  * @since   1.3
  */
+//@CompileStatic        // XXX cannot use here because of compiler error
 @Service(User)
 abstract class UserService implements IUserService {
 

@@ -1,7 +1,7 @@
 /*
  * OverviewController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ class OverviewController {
     PanelService panelService
     SeqNumberService seqNumberService
     UserService userService
+    UserSettingService userSettingService
 
 
     //-- Public methods -------------------------
@@ -197,14 +198,14 @@ class OverviewController {
         NumberFormat formatter = NumberFormat.getInstance(request.locale)
         BigDecimal min = formatter.parse(minimum) as BigDecimal
 
-        User user = getUser()
-        user.settings.putAll(
-            unpaidBillsMinimum: min <= BigDecimal.ZERO ? '' : min.toString(),
-            unpaidBillsSort: sort,
-            unpaidBillsMax: max,
-            unpaidBillsOrder: order
+        User u = user
+        userSettingService.store(
+            u, 'unpaidBillsMinimum',
+            min <= BigDecimal.ZERO ? '' : min.toString()
         )
-        user.save flush: true
+        userSettingService.store u, 'unpaidBillsSort', sort
+        userSettingService.store u, 'unpaidBillsMax', max
+        userSettingService.store u, 'unpaidBillsOrder', order
 
         redirect action: 'index'
     }

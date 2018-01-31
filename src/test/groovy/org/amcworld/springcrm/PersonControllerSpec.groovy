@@ -761,14 +761,18 @@ class PersonControllerSpec extends Specification
         controller.ldapService = ldapService
 
         and: 'a user instance'
-        User user = new User(
-            username: 'jdoe', settings: [excludeFromSync: '4520']
-        )
+        User user = new User(username: 'jdoe')
 
         and: 'a user service instance'
         UserService userService = Mock()
         userService.getCurrentUser() >> user
         controller.userService = userService
+
+        and: 'a user setting service instance'
+        UserSettingService userSettingService = Mock()
+        userSettingService.getString(user, 'excludeFromSync') >>
+            '4520'
+        controller.userSettingService = userSettingService
 
         and: 'an additional ID'
         ObjectId anotherId = new ObjectId()

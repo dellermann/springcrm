@@ -28,9 +28,26 @@ class SalesJournalInterceptorSpec extends Specification
     implements InterceptorUnitTest<SalesJournalInterceptor>
 {
 
+    //-- Fields ---------------------------------
+
+    User user = makeUser()
+
+
+    //-- Fixture methods ------------------------
+
+    void setup() {
+        UserService userService = Mock()
+        userService.getCurrentUser() >> user
+        interceptor.userService = userService
+
+        UserSettingService userSettingService = Mock()
+        interceptor.userSettingService = userSettingService
+    }
+
+
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
         when: 'I use a particular request'
@@ -52,7 +69,7 @@ class SalesJournalInterceptorSpec extends Specification
         'report'            | 'sales-journal'       || true
     }
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         given: 'a controller name'
         webRequest.controllerName = 'call'
 
@@ -61,45 +78,59 @@ class SalesJournalInterceptorSpec extends Specification
         interceptor.before()
     }
 
-    def 'Month and year are initialized from user settings'() {
-        given: 'a user and a credential'
-        session.credential = new Credential(makeUser())
-        session.credential.settings.salesJournalYear = '2014'
-        session.credential.settings.salesJournalMonth = '5'
+    void 'Month and year are initialized from user settings'() {
+        given: 'a user setting service methods'
+        1 * interceptor.userSettingService.getString(
+            user, 'salesJournalYear'
+        ) >> '2014'
+        1 * interceptor.userSettingService.getString(
+            user, 'salesJournalMonth'
+        ) >> '5'
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.before()
 
         then: 'the month and year have been set'
+        1 * interceptor.userSettingService.store(
+            user, 'salesJournalYear', '2014'
+        )
+        1 * interceptor.userSettingService.store(
+            user, 'salesJournalMonth', '5'
+        )
         2014 == params.year
-        '2014' == session.credential.settings.salesJournalYear
         5 == params.month
-        '5' == session.credential.settings.salesJournalMonth
     }
 
-    def 'Month and year are stored in user settings'() {
-        given: 'a user and a credential'
-        session.credential = new Credential(makeUser())
+    void 'Month and year are stored in user settings'() {
+        given: 'a user setting service methods'
+        1 * interceptor.userSettingService.getString(
+            user, 'salesJournalYear'
+        )
+        1 * interceptor.userSettingService.getString(
+            user, 'salesJournalMonth'
+        )
 
-        and: 'month and year'
-        params.month = 5
-        params.year = 2014
-
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
+        params.month = 9
+        params.year = 2016
         interceptor.before()
 
         then: 'the month and year have been set'
-        2014 == params.year
-        '2014' == session.credential.settings.salesJournalYear
-        5 == params.month
-        '5' == session.credential.settings.salesJournalMonth
+        1 * interceptor.userSettingService.store(
+            user, 'salesJournalYear', '2016'
+        )
+        1 * interceptor.userSettingService.store(
+            user, 'salesJournalMonth', '9'
+        )
+        2016 == params.year
+        9 == params.month
     }
 
 
     //-- Non-public methods ---------------------
 
-    private User makeUser() {
-        def u = new User(
+    private static User makeUser() {
+        new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -108,12 +139,7 @@ class SalesJournalInterceptorSpec extends Specification
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
-        u.save failOnError: true
-        u.afterLoad()       // initialize user settings
-
-        u
     }
 }

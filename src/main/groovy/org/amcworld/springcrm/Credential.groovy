@@ -131,7 +131,7 @@ final class Credential {
         fax = user.fax
         email = user.email
         fullName = computeFullName()
-        settings = user.settings
+//        settings = user.settings
     }
 
 

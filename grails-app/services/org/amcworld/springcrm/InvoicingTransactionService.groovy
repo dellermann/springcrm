@@ -22,7 +22,6 @@ package org.amcworld.springcrm
 
 import static java.util.Calendar.YEAR
 
-import grails.artefact.Service
 import grails.core.GrailsApplication
 import org.amcworld.springcrm.xml.InvoicingTransactionXML
 import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
@@ -36,13 +35,15 @@ import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
  * @version 3.0
  * @since   1.2
  */
-class InvoicingTransactionService implements Service {
+class InvoicingTransactionService {
 
     //-- Fields ---------------------------------
 
     ConfigService configService
     GrailsApplication grailsApplication
     InvoicingTransactionXMLFactory invoicingTransactionXMLFactory
+    UserService userService
+    UserSettingService userSettingService
 
 
     //-- Public methods -------------------------
@@ -102,20 +103,21 @@ class InvoicingTransactionService implements Service {
 
     /**
      * Finds all unpaid bills filtered and ordered using the settings of the
-     * given credential.
+     * currently logged in user.
      *
-     * @param credential    the credential representing the currently logged in
-     *                      user
-     * @return              a list of unpaid bills
+     * @return  a list of unpaid bills
      */
-    List<Invoice> findUnpaidBills(Credential credential) {
-        UserSettings settings = credential.settings
-        String sort = settings.unpaidBillsSort ?: 'docDate'
-        String ord = settings.unpaidBillsOrder ?: 'desc'
-        int max = (settings.unpaidBillsMax ?: '0') as int
+    List<Invoice> findUnpaidBills() {
+        User user = userService.currentUser
+        String sort =
+            userSettingService.getString(user, 'unpaidBillsSort', 'docDate')
+        String ord =
+            userSettingService.getString(user, 'unpaidBillsOrder', 'desc')
+        int max = userSettingService.getInteger(user, 'unpaidBillsMax', 0i)
 
-        int precision = configService.getInteger('numFractionDigitsExt') ?: 2i
-        String setting = settings.unpaidBillsMinimum
+        int precision = configService.getInteger('numFractionDigitsExt', 2i)
+        String setting =
+            userSettingService.getString(user, 'unpaidBillsMinimum')
         BigDecimal minimum = setting ? new BigDecimal(setting)
             : BigDecimal.ONE.movePointLeft(precision)
 

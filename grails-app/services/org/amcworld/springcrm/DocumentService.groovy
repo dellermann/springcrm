@@ -118,7 +118,7 @@ class DocumentService {
     * @see			#getRootPath()
     */
     FileObject getFolderOfOrganization(Organization org) {
-        String pathSpec = configService.getString('pathDocumentByOrg') ?: '%o'
+        String pathSpec = configService.getString('pathDocumentByOrg', '%o')
 
         // check the document placeholder of the organization
         FileObject folder

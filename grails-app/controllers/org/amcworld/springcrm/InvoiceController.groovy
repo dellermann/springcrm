@@ -140,14 +140,16 @@ class InvoiceController extends InvoicingController<Invoice> {
      * @return  a map containing the model for the view
      */
     def listUnpaidBills() {
-        List<Invoice> invoiceInstanceList =
-            invoicingTransactionService.findUnpaidBills(credential)
+        List<Invoice> invoiceList =
+            invoicingTransactionService.findUnpaidBills()
 
-        [
-            (getDomainInstanceName('List')): invoiceInstanceList,
-            numFractionDigitsExt:
-                configService.getInteger('numFractionDigitsExt')
-        ]
+        respond(
+            invoiceList,
+            [
+                numFractionDigitsExt:
+                   configService.getInteger('numFractionDigitsExt')
+            ]
+        )
     }
 
     def print(Long id, String template) {

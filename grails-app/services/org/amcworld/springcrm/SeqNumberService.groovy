@@ -1,7 +1,7 @@
 /*
  * SeqNumberService.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@ import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.services.Service
 import grails.util.GrailsNameUtils
-import groovy.transform.CompileStatic
 import org.bson.conversions.Bson
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.beans.factory.annotation.Autowired
@@ -74,7 +73,7 @@ interface ISeqNumberService {
  * @author  Daniel Ellermann
  * @version 3.0
  */
-@CompileStatic
+//@CompileStatic        // XXX cannot use here because of compiler error
 @Service(SeqNumber)
 abstract class SeqNumberService implements ISeqNumberService {
 
@@ -98,6 +97,9 @@ abstract class SeqNumberService implements ISeqNumberService {
 
     @Autowired(required = false)
     MongoClient mongo
+
+    @Autowired(required = false)
+    UserSettingService userSettingService
 
 
     //-- Public methods -------------------------
@@ -164,9 +166,9 @@ abstract class SeqNumberService implements ISeqNumberService {
             return false
         }
 
-        String year = user.settings.seqNumberHintYear
+        Integer year = userSettingService.getInteger(user, 'seqNumberHintYear')
 
-        !year || new Date().format('YYYY').toInteger() > year.toInteger()
+        !year || new Date().format('YYYY').toInteger() > year
     }
 
     /**
@@ -251,7 +253,9 @@ abstract class SeqNumberService implements ISeqNumberService {
      * @param user  the currently logged in user
      */
     void setDontShowAgain(User user) {
-        user.settings.seqNumberHintYear = new Date().format('YYYY')
+        userSettingService.store(
+            user, 'seqNumberHintYear', new Date().format('YYYY')
+        )
     }
 
     /**
@@ -261,7 +265,7 @@ abstract class SeqNumberService implements ISeqNumberService {
      * @param user  the currently logged in user
      */
     void setNeverShowAgain(User user) {
-        user.settings.seqNumberHintYear = '9999'
+        userSettingService.store user, 'seqNumberHintYear', '9999'
     }
 
 

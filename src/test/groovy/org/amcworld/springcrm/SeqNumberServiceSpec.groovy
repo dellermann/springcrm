@@ -127,13 +127,21 @@ class SeqNumberServiceSpec extends Specification
 
         /* leave sequence number for invoices at start value 10000 */
 
-        when:
+        and: 'a user setting service instance'
+        UserSettingService userSettingService = Mock()
+        service.userSettingService = userSettingService
+
+        and: 'a date within the given year'
         Date d = new Date()
         d.set date: 31, month: Calendar.MARCH, year: year
-        user.settings.seqNumberHintYear = d.format('YYYY')
 
-        then:
-        res == service.getShowHint(user)
+        when: 'the method is called with the user'
+        boolean b = service.getShowHint(user)
+
+        then: 'the result is as expected'
+        1 * userSettingService.getInteger(user, 'seqNumberHintYear') >>
+            d.format('YYYY').toInteger()
+        res == b
 
         where:
         year                            || res
@@ -153,13 +161,20 @@ class SeqNumberServiceSpec extends Specification
 
         /* leave sequence number for invoices at start value 10000 */
 
-        when:
+        and: 'a user setting service instance'
+        UserSettingService userSettingService = Mock()
+        service.userSettingService = userSettingService
+
+        and: 'a date within the given year'
         Date d = new Date()
         d.set date: 31, month: Calendar.MARCH, year: year
-        user.settings.seqNumberHintYear = d.format('YYYY')
 
-        then:
-        !service.getShowHint(user)
+        when: 'the method is called with the user'
+        boolean b = service.getShowHint(user)
+
+        then: 'the result is as expected'
+        0 * userSettingService.getInteger(user, 'seqNumberHintYear')
+        !b
 
         where:
         year                            || _
@@ -223,29 +238,35 @@ class SeqNumberServiceSpec extends Specification
     }
 
     def 'Store year for sequence number hint'() {
-        given: 'a user with mocked settings'
+        given: 'a user'
         User user = makeUser()
-        Map settings = Mock()
-        user.settings = settings
 
-        when: 'I store the year'
+        and: 'a user setting service'
+        UserSettingService userSettingService = Mock()
+        service.userSettingService = userSettingService
+
+        when: 'the year is stored'
         service.dontShowAgain = user
 
-        then: 'the current year has been stored'
-        1 * settings.put('seqNumberHintYear', new Date().format('YYYY'))
+        then: 'the current year has been persisted'
+        1 * userSettingService.store(
+            user, 'seqNumberHintYear', new Date().format('YYYY')
+        )
     }
 
     def 'Store never show again for sequence number hint'() {
-        given: 'a user with mocked settings'
+        given: 'a user'
         User user = makeUser()
-        Map settings = Mock()
-        user.settings = settings
 
-        when: 'I store the selection'
+        and: 'a user setting service'
+        UserSettingService userSettingService = Mock()
+        service.userSettingService = userSettingService
+
+        when: 'the decision is stored'
         service.neverShowAgain = user
 
-        then: 'a year in the future has been stored'
-        1 * settings.put('seqNumberHintYear', '9999')
+        then: 'a year in the future has been persisted'
+        1 * userSettingService.store(user, 'seqNumberHintYear', '9999')
     }
 
     def 'Load sequence number of a known class'() {
@@ -328,18 +349,18 @@ class SeqNumberServiceSpec extends Specification
     /*
      * XXX moved down from DataTest because line
      *
-     *      Service service = (Service)dataStore.getService(serviceClass)
+     *      Service service = (Service) dataStore.getService(serviceClass)
      *
      * throws a NoSuchMethodError when calling getService().  I really don't
      * know why.
      */
     void mockDataService(Class<?> serviceClass) {
-        Service service = (Service)dataStore.getService(serviceClass)
-        String serviceName = Introspector.decapitalize(serviceClass.simpleName)
-        if(!applicationContext.containsBean(serviceName)) {
-            applicationContext.beanFactory.autowireBean(service)
-            service.setDatastore(dataStore)
-            applicationContext.beanFactory.registerSingleton(serviceName, service)
+        Service service = (Service) dataStore.getService(serviceClass)
+        String name = Introspector.decapitalize(serviceClass.simpleName)
+        if (!applicationContext.containsBean(name)) {
+            applicationContext.beanFactory.autowireBean service
+            service.datastore = dataStore
+            applicationContext.beanFactory.registerSingleton name, service
         }
     }
 

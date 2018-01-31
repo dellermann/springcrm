@@ -51,6 +51,7 @@ class PersonController {
     OrganizationService organizationService
     PersonService personService
     UserService userService
+    UserSettingService userSettingService
 
 
     //-- Public methods -------------------------
@@ -330,7 +331,9 @@ class PersonController {
      * @since   2.0
      */
     private List<String> getExcludeFromSyncValues() {
-        List<String> ids = currentUser.settings.excludeFromSync?.split(/,/)
+        List<String> ids =
+            userSettingService.getString(currentUser, 'excludeFromSync')
+                ?.split(/,/)
 
         ids ?: []
     }

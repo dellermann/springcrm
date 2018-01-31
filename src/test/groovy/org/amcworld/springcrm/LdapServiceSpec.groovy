@@ -44,10 +44,10 @@ class LdapServiceSpec extends Specification
 
         and: 'a mocked LDAP factory'
         LdapFactory factory = Mock()
-        factory.newInstance(null, null, null, null) >> ldap
+        factory.newLdap(null, null, null, null) >> ldap
         service.ldapFactory = factory
 
-        when: 'I call the delete method'
+        when: 'the delete method is called'
         service.delete person
 
         then: 'no LDAP method has been called'
@@ -57,16 +57,15 @@ class LdapServiceSpec extends Specification
 
     def 'No delete if an empty host has been configured'() {
         given: 'a configuration'
-        mockDomain Config, [
-            [name: 'ldapHost', value: '']
-        ]
+        def config = new Config(value: '')
+        config.id = 'ldapHost'
 
         and: 'a mocked LDAP'
         Ldap ldap = Mock()
 
         and: 'a mocked LDAP factory'
         LdapFactory factory = Mock()
-        factory.newInstance('', null, null, null) >> ldap
+        factory.newLdap('', null, null, null) >> ldap
         service.ldapFactory = factory
 
         when: 'I call the delete method'

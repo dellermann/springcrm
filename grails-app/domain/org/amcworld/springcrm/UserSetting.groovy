@@ -1,7 +1,7 @@
 /*
  * UserSetting.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,17 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+
 
 /**
- * The class {@code UserSetting} stores a setting of a particular user.  The
- * class was necessary because the default implementation with a map in class
- * {@code User} is buggy.
+ * The class {@code UserSetting} stores a setting of a particular user.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.2
  */
+@EqualsAndHashCode(includes = ['user', 'name'])
 class UserSetting {
 
     //-- Class fields ---------------------------
@@ -42,25 +43,26 @@ class UserSetting {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The name of the user setting.
+     */
     String name
+
+    /**
+     * The string representation of the user setting.
+     */
     String value
+
+    /**
+     * The associated user.
+     */
     User user
 
 
     //-- Public methods -------------------------
 
     @Override
-    boolean equals(Object obj) {
-        obj instanceof UserSetting && name == obj.name
-    }
-
-    @Override
-    int hashCode() {
-        name.hashCode()
-    }
-
-    @Override
     String toString() {
-        "${name}: ${value}".toString()
+        "${user}: ${name} = ${value}".toString()
     }
 }

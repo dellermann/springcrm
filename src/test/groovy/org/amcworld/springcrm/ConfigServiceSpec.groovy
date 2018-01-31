@@ -43,6 +43,7 @@ class ConfigServiceSpec extends Specification
         expect:
         b == service.getBoolean('a')
         null == service.getBoolean('b')
+        true == service.getBoolean('b', true)
 
         where:
         value   || b
@@ -77,11 +78,16 @@ class ConfigServiceSpec extends Specification
 
         expect:
         /* comparing Calendar instances directly doesn't work */
-        d1.toCalendar().time.toString() == service.getCalendar('a1').time.toString()
-        d2.toCalendar().time.toString() == service.getCalendar('a2').time.toString()
-        d3.toCalendar().time.toString() == service.getCalendar('a3').time.toString()
+        d1.toCalendar().time.toString() ==
+            service.getCalendar('a1').time.toString()
+        d2.toCalendar().time.toString() ==
+            service.getCalendar('a2').time.toString()
+        d3.toCalendar().time.toString() ==
+            service.getCalendar('a3').time.toString()
         null == service.getCalendar('a4')
         null == service.getCalendar('b')
+        d3.toCalendar().time.toString() ==
+            service.getCalendar('b', d3.toCalendar()).time.toString()
     }
 
     void 'Can get date value'() {
@@ -109,6 +115,7 @@ class ConfigServiceSpec extends Specification
         d3.toString() == service.getDate('a3').toString()
         null == service.getDate('a4')
         null == service.getDate('b')
+        d3.toString() == service.getDate('b', d3).toString()
     }
 
     void 'Can get integer value'(String value, Integer i) {
@@ -121,6 +128,7 @@ class ConfigServiceSpec extends Specification
         expect:
         i == service.getInteger('a')
         null == service.getInteger('b')
+        45i == service.getInteger('b', 45i)
 
         where:
         value   || i
@@ -142,6 +150,7 @@ class ConfigServiceSpec extends Specification
         expect:
         l == service.getLong('a')
         null == service.getLong('b')
+        3274L == service.getLong('b', 3274L)
 
         where:
         value       || l
@@ -164,6 +173,7 @@ class ConfigServiceSpec extends Specification
         expect:
         s == service.getString('a')
         null == service.getString('b')
+        'foo' == service.getString('b', 'foo')
 
         where:
         value   || s
@@ -210,20 +220,18 @@ class ConfigServiceSpec extends Specification
     /*
      * XXX moved down from DataTest because line
      *
-     *      Service service = (Service)dataStore.getService(serviceClass)
+     *      Service service = (Service) dataStore.getService(serviceClass)
      *
      * throws a NoSuchMethodError when calling getService().  I really don't
      * know why.
      */
     void mockDataService(Class<?> serviceClass) {
         Service service = (Service) dataStore.getService(serviceClass)
-        String serviceName = Introspector.decapitalize(serviceClass.simpleName)
-        if (!applicationContext.containsBean(serviceName)) {
-            applicationContext.beanFactory.autowireBean(service)
-            service.setDatastore(dataStore)
-            applicationContext.beanFactory.registerSingleton(
-                serviceName, service
-            )
+        String name = Introspector.decapitalize(serviceClass.simpleName)
+        if (!applicationContext.containsBean(name)) {
+            applicationContext.beanFactory.autowireBean service
+            service.datastore = dataStore
+            applicationContext.beanFactory.registerSingleton name, service
         }
     }
 }

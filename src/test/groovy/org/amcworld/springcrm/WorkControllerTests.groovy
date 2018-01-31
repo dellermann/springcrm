@@ -43,7 +43,7 @@ class WorkControllerTests {
 //		def seqNumber = new SeqNumber(controllerName:'work', nextNumber:10002, prefix:'S', suffix:'')
 //		mockDomain(SeqNumber, [seqNumber])
 
-		controller.seqNumberService = new SeqNumberService()
+//		controller.seqNumberService = new SeqNumberService()
     }
 
     void testIndex() {

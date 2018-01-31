@@ -1,7 +1,7 @@
 /*
  * AbstractGoogleSync.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ import org.amcworld.springcrm.GoogleDataSyncStatus
 import org.amcworld.springcrm.GoogleOAuthService
 import org.amcworld.springcrm.Organization
 import org.amcworld.springcrm.User
+import org.amcworld.springcrm.UserSettingService
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.grails.datastore.gorm.GormEntity
@@ -44,7 +45,7 @@ import org.springframework.context.MessageSource
  *              service
  * @param <G>   the type of Google entries which are handled by this service
  * @author      Daniel Ellermann
- * @version     2.1
+ * @version     3.0
  * @since       1.0
  */
 abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
@@ -79,6 +80,8 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
      * The type of the local entries.
      */
     protected Class<E> localEntryClass
+
+    UserSettingService userSettingService
 
 
     //-- Constructors ---------------------------
@@ -367,9 +370,7 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
     protected boolean getBooleanSystemConfig(String key,
                                              boolean defaultValue = false)
     {
-        Boolean b = configService.getBoolean(key)
-
-        b == null ? defaultValue : b
+        configService.getBoolean(key, defaultValue)
     }
 
     /**
@@ -404,7 +405,10 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
      */
     @CompileStatic
     private SyncSource getPrimarySyncSource(User user) {
-        String s = user.settings['primarySyncSource' + localEntryClass.name]
+        String s = userSettingService.getString(
+            user, 'primarySyncSource' + localEntryClass.name
+        )
+
         (s == null) ? LOCAL : SyncSource.valueOf(SyncSource, s)
     }
 

@@ -1,7 +1,7 @@
 /*
  * OverviewService.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ class OverviewService {
     //-- Fields ---------------------------------
 
     GrailsApplication grailsApplication
+    UserSettingService userSettingService
 
 
     //-- Public methods -------------------------
@@ -61,9 +62,10 @@ class OverviewService {
      */
     @Transactional
     void dontShowAgain(User user) {
-        user.settings.changelogVersion =
+        userSettingService.store(
+            user, 'changelogVersion',
             grailsApplication.metadata.applicationVersion
-        user.save flush: true
+        )
     }
 
     /**
@@ -101,7 +103,7 @@ class OverviewService {
      *              {@code false} otherwise
      */
     boolean showChangelog(User user) {
-        String version = user.settings.changelogVersion?.toString()
+        String version = userSettingService.getString(user, 'changelogVersion')
         if (!version) {
             return true
         }

@@ -46,7 +46,6 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         !u.administrator
         null == u.dateCreated
         null == u.lastUpdated
-        null == u.settings
     }
 
     def 'Copy an empty instance using constructor'() {
@@ -70,7 +69,6 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         !u2.administrator
         null == u2.dateCreated
         null == u2.lastUpdated
-        null == u2.settings
     }
 
     def 'Copy a user using constructor'() {
@@ -107,7 +105,6 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         null == u2.password
         null == u2.dateCreated
         null == u2.lastUpdated
-        null == u2.settings
     }
 
     def 'Obtain the full name'(String fn, String ln, String e) {
@@ -231,73 +228,6 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
         then: 'I get an exception'
         thrown ReadOnlyPropertyException
-    }
-
-    def 'Obtain user settings'() {
-        given: 'a user'
-        def u = new User(
-            username: 'jsmith',
-            password: 'abcd',
-            firstName: 'John',
-            lastName: 'Smith',
-            phone: '+49 30 1234567',
-            phoneHome: '+49 30 9876543',
-            mobile: '+49 172 3456789',
-            fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
-        )
-        u.save()
-
-        and: 'various settings for the user'
-        def us1 = new UserSetting(user: u, name: 'foo', value: 'bar')
-        def us2 = new UserSetting(user: u, name: 'whee', value: 'buzz')
-        us1.save()
-        us2.save()
-
-        and: 'I simulate a call to afterLoad()'
-        u.afterLoad()
-
-        when: 'I obtain the settings of the first user'
-        UserSettings us = u.settings
-
-        then: 'I get the settings'
-        null != us
-        'bar' == us['foo']
-        'buzz' == us['whee']
-    }
-
-    def 'Cannot set settings'() {
-        given: 'a user'
-        def u = new User(
-            username: 'jsmith',
-            password: 'abcd',
-            firstName: 'John',
-            lastName: 'Smith',
-            phone: '+49 30 1234567',
-            phoneHome: '+49 30 9876543',
-            mobile: '+49 172 3456789',
-            fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
-        )
-        u.save()
-
-        and: 'various settings for the user'
-        def us1 = new UserSetting(user: u, name: 'foo', value: 'bar')
-        def us2 = new UserSetting(user: u, name: 'whee', value: 'buzz')
-        us1.save()
-        us2.save()
-
-        and: 'I simulate a call to afterLoad()'
-        u.afterLoad()
-        assert null != u.settings
-
-        when: 'I try to set the settings'
-        u.settings = new UserSettings(u)
-
-        then: 'the user instance is unchanged'
-        null != u.settings
     }
 
     def 'Equals is null-safe'() {

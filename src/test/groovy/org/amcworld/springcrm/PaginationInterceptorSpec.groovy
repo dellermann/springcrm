@@ -20,17 +20,35 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
 class PaginationInterceptorSpec extends Specification
-    implements InterceptorUnitTest<PaginationInterceptor>
+    implements InterceptorUnitTest<PaginationInterceptor>, DomainUnitTest<Call>
 {
+
+    //-- Fields ---------------------------------
+
+    User user = makeUser()
+
+
+    //-- Fixture methods ------------------------
+
+    void setup() {
+        UserService userService = Mock()
+        userService.getCurrentUser() >> user
+        interceptor.userService = userService
+
+        UserSettingService userSettingService = Mock()
+        interceptor.userSettingService = userSettingService
+    }
+
 
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
         when: 'I use a particular request'
@@ -52,7 +70,7 @@ class PaginationInterceptorSpec extends Specification
         'user'              | 'index'               || true
     }
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         given: 'a controller name'
         webRequest.controllerName = 'call'
 
@@ -61,14 +79,14 @@ class PaginationInterceptorSpec extends Specification
         interceptor.before()
     }
 
-    def 'Offset is initialized from session'() {
+    void 'Offset is initialized from session'() {
         given: 'a controller name'
         webRequest.controllerName = 'xyz'
 
         and: 'an offset in session'
         session.offsetXyz = 50
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.before()
 
         then: 'the offset has been set'
@@ -76,7 +94,7 @@ class PaginationInterceptorSpec extends Specification
         50 == session.offsetXyz
     }
 
-    def 'Offset is stored in session'() {
+    void 'Offset is stored in session'() {
         given: 'a controller name'
         webRequest.controllerName = 'xyz'
 
@@ -86,7 +104,7 @@ class PaginationInterceptorSpec extends Specification
         and: 'a offset parameter'
         params.offset = 30
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.before()
 
         then: 'the offset has been set'
@@ -94,18 +112,19 @@ class PaginationInterceptorSpec extends Specification
         30 == session.offsetXyz
     }
 
-    def 'Cannot obtain count from invalid domain model class'() {
+    void 'Cannot obtain count from invalid domain model class'() {
         given: 'a controller name'
         webRequest.controllerName = 'xyz'
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.before()
 
         then: 'no offset has been stored in session'
         null == session.offsetXyz
     }
 
-    def 'Offset is limited and stored in session'(Integer o, Integer m, int e) {
+    void 'Offset is limited and stored in session'(Integer o, Integer m, int e)
+    {
         given: 'some calls'
         makeCalls()
 
@@ -119,7 +138,7 @@ class PaginationInterceptorSpec extends Specification
         and: 'an offset in session'
         session.offsetCall = 500
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.before()
 
         then: 'the offset has been stored correctly'
@@ -190,94 +209,82 @@ class PaginationInterceptorSpec extends Specification
         -10     | 50    || 0
     }
 
-    def 'Sort criterion is initialized user settings'() {
+    void 'Sort criterion is initialized from user settings'() {
         given: 'some calls'
-        makeCalls(10)
-
-        and: 'a user and a credential'
-        session.credential = new Credential(makeUser())
-        session.credential.settings.sortCall = 'type'
+        makeCalls 10
 
         and: 'a controller name'
         webRequest.controllerName = 'call'
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.before()
 
         then: 'the sort criterion has been set'
+        1 * interceptor.userSettingService.getString(user, 'sortCall') >>
+            'type'
+        1 * interceptor.userSettingService.store(user, 'sortCall', 'type')
         'type' == params.sort
-        'type' == session.credential.settings.sortCall
     }
 
-    def 'Sort criterion is stored in user settings'() {
+    void 'Sort criterion is stored in user settings'() {
         given: 'some calls'
-        makeCalls(10)
-
-        and: 'a user and a credential'
-        session.credential = new Credential(makeUser())
+        makeCalls 10
 
         and: 'a controller name'
         webRequest.controllerName = 'call'
 
-        and: 'a sort criterion'
-        params.sort = 'type'
-
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
+        params.sort = 'subject'
         interceptor.before()
 
         then: 'the sort criterion has been set'
-        'type' == params.sort
-        'type' == session.credential.settings.sortCall
+        1 * interceptor.userSettingService.getString(user, 'sortCall')
+        1 * interceptor.userSettingService.store(user, 'sortCall', 'subject')
+        'subject' == params.sort
     }
 
-    def 'Order is initialized from user settings'() {
+    void 'Order is initialized from user settings'() {
         given: 'some calls'
-        makeCalls(10)
-
-        and: 'a user and a credential'
-        session.credential = new Credential(makeUser())
-        session.credential.settings.orderCall = 'desc'
+        makeCalls 10
 
         and: 'a controller name'
         webRequest.controllerName = 'call'
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.before()
 
-        then: 'the order has been set'
+        then: 'the sort criterion has been set'
+        1 * interceptor.userSettingService.getString(user, 'orderCall') >>
+            'desc'
+        1 * interceptor.userSettingService.store(user, 'orderCall', 'desc')
         'desc' == params.order
-        'desc' == session.credential.settings.orderCall
     }
 
-    def 'Order is stored in user settings'() {
+    void 'Order is stored in user settings'() {
         given: 'some calls'
-        makeCalls(10)
-
-        and: 'a user and a credential'
-        session.credential = new Credential(makeUser())
+        makeCalls 10
 
         and: 'a controller name'
         webRequest.controllerName = 'call'
 
-        and: 'a sort order'
-        params.order = 'desc'
-
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
+        params.order = 'asc'
         interceptor.before()
 
-        then: 'the order has been set'
-        'desc' == params.order
-        'desc' == session.credential.settings.orderCall
+        then: 'the sort criterion has been set'
+        1 * interceptor.userSettingService.getString(user, 'orderCall')
+        1 * interceptor.userSettingService.store(user, 'orderCall', 'asc')
+        'asc' == params.order
     }
 
-    def 'Store offset in session'() {
+    void 'Store offset in session'() {
         given: 'a controller name'
         webRequest.controllerName = 'call'
 
         and: 'an offset'
         params.offset = 50
 
-        when: 'I call the interceptor'
+        when: 'the before method of the interceptor is executed'
         interceptor.after()
 
         then: 'the offset has been stored in session'
@@ -287,7 +294,7 @@ class PaginationInterceptorSpec extends Specification
 
     //-- Non-public methods ---------------------
 
-    private void makeCalls(int n = 150) {
+    private static void makeCalls(int n = 150) {
         for (int i = 0; i < n; i++) {
             def c = new Call(
                 subject: 'My call ' + i, notes: 'I call you!',
@@ -297,8 +304,8 @@ class PaginationInterceptorSpec extends Specification
         }
     }
 
-    private User makeUser() {
-        def u = new User(
+    private static User makeUser() {
+        new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -307,12 +314,7 @@ class PaginationInterceptorSpec extends Specification
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
-        u.save failOnError: true
-        u.afterLoad()       // initialize user settings
-
-        u
     }
 }

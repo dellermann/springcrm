@@ -57,7 +57,7 @@ class BootStrap {
 
         /* start tasks */
         long interval =
-            (configService.getLong('syncContactsFrequency') ?: 5L) * 60000L
+            configService.getLong('syncContactsFrequency', 5L) * 60000L
         Timer timer = new Timer('tasks')
 //        timer.schedule googleContactSyncTask, interval, interval
         InstallerDisableTask installDisableTask =

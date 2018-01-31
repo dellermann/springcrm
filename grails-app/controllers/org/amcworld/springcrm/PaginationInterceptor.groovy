@@ -1,7 +1,7 @@
 /*
  * PaginationInterceptor.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,20 @@ class PaginationInterceptor extends SettingsInterceptorBase {
     //-- Public methods -------------------------
 
     /**
+     * Called after the action has been executed.  The method stores the
+     * pagination offset in session.
+     *
+     * @return  always {@code true}
+     */
+    boolean after() {
+        if (controllerName != 'search') {
+            session.setAttribute getKey('offset'), params.offset
+        }
+
+        true
+    }
+
+    /**
      * Called before the action is executed.  The method initializes parameters
      * used for pagination and sorting and stores these settings in user session.
      *
@@ -57,7 +71,7 @@ class PaginationInterceptor extends SettingsInterceptorBase {
     boolean before() {
 
         /* store or restore offset */
-        String key = getSessionKey('offset')
+        String key = getKey('offset')
         if (controllerName != 'search') {
             exchangeSetting params, 'offset', session, key
         }
@@ -69,20 +83,14 @@ class PaginationInterceptor extends SettingsInterceptorBase {
         }
 
         /* store or restore number of items per page, sorting and order */
-        Credential credential = (Credential) session?.getAttribute('credential')
-        if (credential) {
-            User user = credential.loadUser()
-            exchangeSetting(
-                params, 'max', user.settings, getSessionKey('max')
-            )
-            exchangeSetting(
-                params, 'sort', user.settings, getSessionKey('sort')
-            )
-            exchangeSetting(
-                params, 'order', user.settings, getSessionKey('order')
-            )
-            user.save flush: true
-        }
+        String keyMax = getKey('max')
+        String keySort = getKey('sort')
+        String keyOrder = getKey('order')
+        Map<String, String> settings = loadSettings(keyMax, keySort, keyOrder)
+        exchangeSetting params, 'max', settings, keyMax
+        exchangeSetting params, 'sort', settings, keySort
+        exchangeSetting params, 'order', settings, keyOrder
+        storeSettings settings
 
         /* limit offset */
         int max = Math.min(params.max ? params.int('max') : 10, 100)
@@ -91,20 +99,6 @@ class PaginationInterceptor extends SettingsInterceptorBase {
         params.offset =
             Math.max(0, Math.min(maxOffset, params.int('offset') ?: 0))
         session.setAttribute key, params.offset
-
-        true
-    }
-
-    /**
-     * Called after the action has been executed.  The method stores the
-     * pagination offset in session.
-     *
-     * @return  always {@code true}
-     */
-    boolean after() {
-        if (controllerName != 'search') {
-            session.setAttribute getSessionKey('offset'), params.offset
-        }
 
         true
     }
@@ -144,7 +138,7 @@ class PaginationInterceptor extends SettingsInterceptorBase {
      * @param name  the name of the value
      * @return      the computed session key
      */
-    private String getSessionKey(String name) {
+    private String getKey(String name) {
         String key = name + controllerName.capitalize()
         if (params.type) key += params.type
 
