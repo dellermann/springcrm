@@ -1,7 +1,7 @@
 /*
  * LdapService.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ class LdapService {
                     log.debug "Deleting DN ${status.dn} from LDAP..."
                     ldap.delete status.dn
                 }
-                status.delete flush: true
+                ldapSyncStatusService.delete status.id
             }
         }
     }
@@ -88,18 +88,17 @@ class LdapService {
                 ldap.delete status.dn
             }
             Map<String, Object> attrs = convertPersonToAttrs(person)
+            String baseDn = configService.getString('ldapContactDn')
             StringBuilder dn
             for (int i = 1; i < 10000; i++) {    // 10000 => emergency abort
                 dn = new StringBuilder('cn=')
                 dn << attrs.cn
-                if (i > 1) {
-                    dn << ' ' << i
+                if (i > 1) dn << ' ' << i
+                dn << ',' << baseDn
+                if (log.debugEnabled) {
+                    log.debug "Trying to save DN ${dn} to LDAP..."
                 }
-                dn << ',' << configService.getString('ldapContactDn')
                 try {
-                    if (log.debugEnabled) {
-                        log.debug "Trying to save DN ${dn} to LDAP..."
-                    }
                     ldap.add dn.toString(), attrs
                     status.dn = dn.toString()
                     ldapSyncStatusService.save status

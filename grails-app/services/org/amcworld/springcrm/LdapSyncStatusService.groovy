@@ -38,6 +38,13 @@ interface LdapSyncStatusService {
     //-- Public methods -------------------------
 
     /**
+     * Deletes the LDAP sync status with the given ID.
+     *
+     * @param id    the given ID
+     */
+    void delete(ObjectId id)
+
+    /**
      * Gets the LDAP sync status by the given ID of the synchronized item.
      *
      * @param id    the given ID
