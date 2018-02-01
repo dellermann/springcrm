@@ -31,5 +31,5 @@ class CallListPage extends DefaultListPage {
     static content = {
         tr { moduleList CallTableRowModule, table.find('tbody > tr') }
     }
-    static url = 'call/list'
+    static url = 'phoneCall/list'
 }

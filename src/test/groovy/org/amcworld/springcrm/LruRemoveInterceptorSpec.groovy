@@ -41,13 +41,13 @@ class LruRemoveInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'document'          | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'document'          | 'index'               || false
-        'call'              | 'delete'              || true
+        'phoneCall'         | 'delete'              || true
         'organization'      | 'delete'              || true
         'document'          | 'delete'              || false
     }
@@ -74,7 +74,7 @@ class LruRemoveInterceptorSpec extends Specification
         interceptor.lruService = Mock(LruService)
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'some parameters'
         interceptor.params.confirmed = '1'
@@ -84,6 +84,6 @@ class LruRemoveInterceptorSpec extends Specification
         interceptor.before()
 
         then: 'the remove method has not been called'
-        1 * interceptor.lruService.removeItem('call', 25L)
+        1 * interceptor.lruService.removeItem('phoneCall', 25L)
     }
 }

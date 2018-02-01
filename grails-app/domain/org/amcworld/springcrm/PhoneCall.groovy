@@ -1,7 +1,7 @@
 /*
- * Call.groovy
+ * PhoneCall.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,18 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
+
 
 /**
- * The class {@code Call} represents a phone call.
+ * The class {@code PhoneCall} represents a phone call.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class Call {
+@EqualsAndHashCode(includes = ['id'])
+class PhoneCall {
 
     //-- Constants ----------------------------------
 
@@ -47,29 +51,74 @@ class Call {
     static belongsTo = [organization: Organization, person: Person]
     static mapping = {
         sort start: 'desc'
-        table 'phone_call'
         notes type: 'text'
-        subject index: 'subject'
+        subject index: true
     }
 
 
     //-- Fields ---------------------------------
 
-    String subject
-    String notes
-    String phone
-    Date start = new Date()
-    CallType type
-    CallStatus status
+    /**
+     * The timestamp of the creation of the record.
+     */
     Date dateCreated
+
+    /**
+     * The ID of the phone call.
+     */
+    ObjectId id
+
+    /**
+     * The timestamp of the last update of the record.
+     */
     Date lastUpdated
+
+    /**
+     * Any notes about the phone call.
+     */
+    String notes
+
+    /**
+     * The organization associated to the phone call
+     */
+    Organization organization
+
+    /**
+     * The person associated to the phone call.
+     */
+    Person person
+
+    /**
+     * The phone number of the call.
+     */
+    String phone
+
+    /**
+     * The timestamp of the start of the phone call.
+     */
+    Date start = new Date()
+
+    /**
+     * The status of the phone call.
+     */
+    PhoneCallStatus status
+
+    /**
+     * The subject of the phone call.
+     */
+    String subject
+
+    /**
+     * The type of phone call.
+     */
+    PhoneCallType type
 
 
     //-- Constructors ---------------------------
 
-    Call() {}
+    PhoneCall() {}
 
-    Call(Call call) {
+    PhoneCall(PhoneCall call) {
         subject = call.subject
         notes = call.notes
         organization = call.organization
@@ -84,16 +133,6 @@ class Call {
     //-- Public methods -------------------------
 
     @Override
-    boolean equals(Object obj) {
-        obj instanceof Call && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
-
-    @Override
     String toString() {
         subject ?: ''
     }
@@ -101,22 +140,30 @@ class Call {
 
 
 /**
- * The enumeration {@code CallType} represents the types of phone calls, that
- * is, the direction of them.
+ * The enumeration {@code PhoneCallStatus} represents the status of a phone
+ * call.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 3.0
  */
-enum CallType {
-    incoming, outgoing
+enum PhoneCallStatus {
+
+    //-- Values ---------------------------------
+
+    PLANNED, COMPLETED, ACKNOWLEDGED, CANCELLED
 }
 
+
 /**
- * The enumeration {@code CallStatus} represents the status of a phone call.
+ * The enumeration {@code PhoneCallType} represents the types of phone calls,
+ * that is, the direction of them.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 3.0
  */
-enum CallStatus {
-    planned, completed, acknowledged, cancelled
+enum PhoneCallType {
+
+    //-- Values ---------------------------------
+
+    INCOMING, OUTGOING
 }

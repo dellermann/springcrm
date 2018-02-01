@@ -41,25 +41,25 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'create'              || true
+        'phoneCall'         | 'create'              || true
         'organization'      | 'create'              || true
         'user'              | 'create'              || true
-        'call'              | 'copy'                || true
+        'phoneCall'         | 'copy'                || true
         'organization'      | 'copy'                || true
         'user'              | 'copy'                || true
-        'call'              | 'edit'                || true
+        'phoneCall'         | 'edit'                || true
         'organization'      | 'edit'                || true
         'user'              | 'edit'                || true
-        'call'              | 'save'                || true
+        'phoneCall'         | 'save'                || true
         'organization'      | 'save'                || true
         'user'              | 'save'                || true
-        'call'              | 'update'              || true
+        'phoneCall'         | 'update'              || true
         'organization'      | 'update'              || true
         'user'              | 'update'              || true
     }
@@ -112,7 +112,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         )
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'I call the interceptor'
         interceptor.after()
@@ -225,11 +225,11 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.seqNumberService = Mock(SeqNumberService)
 
         and: 'an non-empty model'
-        interceptor.model = [callInstance: new Call(subject: 'Phone call')]
+        interceptor.model = [callInstance: new PhoneCall(subject: 'Phone call')]
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'call',
+            controllerName: 'phoneCall',
             prefix: 'T',
             suffix: 'Y',
             startValue: 10_000,
@@ -237,15 +237,15 @@ class SeqNumberLoadInterceptorSpec extends Specification
         )
 
         and: 'a controller and action name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = 'create'
 
         when: 'I call the interceptor'
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('call') >> seqNumber
-        0 * interceptor.seqNumberService.nextNumber('call')
+        1 * interceptor.seqNumberService.loadSeqNumber('phoneCall') >> seqNumber
+        0 * interceptor.seqNumberService.nextNumber('phoneCall')
 
         and: 'prefix and suffix are correct'
         'T' == interceptor.model.seqNumberPrefix
@@ -257,11 +257,11 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.seqNumberService = Mock(SeqNumberService)
 
         and: 'an non-empty model'
-        interceptor.model = [callInstance: new Call(subject: 'Phone call')]
+        interceptor.model = [callInstance: new PhoneCall(subject: 'Phone call')]
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'call',
+            controllerName: 'phoneCall',
             prefix: 'T',
             suffix: 'Y',
             startValue: 10_000,
@@ -269,15 +269,15 @@ class SeqNumberLoadInterceptorSpec extends Specification
         )
 
         and: 'a controller and action name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = 'copy'
 
         when: 'I call the interceptor'
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('call') >> seqNumber
-        0 * interceptor.seqNumberService.nextNumber('call')
+        1 * interceptor.seqNumberService.loadSeqNumber('phoneCall') >> seqNumber
+        0 * interceptor.seqNumberService.nextNumber('phoneCall')
 
         and: 'prefix and suffix are correct'
         'T' == interceptor.model.seqNumberPrefix

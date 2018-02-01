@@ -71,7 +71,7 @@ class ModuleSpec extends Specification {
 
     def 'Obtain modules by invalid names'() {
         when: 'I obtain modules by invalid names'
-        Module.modulesByName(['REPORT', 'call'])
+        Module.modulesByName(['REPORT', 'phoneCall'])
 
         then: 'I get an exception'
         thrown IllegalArgumentException
@@ -81,7 +81,7 @@ class ModuleSpec extends Specification {
         expect:
         [] as Set == Module.resolveModules(null)
         [] as Set == Module.resolveModules(EnumSet.noneOf(Module))
-        ['call'] as Set == Module.resolveModules(EnumSet.of(CALL))
+        ['phoneCall'] as Set == Module.resolveModules(EnumSet.of(CALL))
         ['organization', 'person'] as Set == Module.resolveModules(EnumSet.of(CONTACT))
         ['organization', 'person', 'invoice'] as Set == Module.resolveModules(EnumSet.of(CONTACT, INVOICE))
         ['organization', 'person', 'invoice', 'dunning', 'creditMemo', 'report'] as Set == Module.resolveModules(EnumSet.of(CONTACT, INVOICE, REPORT))

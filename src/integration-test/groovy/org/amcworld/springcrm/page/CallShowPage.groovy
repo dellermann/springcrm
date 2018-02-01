@@ -26,5 +26,5 @@ class CallShowPage extends DefaultShowPage {
     //-- Class variables ------------------------
 
     static at = { title == 'Anruf anzeigen' }
-    static url = 'call/show'
+    static url = 'phoneCall/show'
 }

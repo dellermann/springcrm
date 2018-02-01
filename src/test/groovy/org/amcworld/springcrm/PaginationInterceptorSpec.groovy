@@ -26,7 +26,8 @@ import spock.lang.Specification
 
 
 class PaginationInterceptorSpec extends Specification
-    implements InterceptorUnitTest<PaginationInterceptor>, DomainUnitTest<Call>
+    implements InterceptorUnitTest<PaginationInterceptor>,
+        DomainUnitTest<PhoneCall>
 {
 
     //-- Fields ---------------------------------
@@ -59,20 +60,20 @@ class PaginationInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'show'                || false
+        'phoneCall'         | 'show'                || false
         'organization'      | 'show'                || false
         'user'              | 'show'                || false
-        'call'              | 'index'               || true
+        'phoneCall'         | 'index'               || true
         'organization'      | 'index'               || true
         'user'              | 'index'               || true
     }
 
     void 'All interceptor methods return true'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         expect:
         interceptor.after()
@@ -129,7 +130,7 @@ class PaginationInterceptorSpec extends Specification
         makeCalls()
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'an offset and a page size'
         params.offset = o
@@ -214,7 +215,7 @@ class PaginationInterceptorSpec extends Specification
         makeCalls 10
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'the before method of the interceptor is executed'
         interceptor.before()
@@ -231,7 +232,7 @@ class PaginationInterceptorSpec extends Specification
         makeCalls 10
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'the before method of the interceptor is executed'
         params.sort = 'subject'
@@ -248,7 +249,7 @@ class PaginationInterceptorSpec extends Specification
         makeCalls 10
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'the before method of the interceptor is executed'
         interceptor.before()
@@ -265,7 +266,7 @@ class PaginationInterceptorSpec extends Specification
         makeCalls 10
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'the before method of the interceptor is executed'
         params.order = 'asc'
@@ -279,7 +280,7 @@ class PaginationInterceptorSpec extends Specification
 
     void 'Store offset in session'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'an offset'
         params.offset = 50
@@ -296,9 +297,9 @@ class PaginationInterceptorSpec extends Specification
 
     private static void makeCalls(int n = 150) {
         for (int i = 0; i < n; i++) {
-            def c = new Call(
-                subject: 'My call ' + i, notes: 'I call you!',
-                type: CallType.outgoing, status: CallStatus.completed
+            def c = new PhoneCall(
+                subject: 'My phoneCall ' + i, notes: 'I phoneCall you!',
+                type: PhoneCallType.OUTGOING, status: PhoneCallStatus.COMPLETED
             )
             c.save failOnError: true
         }

@@ -1,7 +1,7 @@
 /*
  * GeneralFunctionalTest.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,15 +141,15 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
 	 * @param p     the person the phone call belongs to
 	 * @return      the prepared phone call
 	 */
-	protected Call prepareCall(Organization org, Person p) {
-		def call = new Call(
+	protected PhoneCall prepareCall(Organization org, Person p) {
+		def call = new PhoneCall(
 			subject: 'Bitte um Angebot',
 			start: new GregorianCalendar(2013, Calendar.FEBRUARY, 13, 9, 15, 0).time,
 			organization: org,
 			person: p,
 			phone: '04543 31233',
-			type: CallType.incoming,
-			status: CallStatus.completed,
+			type: PhoneCallType.INCOMING,
+			status: PhoneCallStatus.COMPLETED,
 			notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
 		)
 		call.save flush: true, failOnError: true

@@ -26,5 +26,5 @@ class CallEditPage extends CallFormPage {
     //-- Class variables ------------------------
 
     static at = { title == 'Anruf bearbeiten' }
-    static url = 'call/edit'
+    static url = 'phoneCall/edit'
 }

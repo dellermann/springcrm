@@ -1,7 +1,7 @@
 /*
  * SearchData.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,9 @@
 
 package org.amcworld.springcrm
 
-import grails.artefact.Service
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.DetachedCriteria
-import grails.transaction.Transactional
 import groovy.transform.CompileStatic
 import java.lang.reflect.Field
 import org.grails.datastore.gorm.GormEntity
@@ -35,11 +33,10 @@ import org.grails.datastore.gorm.GormEntity
  * and query it.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
-@Transactional
-class SearchService implements Service {
+class SearchService {
 
     //-- Constants ----------------------------------
 
@@ -54,7 +51,7 @@ class SearchService implements Service {
      */
     public static final List<String> TYPE_ORDER = [
         'organization', 'person', 'quote', 'salesOrder', 'invoice', 'dunning',
-        'creditMemo', 'purchaseInvoice', 'product', 'work', 'call', 'note',
+        'creditMemo', 'purchaseInvoice', 'product', 'work', 'phoneCall', 'note',
         'calendarEvent', 'project', 'helpdesk', 'ticket', 'user', 'boilerplate'
     ].asImmutable()
 

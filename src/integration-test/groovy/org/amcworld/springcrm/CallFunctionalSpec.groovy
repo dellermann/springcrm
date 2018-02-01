@@ -94,7 +94,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         'geplante Marketing-Aktion' == fs1.row[0].htmlContent.find('strong').text()
 
         and: 'there is one Call object'
-        1 == Call.count()
+        1 == PhoneCall.count()
     }
 
     def 'Create phone call with errors'() {
@@ -124,7 +124,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         page.emptyList.check CallCreatePage, 'Anruf anlegen'
 
         and: 'no Call object has been created'
-        0 == Call.count()
+        0 == PhoneCall.count()
     }
 
     def 'Show phone call'() {
@@ -165,7 +165,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         page.checkToolbar 'call', call.id
 
         and: 'there is still one Call object'
-        1 == Call.count()
+        1 == PhoneCall.count()
     }
 
     def 'List phone calls'() {
@@ -203,7 +203,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         row.checkActionButtons 'call', call.id
 
         and: 'there is still one Call object'
-        1 == Call.count()
+        1 == PhoneCall.count()
     }
 
     def 'Edit phone call successfully'() {
@@ -273,7 +273,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         'geplanten' == fs1.row[0].htmlContent.find('em').text()
 
         and: 'there is still one Call object'
-        1 == Call.count()
+        1 == PhoneCall.count()
     }
 
     def 'Edit phone call with errors'() {
@@ -308,7 +308,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         1 == tr.size()
 
         and: 'there is one Call object'
-        1 == Call.count()
+        1 == PhoneCall.count()
     }
 
     def 'Delete phone call really'() {
@@ -329,7 +329,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         page.emptyList.check CallCreatePage, 'Anruf anlegen'
 
         and: 'there is no Call object'
-        0 == Call.count()
+        0 == PhoneCall.count()
     }
 
     def 'Delete phone call but cancel'() {
@@ -348,6 +348,6 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         browser.isAt CallListPage
 
         and: 'there is still one Call object'
-        1 == Call.count()
+        1 == PhoneCall.count()
     }
 }

@@ -26,7 +26,7 @@ import spock.lang.Specification
 
 
 class ViewTagLibSpec extends Specification
-    implements TagLibUnitTest<ViewTagLibSpec>
+    implements TagLibUnitTest<ViewTagLib>
 {
 
     //-- Feature methods ------------------------

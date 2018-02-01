@@ -30,38 +30,36 @@ class WorkSpec extends Specification implements DomainUnitTest<Work> {
 
     def 'Creating an empty item initializes the properties'() {
         when: 'I create an empty work'
-        def s = new Work()
+        def work = new Work()
 
         then: 'the properties are initialized properly'
-        'S' == s.type
-        null == s.category
+        'S' == work.type
+        null == work.category
     }
 
     def 'Copy an empty instance using constructor'() {
         given: 'an empty work'
-        def s1 = new Work()
+        def w1 = new Work()
 
         when: 'I copy the work using the constructor'
-        def s2 = new Work(s1)
+        def w2 = new Work(w1)
 
         then: 'the properties are set properly'
-        s1.type == s2.type
-        null == s2.category
+        w1.type == w2.type
+        null == w2.category
     }
 
     def 'Copy a work using constructor'() {
         given: 'a work with various properties'
-        def s1 = new Work(
-            category: new WorkCategory()
-        )
+        def w1 = new Work(category: new WorkCategory())
 
         when: 'I copy the work using the constructor'
-        def s2 = new Work(s1)
+        def w2 = new Work(w1)
 
         then: 'some properties are the equal'
-        s1.type == s2.type
+        w1.type == w2.type
 
         and: 'some instances are the same'
-        s1.category.is s2.category
+        w1.category.is w2.category
     }
 }

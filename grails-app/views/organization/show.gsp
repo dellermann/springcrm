@@ -27,10 +27,10 @@
       ]">
       <content tag="actionMenu">
         <li role="menuitem">
-          <g:link controller="call" action="create"
+          <g:link controller="phoneCall" action="create"
             params="['organization.id': organization?.id, returnUrl: url()]">
             <g:message code="default.create.label"
-              args="[message(code: 'call.label')]"/>
+              args="[message(code: 'phoneCall.label')]"/>
           </g:link>
         </li>
         <g:if test="${organization.client}">
@@ -204,7 +204,7 @@
       <g:ifModuleAllowed modules="CALL">
       <g:applyLayout name="remoteList"
         model="[
-          controller: 'call', createParams: [
+          controller: 'phoneCall', createParams: [
             'organization.id': organization.id, returnUrl: url()
           ]
         ]"/>

@@ -41,13 +41,13 @@ class SeqNumberStoreInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'save'                || true
+        'phoneCall'         | 'save'                || true
         'organization'      | 'save'                || true
         'user'              | 'save'                || true
     }
@@ -133,7 +133,7 @@ class SeqNumberStoreInterceptorSpec extends Specification
         interceptor.seqNumberService = Mock(SeqNumberService)
 
         and: 'a model'
-        interceptor.model = [callInstance: new Call()]
+        interceptor.model = [callInstance: new PhoneCall()]
 
         when: 'I call the interceptor'
         interceptor.after()

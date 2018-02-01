@@ -20,13 +20,21 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DataTest
 import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
 class CommonViewDataInterceptorSpec extends Specification
-    implements InterceptorUnitTest<CommonViewDataInterceptor>
+    implements InterceptorUnitTest<CommonViewDataInterceptor>, DataTest
 {
+
+    //-- Fixture methods ------------------------
+
+    void setup() {
+        mockDomains Config, TaxRate
+    }
+
 
     //-- Feature methods ------------------------
 

@@ -271,7 +271,6 @@ class BoilerplateSpec extends Specification
         s       || v
         null    || false
         ''      || false
-        '  \t ' || false
         'a'     || true
         'abc'   || true
         'a  x ' || true

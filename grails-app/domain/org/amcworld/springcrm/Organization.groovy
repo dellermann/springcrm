@@ -74,10 +74,10 @@ class Organization implements NumberedDomain {
     }
     static embedded = ['billingAddr', 'shippingAddr']
     static hasMany = [
-        persons: Person, calls: Call, noteEntries: Note, quotes: Quote,
+        persons    : Person, calls: PhoneCall, noteEntries: Note, quotes: Quote,
         salesOrders: SalesOrder, invoices: Invoice, creditMemos: CreditMemo,
-        dunnings: Dunning, purchaseInvoices: PurchaseInvoice,
-        projects: Project, calendarEvents: CalendarEvent, helpdesks: Helpdesk
+        dunnings   : Dunning, purchaseInvoices: PurchaseInvoice,
+        projects   : Project, calendarEvents: CalendarEvent, helpdesks: Helpdesk
     ]
     static mapping = {
         sort 'name'

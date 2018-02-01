@@ -41,7 +41,7 @@ class InvoicingItemsInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'quote'             | null                  || false
         'salesOrder'        | null                  || false
         'invoice'           | null                  || false
@@ -50,7 +50,7 @@ class InvoicingItemsInterceptorSpec extends Specification
         'purchaseInvoice'   | null                  || false
         'product'           | null                  || false
         'work'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'quote'             | 'index'               || false
         'salesOrder'        | 'index'               || false
         'invoice'           | 'index'               || false
@@ -59,7 +59,7 @@ class InvoicingItemsInterceptorSpec extends Specification
         'purchaseInvoice'   | 'index'               || false
         'product'           | 'index'               || false
         'work'              | 'index'               || false
-        'call'              | 'create'              || false
+        'phoneCall'         | 'create'              || false
         'quote'             | 'create'              || true
         'salesOrder'        | 'create'              || true
         'invoice'           | 'create'              || true
@@ -68,7 +68,7 @@ class InvoicingItemsInterceptorSpec extends Specification
         'purchaseInvoice'   | 'create'              || true
         'product'           | 'create'              || true
         'work'              | 'create'              || true
-        'call'              | 'edit'                || false
+        'phoneCall'         | 'edit'                || false
         'quote'             | 'edit'                || true
         'salesOrder'        | 'edit'                || true
         'invoice'           | 'edit'                || true
@@ -77,7 +77,7 @@ class InvoicingItemsInterceptorSpec extends Specification
         'purchaseInvoice'   | 'edit'                || true
         'product'           | 'edit'                || true
         'work'              | 'edit'                || true
-        'call'              | 'copy'                || false
+        'phoneCall'         | 'copy'                || false
         'quote'             | 'copy'                || true
         'salesOrder'        | 'copy'                || true
         'invoice'           | 'copy'                || true
@@ -86,7 +86,7 @@ class InvoicingItemsInterceptorSpec extends Specification
         'purchaseInvoice'   | 'copy'                || true
         'product'           | 'copy'                || true
         'work'              | 'copy'                || true
-        'call'              | 'save'                || false
+        'phoneCall'         | 'save'                || false
         'quote'             | 'save'                || true
         'salesOrder'        | 'save'                || true
         'invoice'           | 'save'                || true
@@ -95,7 +95,7 @@ class InvoicingItemsInterceptorSpec extends Specification
         'purchaseInvoice'   | 'save'                || true
         'product'           | 'save'                || true
         'work'              | 'save'                || true
-        'call'              | 'update'              || false
+        'phoneCall'         | 'update'              || false
         'quote'             | 'update'              || true
         'salesOrder'        | 'update'              || true
         'invoice'           | 'update'              || true

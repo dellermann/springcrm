@@ -85,7 +85,7 @@
           </a>
           <ul id="menu-office" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_CALL"><li role="menuitem"><g:link controller="call"><g:message code="call.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_CALL"><li role="menuitem"><g:link controller="phoneCall"><g:message code="phoneCall.plural"/></g:link></li></sec:ifAnyGranted>
             <li class="divider" role="presentation"></li>
             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_DOCUMENT"><li role="menuitem"><g:link controller="document"><g:message code="document.plural"/></g:link></li></sec:ifAnyGranted>
             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_NOTE"><li role="menuitem"><g:link controller="note"><g:message code="note.plural"/></g:link></li></sec:ifAnyGranted>

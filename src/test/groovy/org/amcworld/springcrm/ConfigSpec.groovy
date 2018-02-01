@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
@@ -28,380 +29,176 @@ class ConfigSpec extends Specification implements DomainUnitTest<Config> {
 
     //-- Feature methods ------------------------
 
-    def 'Convert to Date'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
+    void 'Equals is null-safe'() {
+        given: 'an instance'
+        def config = new Config()
 
-        and: 'a Date object without milliseconds'
-        /*
-         * The milliseconds part must be set to zero because otherwise the
-         * converted Date is not comparable.  The reason for this is that the
-         * formatted date string doesn't contain milliseconds.
-         */
-        def d = new Date()
-        d = new Date(((int) (d.time / 1000L)) * 1000L)
-
-        when: 'I use a pre-converted date string'
-        c.value = d.toString()
-
-        then: 'I can convert it to a Date object'
-        d == c.toType(Date)
-
-        when: 'I set a valid date string'
-        c.value = 'Thu Jan 09 10:52:34 CET 2014'
-
-        then: 'I can convert it to a Date object'
-        def cal = new GregorianCalendar(2014, Calendar.JANUARY, 9, 10, 52, 34)
-        cal.time == c.toType(Date)
-
-        when: 'I set an empty string'
-        c.value = ''
-
-        then: 'I get a null value'
-        null == c.toType(Date)
-
-        when: 'I unset the value'
-        c.value = null
-
-        then: 'I get a null value'
-        null == c.toType(Date)
+        expect:
+        null != config
+        config != null
+        !config.equals(null)
     }
 
-    def 'Convert to Calendar'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
+    void 'Instances of other types are always unequal'() {
+        given: 'an instance'
+        def config = new Config()
 
-        and: 'a Calendar object without milliseconds'
-        /*
-         * The milliseconds part must be set to zero because otherwise the
-         * converted Calendar is not comparable.  The reason for this is that
-         * the formatted date string doesn't contain milliseconds.
-         */
-        def cal = new GregorianCalendar()
-        cal[Calendar.MILLISECOND] = 0
-
-        when: 'I use a pre-converted date string'
-        c.value = cal.time.toString()
-
-        then: 'I can convert it to a Calendar object'
-        cal == c.toType(Calendar)
-
-        when: 'I set a valid date string'
-        c.value = 'Thu Jan 09 10:52:34 CET 2014'
-
-        then: 'I can convert it to a Calendar object'
-        new GregorianCalendar(2014, Calendar.JANUARY, 9, 10, 52, 34) == c.toType(Calendar)
-
-        when: 'I set an empty string'
-        c.value = ''
-
-        then: 'I get a null value'
-        null == c.toType(Calendar)
-
-        when: 'I unset the value'
-        c.value = null
-
-        then: 'I get a null value'
-        null == c.toType(Calendar)
+        expect:
+        config != 'foo'
+        config != 45
+        config != 45.3
+        config != new Date()
     }
 
-    def 'Convert to Boolean'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
+    void 'Not persisted instances are equal'() {
+        given: 'three instances without ID'
+        def c1 = new Config(value: 'Value 1')
+        def c2 = new Config(value: 'Value 2')
+        def c3 = new Config(value: 'Value 3')
 
-        when:
-        c.value = v
+        expect: 'equals() is reflexive'
+        c1 == c1
+        c2 == c2
+        c3 == c3
 
-        then:
-        b == c.toType(Boolean)
+        and: 'all instances are equal and equals() is symmetric'
+        c1 == c2
+        c2 == c1
+        c2 == c3
+        c3 == c2
+
+        and: 'equals() is transitive'
+        c1 == c3
+        c3 == c1
+    }
+
+    void 'Persisted instances are equal if they have the same ID'() {
+        given: 'three instances with same ID'
+        def id = new ObjectId()
+        def c1 = new Config(value: 'Value 1')
+        c1.id = id
+        def c2 = new Config(value: 'Value 2')
+        c2.id = id
+        def c3 = new Config(value: 'Value 3')
+        c3.id = id
+
+        expect: 'equals() is reflexive'
+        c1 == c1
+        c2 == c2
+        c3 == c3
+
+        and: 'all instances are equal and equals() is symmetric'
+        c1 == c2
+        c2 == c1
+        c2 == c3
+        c3 == c2
+
+        and: 'equals() is transitive'
+        c1 == c3
+        c3 == c1
+    }
+
+    void 'Persisted instances are unequal if they have the different ID'() {
+        given: 'three instances with different IDs'
+        def c1 = new Config(value: 'Value 1')
+        c1.id = new ObjectId()
+        def c2 = new Config(value: 'Value 1')
+        c2.id = new ObjectId()
+        def c3 = new Config(value: 'Value 1')
+        c3.id = new ObjectId()
+
+        expect: 'equals() is reflexive'
+        c1 == c1
+        c2 == c2
+        c3 == c3
+
+        and: 'all instances are unequal and equals() is symmetric'
+        c1 != c2
+        c2 != c1
+        c2 != c3
+        c3 != c2
+
+        and: 'equals() is transitive'
+        c1 != c3
+        c3 != c1
+    }
+
+    void 'Can compute hash code of an empty instance'() {
+        given: 'an empty instance'
+        def config = new Config()
+
+        expect:
+        3937i == config.hashCode()
+    }
+
+    void 'Can compute hash code of a not persisted instance'() {
+        given: 'an empty instance'
+        def config = new Config(value: 'foo')
+
+        expect:
+        3937i == config.hashCode()
+    }
+
+    void 'Hash codes are consistent'() {
+        given: 'an instance'
+        def id = new ObjectId()
+        def config = new Config(value: 'foo')
+        config.id = id
+
+        when: 'I compute the hash code'
+        int h = config.hashCode()
+
+        then: 'the hash code remains consistent'
+        for (int j = 0; j < 500; j++) {
+            config = new Config(value: 'foo')
+            config.id = id
+            h == config.hashCode()
+        }
+    }
+
+    void 'Equal instances produce the same hash code'() {
+        given: 'three instances with same ID'
+        def id = new ObjectId()
+        def c1 = new Config(value: 'Value 1')
+        c1.id = id
+        def c2 = new Config(value: 'Value 2')
+        c2.id = id
+        def c3 = new Config(value: 'Value 3')
+        c3.id = id
+
+        expect:
+        c1.hashCode() == c2.hashCode()
+        c2.hashCode() == c3.hashCode()
+    }
+
+    void 'Different instances produce different hash codes'() {
+        given: 'three instances with different properties'
+        def c1 = new Config(value: 'Value 1')
+        c1.id = new ObjectId()
+        def c2 = new Config(value: 'Value 1')
+        c2.id = new ObjectId()
+        def c3 = new Config(value: 'Value 1')
+        c3.id = new ObjectId()
+
+        expect:
+        c1.hashCode() != c2.hashCode()
+        c2.hashCode() != c3.hashCode()
+    }
+
+    void 'Can convert to string'(String value, String e) {
+        given: 'an instance'
+        def config = new Config(value: value)
+
+        expect:
+        e == config.toString()
 
         where:
-        v       | b
-        null    | null
-        ''      | false
-        'false' | false
-        'true'  | true
-        'xyz'   | false
-        'FALSE' | false
-        'TRUE'  | true
-        'FaLsE' | false
-        'TrUe'  | true
-    }
-
-    def 'Convert to an integer type'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
-
-        when: 'I set a valid numeric string'
-        c.value = v
-
-        then: 'I can convert it to an integer type'
-        i == c.toType(Integer)
-        i as Long == c.toType(Long)
-        i as BigInteger == c.toType(BigInteger)
-
-        where:
-        v       | i
-        null    | null
-        '0'     | 0
-        '0000'  | 0
-        '1'     | 1
-        '20474' | 20474
-        '-963'  | -963
-    }
-
-    def 'Convert an invalid integer string'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
-
-        when: 'I set an empty string and convert it'
-        c.value = ''
-        c.toType(Integer)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set an blank string and convert it'
-        c.value = '  '
-        c.toType(Integer)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set a numeric but decimal string and convert it'
-        c.value = '1.5'
-        c.toType(Integer)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set a non-numeric string and convert it'
-        c.value = 'abc'
-        c.toType(Integer)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set a partially numeric string and convert it'
-        c.value = '1ab'
-        c.toType(Integer)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-    }
-
-    def 'Convert to a decimal type'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
-
-        when: 'I set a valid numeric string'
-        c.value = v
-
-        then: 'I can convert it to an integer type'
-        ((Float) d) == c.toType(Float)
-        ((Double) d) == c.toType(Double)
-        d == c.toType(BigDecimal)
-
-        where:
-        v       | d
-        null    | null
-        '0'     | 0
-        '0000'  | 0
-        '0.394' | 0.394
-        '0.5'   | 0.5
-        '1'     | 1
-        '1.05'  | 1.05
-        '20474' | 20474
-        '-963'  | -963
-        '-963.1'| -963.1
-    }
-
-    def 'Convert an invalid decimal string'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
-
-        when: 'I set an empty string and convert it'
-        c.value = ''
-        c.toType(Double)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set an blank string and convert it'
-        c.value = '  '
-        c.toType(Double)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set a numeric string with wrong notation and convert it'
-        c.value = '1,5'
-        c.toType(Double)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set a non-numeric string and convert it'
-        c.value = 'abc'
-        c.toType(Double)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-
-        when: 'I set a partially numeric string and convert it'
-        c.value = '1ab'
-        c.toType(Double)
-
-        then: 'I get a NumberFormatException'
-        thrown(NumberFormatException)
-    }
-
-    def 'Convert to string'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
-
-        when: 'I set a valid string'
-        c.value = v
-
-        then: 'I can convert it to a string'
-        s == c.toString()
-
-        where:
-        v           | s
-        null        | null
-        ''          | ''
-        '  '        | '  '
-        ' \t \r'    | ' \t \r'
-        'foo'       | 'foo'
-        'BaR'       | 'BaR'
-    }
-
-    def 'Test for equality'() {
-        given: 'two equal configuration objects'
-        def c1 = new Config(name: 'foo', value: 'bar')
-        def c2 = new Config(name: 'foo', value: 'bar')
-
-        when: 'I compare both these objects'
-        boolean b = c1 == c2
-
-        then: 'they are equal'
-        b
-
-        when: 'I change the value of the second object and compare'
-        c2.value = 'whee'
-        b = c1 == c2
-
-        then: 'they are equal'
-        b
-    }
-
-    def 'Test for inequality'() {
-        given: 'two inequal configuration objects'
-        def c1 = new Config(name: 'foo', value: 'bar')
-        def c2 = new Config(name: 'whee', value: 'baz')
-
-        when: 'I compare both these objects'
-        boolean b = c1 == c2
-
-        then: 'they are not equal'
-        !b
-
-        when: 'I change the value of the second object and compare'
-        c2.value = 'bar'
-        b = c1 == c2
-
-        then: 'they are not equal'
-        !b
-
-        when: 'I compare to null'
-        boolean b1 = c1 == null
-        boolean b2 = null == c2
-
-        then: 'they are not equal'
-        !b1
-        !b2
-
-        when: 'I compare to another type'
-        b = c1 == 'foo'
-
-        then: 'they are not equal'
-        !b
-    }
-
-    def 'Compute hash code'() {
-        when: 'I use a configuration object'
-        def c = new Config(name: n, value: v)
-
-        then: 'I get a valid hash code'
-        n.hashCode() == c.hashCode()
-
-        where:
-        n           | v
-        ''          | null
-        ''          | ''
-        ''          | 'foo'
-        ''          | 'bar'
-        ''          | '5'
-        ''          | '5.7'
-        ''          | 'true'
-        'foo'       | ''
-        'foo'       | 'foo'
-        'foo'       | 'bar'
-        'foo'       | '5'
-        'foo'       | '5.7'
-        'foo'       | 'true'
-    }
-
-    def 'Compute hash code of invalid configuration object'() {
-        when: 'I use a configuration object without name'
-        def c = new Config(value: v)
-
-        and: 'I fixed hash code'
-        def h = ''.hashCode()
-
-        then: 'I get a valid hash code'
-        h == c.hashCode()
-
-        where:
-        v << [null, '', 'foo', 'bar', '5', '5.7', 'true']
-    }
-
-    def 'String representation'() {
-        given: 'a configuration object'
-        def c = new Config(name: 'foo')
-
-        when: 'I set a valid string'
-        c.value = v
-
-        then: 'I get a valid string representation'
-        s == c.toString()
-
-        where:
-        v           | s
-        null        | null
-        ''          | ''
-        '  '        | '  '
-        ' \t \r'    | ' \t \r'
-        'foo'       | 'foo'
-        'BaR'       | 'BaR'
-    }
-
-    def 'Name constraints'() {
-        when:
-        def c = new Config(name: name)
-        c.validate()
-
-        then:
-        !valid == c.hasErrors()
-
-        where:
-        name        | valid
-        null        | false
-        ''          | false
-        ' '         | false
-        '      '    | false
-        '  \t \n '  | false
-        'foo'       | true
-        'any name'  | true
+        value       || e
+        null        || null
+        ''          || null
+        '  '        || null
+        ' \t \r'    || null
+        'foo'       || 'foo'
+        'BaR'       || 'BaR'
     }
 }

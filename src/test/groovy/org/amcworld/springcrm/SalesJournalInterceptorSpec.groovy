@@ -58,20 +58,20 @@ class SalesJournalInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'report'            | null                  || false
-        'call'              | 'show'                || false
+        'phoneCall'         | 'show'                || false
         'organization'      | 'show'                || false
         'report'            | 'show'                || false
-        'call'              | 'sales-journal'       || false
+        'phoneCall'         | 'sales-journal'       || false
         'organization'      | 'sales-journal'       || false
         'report'            | 'sales-journal'       || true
     }
 
     void 'All interceptor methods return true'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         expect:
         interceptor.after()

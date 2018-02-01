@@ -24,7 +24,6 @@ import static java.math.BigDecimal.ZERO
 
 import groovy.transform.EqualsAndHashCode
 import org.bson.types.ObjectId
-import org.grails.datastore.gorm.GormEntity
 
 
 /**
@@ -35,7 +34,7 @@ import org.grails.datastore.gorm.GormEntity
  * @since   1.3
  */
 @EqualsAndHashCode(includes = ['id'])
-class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
+class SalesItem implements NumberedDomain {
 
     //-- Class fields ---------------------------
 
@@ -63,7 +62,7 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
     }
     static mapping = {
         description type: 'text'
-        name index: 'name'
+        name index: true
         sort 'number'
     }
     static transients = ['total']
@@ -154,19 +153,19 @@ class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
     /**
      * Creates a sales item using the data of the given sales item.
      *
-     * @param si    the given sales item
+     * @param item  the given sales item
      */
-    SalesItem(SalesItem si) {
-        name = si.name
-        quantity = si.quantity
-        unit = si.unit
-        unitPrice = si.unitPrice
-        taxRate = si.taxRate
-        purchasePrice = si.purchasePrice
-        salesStart = si.salesStart ? new Date(si.salesStart.time) : null
-        salesEnd = si.salesEnd ? new Date(si.salesEnd.time) : null
-        description = si.description
-        pricing = si.pricing
+    SalesItem(SalesItem item) {
+        name = item.name
+        quantity = item.quantity
+        unit = item.unit
+        unitPrice = item.unitPrice
+        taxRate = item.taxRate
+        purchasePrice = item.purchasePrice
+        salesStart = item.salesStart ? new Date(item.salesStart.time) : null
+        salesEnd = item.salesEnd ? new Date(item.salesEnd.time) : null
+        description = item.description
+        pricing = item.pricing
     }
 
 

@@ -34,7 +34,7 @@ class ListInterceptorSpec extends Specification
         String a, boolean b
     ) {
         when: 'I use a particular request'
-        withRequest controller: 'Call', action: a
+        withRequest controller: 'PhoneCall', action: a
 
         then: 'the interceptor does match or not'
         b == interceptor.doesMatch()

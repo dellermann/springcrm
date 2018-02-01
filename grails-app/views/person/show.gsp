@@ -7,13 +7,13 @@
     <g:applyLayout name="show" model="[instance: person]">
       <content tag="actionMenu">
         <li role="menuitem">
-          <g:link controller="call" action="create"
+          <g:link controller="phoneCall" action="create"
             params="[
               'person.id': person?.id,
               'organization.id': person?.organization?.id, returnUrl: url()
             ]">
             <g:message code="default.create.label"
-              args="[message(code: 'call.label')]"/>
+              args="[message(code: 'phoneCall.label')]"/>
           </g:link>
         </li>
         <li role="menuitem">
@@ -172,7 +172,7 @@
       <g:ifModuleAllowed modules="CALL">
       <g:applyLayout name="remoteList"
         model="[
-          controller: 'call', createParams: [
+          controller: 'phoneCall', createParams: [
             'person.id': person.id,
             'organization.id': person?.organization?.id,
             returnUrl: url()

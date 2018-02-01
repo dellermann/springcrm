@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
@@ -82,8 +83,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I copy the user using the constructor'
@@ -154,82 +154,6 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         ' John \t ' || ' Smith\t '  || 'John Smith'
     }
 
-    def 'Obtain raw user settings'() {
-        given: 'a user'
-        def u1 = new User(
-            username: 'jsmith',
-            password: 'abcd',
-            firstName: 'John',
-            lastName: 'Smith',
-            phone: '+49 30 1234567',
-            phoneHome: '+49 30 9876543',
-            mobile: '+49 172 3456789',
-            fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
-        )
-        u1.save()
-
-        and: 'another user'
-        def u2 = new User(
-            username: 'bwayne',
-            password: 'qxyz',
-            firstName: 'Barbra',
-            lastName: 'Wayne',
-            phone: '+49 30 4040404',
-            phoneHome: '+49 30 5050505',
-            mobile: '+49 172 7070707',
-            fax: '+49 30 4040405',
-            email: 'b.wayne@example.com',
-//            admin: false
-        )
-        u2.save()
-
-        and: 'various settings for both the users'
-        def us1 = new UserSetting(user: u1, name: 'foo', value: 'bar')
-        def us2 = new UserSetting(user: u1, name: 'whee', value: 'buzz')
-        def us3 = new UserSetting(user: u2, name: 'order', value: 'asc')
-        us1.save()
-        us2.save()
-        us3.save()
-
-        when: 'I obtain the settings of the first user'
-        List<UserSetting> l1 = u1.rawSettings
-
-        then: 'I get two settings'
-        null != l1
-        2 == l1.size()
-        for (UserSetting us : l1) {
-            if (us.name == 'foo') {
-                'bar' == us.value
-            } else {
-                'buzz' == us.value
-            }
-            u1 == us.user
-        }
-
-        when: 'I obtain the settings of another user'
-        List<UserSetting> l2 = u2.rawSettings
-
-        then: 'I get one setting'
-        null != l2
-        1 == l2.size()
-        'order' == l2[0].name
-        'asc' == l2[0].value
-        u2 == l2[0].user
-    }
-
-    def 'Cannot set raw settings'() {
-        given: 'a user'
-        def u = new User()
-
-        when: 'I try to set the raw settings'
-        u.rawSettings = []
-
-        then: 'I get an exception'
-        thrown ReadOnlyPropertyException
-    }
-
     def 'Equals is null-safe'() {
         given: 'a user'
         def u = new User()
@@ -276,11 +200,11 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
     def 'Persisted instances are equal if they have the same ID'() {
         given: 'three instances with different IDs but same name'
         def u1 = new User(username: 'jsmith')
-        u1.id = 7403L
+        u1.id = new ObjectId()
         def u2 = new User(username: 'jsmith')
-        u2.id = 7404L
+        u2.id = new ObjectId()
         def u3 = new User(username: 'jsmith')
-        u3.id = 8473L
+        u3.id = new ObjectId()
 
         expect: 'equals() is reflexive'
         u1 == u1
@@ -300,12 +224,13 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Persisted instances are unequal if they have the different ID'() {
         given: 'three instances with same IDs but different names'
+        def id = new ObjectId()
         def u1 = new User(username: 'jsmith')
-        u1.id = 7403L
+        u1.id = id
         def u2 = new User(username: 'bwayne')
-        u2.id = 7403L
+        u2.id = id
         def u3 = new User(username: 'mdoe')
-        u3.id = 7403L
+        u3.id = id
 
         expect: 'equals() is reflexive'
         u1 == u1
@@ -328,7 +253,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         def u = new User()
 
         expect:
-        0i == u.hashCode()
+        3937i == u.hashCode()
     }
 
     def 'Can compute hash code of a not persisted instance'() {
@@ -336,33 +261,34 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         def u = new User(username: 'jsmith')
 
         expect:
-        'jsmith'.hashCode() == u.hashCode()
+        -1150716614i == u.hashCode()
     }
 
     def 'Hash codes are consistent'() {
         given: 'an instance with ID'
-        def u = new User(username: 'jsmith')
-        u.id = 7403L
+        def id = new ObjectId()
+        def user = new User(username: 'jsmith')
+        user.id = id
 
         when: 'I compute the hash code'
-        int h = u.hashCode()
+        int h = user.hashCode()
 
         then: 'the hash code remains consistent'
         for (int j = 0; j < 500; j++) {
-            u = new User(username: 'bwayne')
-            u.id = 7403L
-            h == u.hashCode()
+            user = new User(username: 'bwayne')
+            user.id = id
+            h == user.hashCode()
         }
     }
 
     def 'Equal instances produce the same hash code'() {
         given: 'three instances with different IDs but same names'
         def u1 = new User(username: 'jsmith')
-        u1.id = 7403L
+        u1.id = new ObjectId()
         def u2 = new User(username: 'jsmith')
-        u2.id = 7404L
+        u2.id = new ObjectId()
         def u3 = new User(username: 'jsmith')
-        u3.id = 8473L
+        u3.id = new ObjectId()
 
         expect:
         u1.hashCode() == u2.hashCode()
@@ -371,12 +297,13 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Different instances produce different hash codes'() {
         given: 'three instances with same IDs but different names'
+        def id = new ObjectId()
         def u1 = new User(username: 'jsmith')
-        u1.id = 7403L
+        u1.id = id
         def u2 = new User(username: 'bwayne')
-        u2.id = 7403L
+        u2.id = id
         def u3 = new User(username: 'mdoe')
-        u3.id = 7403L
+        u3.id = id
 
         expect:
         u1.hashCode() != u2.hashCode()
@@ -430,9 +357,9 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         ' John \t ' || ' Smith\t '  || 'John Smith'
     }
 
-    def 'User name must not be blank'(String un, boolean v) {
+    def 'Username must not be blank'(String name, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -440,22 +367,19 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the user name'
-        u.username = un
+        user.username = name
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
-        un      || v
+        name    || v
         null    || false
         ''      || false
-        '   '   || false
-        ' \t  ' || false
         'a'     || true
         ' abc ' || true
         '    x' || true
@@ -508,7 +432,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Password must not be blank'(String p, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             firstName: 'John',
             lastName: 'Smith',
@@ -516,22 +440,19 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the password'
-        u.password = p
+        user.password = p
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         p       || v
         null    || false
         ''      || false
-        '   '   || false
-        ' \t  ' || false
         'a'     || true
         ' abc ' || true
         '    x' || true
@@ -540,7 +461,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'First name must not be blank'(String fn, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             password: 'abcd',
             lastName: 'Smith',
@@ -548,22 +469,19 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the first name'
-        u.firstName = fn
+        user.firstName = fn
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         fn      || v
         null    || false
         ''      || false
-        '   '   || false
-        ' \t  ' || false
         'a'     || true
         ' abc ' || true
         '    x' || true
@@ -572,7 +490,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Last name must not be blank'(String ln, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -580,22 +498,19 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the last name'
-        u.lastName = ln
+        user.lastName = ln
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         ln      || v
         null    || false
         ''      || false
-        '   '   || false
-        ' \t  ' || false
         'a'     || true
         ' abc ' || true
         '    x' || true
@@ -604,7 +519,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Office phone number must not exceed length'(String p, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -612,15 +527,14 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the phone number'
-        u.phone = p
+        user.phone = p
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         p           || v
@@ -637,7 +551,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Home phone number must not exceed length'(String p, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -645,15 +559,14 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phone: '+49 30 1234567',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the phone number'
-        u.phoneHome = p
+        user.phoneHome = p
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         p           || v
@@ -670,7 +583,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Mobile phone number must not exceed length'(String m, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -678,15 +591,14 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phone: '+49 30 1234567',
             phoneHome: '+49 30 9876543',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the mobile phone number'
-        u.mobile = m
+        user.mobile = m
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         m           || v
@@ -703,7 +615,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'Fax number must not exceed length'(String f, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -711,15 +623,14 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phone: '+49 30 1234567',
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
 
         when: 'I set the fax number'
-        u.fax = f
+        user.fax = f
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         f           || v
@@ -736,7 +647,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
 
     def 'E-mail must not be blank and must be valid'(String e, boolean v) {
         given: 'a quite valid user'
-        def u = new User(
+        def user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -744,15 +655,14 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phone: '+49 30 1234567',
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
-            fax: '+49 30 1234568',
-//            admin: true
+            fax: '+49 30 1234568'
         )
 
         when: 'I set the e-mail'
-        u.email = e
+        user.email = e
 
         then: 'the instance is valid or not'
-        v == u.validate()
+        v == user.validate()
 
         where:
         e                       || v

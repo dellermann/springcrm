@@ -51,10 +51,10 @@ class OrganizationControllerSpec extends Specification
 
         then: 'the model is correctly created'
         null != model.organization
-        ((byte) 1) == model.organization.recType
-        'My Organization ltd.' == model.organization.name
+        org.recType == model.organization.recType
+        org.name == model.organization.name
         0i == model.organization.number
-        '+1 47 304503033' == model.organization.phone
+        org.phone == model.organization.phone
 
         and: 'the view is correctly set'
         'create' == view
@@ -73,8 +73,8 @@ class OrganizationControllerSpec extends Specification
 
         then: 'the model is correctly created'
         null != model.organization
-        ((byte) 1) == model.organization.recType
-        'My Organization ltd.' == model.organization.name
+        params.recType == model.organization.recType
+        params.name == model.organization.name
     }
 
     void 'The delete action deletes an instance if it exists'() {
@@ -321,7 +321,7 @@ class OrganizationControllerSpec extends Specification
         controller.getTermOfPayment null
 
         then: 'the model is correct'
-        1 * configService.getInteger('termOfPayment') >> null
+        1 * configService.getInteger('termOfPayment', 14i) >> 14i
         0 * service.get(_)
         14i == model.termOfPayment
 
@@ -329,7 +329,7 @@ class OrganizationControllerSpec extends Specification
         controller.getTermOfPayment null
 
         then: 'the model is correct'
-        1 * configService.getInteger('termOfPayment') >> 28i
+        1 * configService.getInteger('termOfPayment', 14i) >> 28i
         0 * service.get(_)
         28i == model.termOfPayment
 
@@ -338,7 +338,7 @@ class OrganizationControllerSpec extends Specification
         controller.getTermOfPayment new ObjectId().toString()
 
         then: 'the model is correct'
-        1 * configService.getInteger('termOfPayment') >> 28i
+        1 * configService.getInteger('termOfPayment', 14i) >> 28i
         0 * service.get(org.id)
         28i == model.termOfPayment
 
@@ -347,7 +347,7 @@ class OrganizationControllerSpec extends Specification
         controller.getTermOfPayment org.id.toString()
 
         then: 'the model is correct'
-        1 * configService.getInteger('termOfPayment') >> 28i
+        1 * configService.getInteger('termOfPayment', 14i) >> 28i
         1 * service.get(org.id) >> org
         28i == model.termOfPayment
 
@@ -357,7 +357,7 @@ class OrganizationControllerSpec extends Specification
         controller.getTermOfPayment org.id.toString()
 
         then: 'the model is correct'
-        1 * configService.getInteger('termOfPayment') >> 28i
+        1 * configService.getInteger('termOfPayment', 14i) >> 28i
         1 * service.get(org.id) >> org
         21i == model.termOfPayment
     }

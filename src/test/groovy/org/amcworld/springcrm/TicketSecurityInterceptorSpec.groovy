@@ -44,19 +44,19 @@ class TicketSecurityInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'helpdesk'          | null                  || false
         'ticket'            | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'helpdesk'          | 'index'               || false
         'ticket'            | 'index'               || false
-        'call'              | 'frontend'            || false
+        'phoneCall'         | 'frontend'            || false
         'organization'      | 'frontend'            || false
         'helpdesk'          | 'frontend'            || false
         'ticket'            | 'frontend'            || true
-        'call'              | 'frontendSave'        || false
+        'phoneCall'         | 'frontendSave'        || false
         'organization'      | 'frontendSave'        || false
         'helpdesk'          | 'frontendSave'        || false
         'ticket'            | 'frontendSave'        || true

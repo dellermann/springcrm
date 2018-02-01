@@ -24,6 +24,14 @@ import grails.gorm.services.Service
 import org.bson.types.ObjectId
 
 
+/**
+ * The class {@code WorkService} contains methods for working with services
+ * (works).
+ *
+ * @author  Daniel Ellermann
+ * @version 3.0
+ * @since   1.3
+ */
 @Service(Work)
 interface WorkService {
 

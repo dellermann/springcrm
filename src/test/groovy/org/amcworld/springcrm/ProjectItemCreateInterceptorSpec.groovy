@@ -41,13 +41,13 @@ class ProjectItemCreateInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'save'                || true
+        'phoneCall'         | 'save'                || true
         'organization'      | 'save'                || true
         'user'              | 'save'                || true
     }
@@ -60,7 +60,7 @@ class ProjectItemCreateInterceptorSpec extends Specification
 
     def 'No instance does not create project item'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'I call the interceptor'
         interceptor.after()
@@ -80,7 +80,7 @@ class ProjectItemCreateInterceptorSpec extends Specification
 
     def 'No entity does not create project item'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a request attribute which is no entity'
         request.callInstance = 'bar'
@@ -94,10 +94,10 @@ class ProjectItemCreateInterceptorSpec extends Specification
 
     def 'No project does not create project item'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a request attribute which is no entity'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
 
         when: 'I call the interceptor'
         interceptor.after()
@@ -108,10 +108,10 @@ class ProjectItemCreateInterceptorSpec extends Specification
 
     def 'No project phase does not create project item'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a request attribute which is no entity'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
 
         and: 'some parameters'
         params.project = 5
@@ -128,10 +128,10 @@ class ProjectItemCreateInterceptorSpec extends Specification
         def p = makeProject()
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a request attribute which is no entity'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
 
         and: 'some parameters'
         params.project = p.id + 1
@@ -149,10 +149,10 @@ class ProjectItemCreateInterceptorSpec extends Specification
         def p = makeProject()
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a request attribute which is no entity'
-        def call = new Call(subject: 'Phone call')
+        def call = new PhoneCall(subject: 'Phone call')
         call.id = 453
         request.callInstance = call
 
@@ -173,7 +173,7 @@ class ProjectItemCreateInterceptorSpec extends Specification
         and: 'the project item data are correct'
         ProjectItem item = pNew.items.first()
         ProjectPhase.quote == item.phase
-        'call' == item.controller
+        'phoneCall' == item.controller
         453L == item.itemId
         'Phone call' == item.title
     }

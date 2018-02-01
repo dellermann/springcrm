@@ -1,7 +1,7 @@
 /*
  * SelectorViewInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import groovy.transform.CompileStatic
  * depending on the {@code view} parameter.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
@@ -42,7 +42,7 @@ class SelectorViewInterceptor implements Interceptor {
      */
     SelectorViewInterceptor() {
         match(
-            controller: ~/(calendarEvent|call|creditMemo|dunning|invoice|note|product|purchaseInvoice|quote|salesOrder|work)/,
+            controller: ~/(calendarEvent|phoneCall|creditMemo|dunning|invoice|note|product|purchaseInvoice|quote|salesOrder|work)/,
             action: 'index'
         )
     }

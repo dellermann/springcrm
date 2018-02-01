@@ -41,25 +41,25 @@ class LruRecordInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'show'                || true
+        'phoneCall'         | 'show'                || true
         'organization'      | 'show'                || true
         'user'              | 'show'                || true
-        'call'              | 'edit'                || true
+        'phoneCall'         | 'edit'                || true
         'organization'      | 'edit'                || true
         'user'              | 'edit'                || true
-        'call'              | 'save'                || true
+        'phoneCall'         | 'save'                || true
         'organization'      | 'save'                || true
         'user'              | 'save'                || true
-        'call'              | 'update'              || true
+        'phoneCall'         | 'update'              || true
         'organization'      | 'update'              || true
         'user'              | 'update'              || true
-        'call'              | 'updatePayment'       || true
+        'phoneCall'         | 'updatePayment'       || true
         'organization'      | 'updatePayment'       || true
         'user'              | 'updatePayment'       || true
     }
@@ -109,7 +109,7 @@ class LruRecordInterceptorSpec extends Specification
         0 * interceptor.lruService.recordItem(_, _)
 
         when: 'I use a wrong instance name and call the interceptor'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         interceptor.model = [noteInstance: new Note()]
         interceptor.after()
 
@@ -122,10 +122,10 @@ class LruRecordInterceptorSpec extends Specification
         interceptor.lruService = Mock(LruService)
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a model with an instance without ID'
-        interceptor.model = [callInstance: new Call()]
+        interceptor.model = [callInstance: new PhoneCall()]
 
         when: 'I call the interceptor'
         interceptor.after()
@@ -139,10 +139,10 @@ class LruRecordInterceptorSpec extends Specification
         interceptor.lruService = Mock(LruService)
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'an instance with errors'
-        def call = new Call()
+        def call = new PhoneCall()
         call.validate()
 
         and: 'a model with an invalid instance name'
@@ -160,13 +160,13 @@ class LruRecordInterceptorSpec extends Specification
         interceptor.lruService = Mock(LruService)
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'an instance with errors'
-        def call = new Call(
-            subject: 'Phone call',
-            type: CallType.incoming,
-            status: CallStatus.completed
+        def call = new PhoneCall(
+            subject: 'Phone phoneCall',
+            type: PhoneCallType.INCOMING,
+            status: PhoneCallStatus.COMPLETED
         )
         call.save failOnError: true
 
@@ -177,6 +177,6 @@ class LruRecordInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'no LRU item is recorded'
-        1 * interceptor.lruService.recordItem('call', call)
+        1 * interceptor.lruService.recordItem('phoneCall', call)
     }
 }

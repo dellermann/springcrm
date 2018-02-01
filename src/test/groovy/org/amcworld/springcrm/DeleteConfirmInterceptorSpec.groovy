@@ -41,13 +41,13 @@ class DeleteConfirmInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'delete'              || true
+        'phoneCall'         | 'delete'              || true
         'organization'      | 'delete'              || true
         'user'              | 'delete'              || true
     }
@@ -59,7 +59,7 @@ class DeleteConfirmInterceptorSpec extends Specification
 
     def 'Without confirmed parameter the user is redirected'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'I call the interceptor'
         boolean res = interceptor.before()
@@ -68,12 +68,12 @@ class DeleteConfirmInterceptorSpec extends Specification
         !res
 
         and: 'the user is redirected'
-        '/call/index' == response.redirectedUrl
+        '/phoneCall/index' == response.redirectedUrl
     }
 
     def 'With confirmed parameter the action is called'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'the confirmed parameter'
         params.confirmed = 1

@@ -41,11 +41,11 @@ class SelectorViewInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
         'calendarEvent'     | 'create'              || false
-        'call'              | 'create'              || false
+        'phoneCall'         | 'create'              || false
         'creditMemo'        | 'create'              || false
         'dunning'           | 'create'              || false
         'invoice'           | 'create'              || false
@@ -56,7 +56,7 @@ class SelectorViewInterceptorSpec extends Specification
         'salesOrder'        | 'create'              || false
         'work'              | 'create'              || false
         'calendarEvent'     | 'index'               || true
-        'call'              | 'index'               || true
+        'phoneCall'         | 'index'               || true
         'creditMemo'        | 'index'               || true
         'dunning'           | 'index'               || true
         'invoice'           | 'index'               || true
@@ -98,15 +98,15 @@ class SelectorViewInterceptorSpec extends Specification
 
         where:
         c               | v                 || e
-        'call'          | null              || '/call/index'
+        'phoneCall'     | null              || '/phoneCall/index'
         'quote'         | null              || '/quote/index'
         'dunning'       | null              || '/dunning/index'
         'work'          | null              || '/work/index'
-        'call'          | 'selector'        || '/call/selectorList'
+        'phoneCall'     | 'selector'        || '/phoneCall/selectorList'
         'quote'         | 'selector'        || '/quote/selectorList'
         'dunning'       | 'selector'        || '/dunning/selectorList'
         'work'          | 'selector'        || '/work/selectorList'
-        'call'          | 'foo'             || '/call/index'
+        'phoneCall'     | 'foo'             || '/phoneCall/index'
         'quote'         | 'foo'             || '/quote/index'
         'dunning'       | 'foo'             || '/dunning/index'
         'work'          | 'foo'             || '/work/index'

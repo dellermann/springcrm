@@ -44,17 +44,17 @@ class DataFileFrontendSecurityInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'helpdesk'          | null                  || false
         'ticket'            | null                  || false
         'dataFile'          | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'helpdesk'          | 'index'               || false
         'ticket'            | 'index'               || false
         'dataFile'          | 'index'               || false
-        'call'              | 'frontend-load-file'  || false
+        'phoneCall'         | 'frontend-load-file'  || false
         'organization'      | 'frontend-load-file'  || false
         'helpdesk'          | 'frontend-load-file'  || false
         'ticket'            | 'frontend-load-file'  || false

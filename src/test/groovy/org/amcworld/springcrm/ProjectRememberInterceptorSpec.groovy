@@ -41,13 +41,13 @@ class ProjectRememberInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'create'              || true
+        'phoneCall'         | 'create'              || true
         'organization'      | 'create'              || true
         'user'              | 'create'              || true
     }

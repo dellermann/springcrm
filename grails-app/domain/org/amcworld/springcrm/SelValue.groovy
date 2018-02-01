@@ -1,7 +1,7 @@
 /*
  * SelValue.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -30,6 +31,7 @@ import org.grails.datastore.gorm.GormEntity
  * @author  Daniel Ellermann
  * @version 3.0
  */
+@EqualsAndHashCode(includes = ['id'])
 class SelValue implements GormEntity<SelValue> {
 
     //-- Class fields ---------------------------
@@ -65,16 +67,6 @@ class SelValue implements GormEntity<SelValue> {
 
 
     //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof SelValue && obj.id == id
-    }
-
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
 
     @Override
     String toString() {

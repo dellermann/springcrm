@@ -46,12 +46,12 @@ class PersonControllerSpec extends Specification
 
         then: 'the model is correctly created'
         null != model.person
-        'John' == model.person.firstName
-        'Doe' == model.person.lastName
+        person.firstName == model.person.firstName
+        person.lastName == model.person.lastName
         0i == model.person.number
-        '+1 47 304503033' == model.person.phone
-        'j.doe@example.com' == model.person.email1
-        'info@example.com' == model.person.email2
+        person.phone == model.person.phone
+        person.email1 == model.person.email1
+        person.email2 == model.person.email2
 
         and: 'the view is correctly set'
         'create' == view
@@ -70,11 +70,11 @@ class PersonControllerSpec extends Specification
 
         then: 'the model is correctly created'
         null != model.person
-        'John' == model.person.firstName
-        'Doe' == model.person.lastName
-        '+1 47 304503033' == model.person.phone
-        'j.doe@example.com' == model.person.email1
-        'info@example.com' == model.person.email2
+        params.firstName == model.person.firstName
+        params.lastName == model.person.lastName
+        params.phone == model.person.phone
+        params.email1 == model.person.email1
+        params.email2 == model.person.email2
     }
 
     void 'The delete action deletes an instance if it exists'() {
@@ -670,6 +670,11 @@ class PersonControllerSpec extends Specification
         UserService userService = Mock()
         userService.getCurrentUser() >> user
         controller.userService = userService
+
+        and: 'a user setting service instance'
+        UserSettingService userSettingService = Mock()
+        userSettingService.getString(user, 'excludeFromSync')
+        controller.userSettingService = userSettingService
 
         and: 'an additional ID'
         ObjectId anotherId = new ObjectId()

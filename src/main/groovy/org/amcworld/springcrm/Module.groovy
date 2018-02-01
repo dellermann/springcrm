@@ -38,7 +38,7 @@ enum Module {
 
     BOILERPLATE(['boilerplate']),
     CALENDAR(['calendarEvent', 'organization']),
-    CALL(['call']),
+    CALL(['phoneCall']),
     CONTACT(['organization', 'person']),
     CREDIT_MEMO(['organization', 'creditMemo']),
     DOCUMENT(['document']),

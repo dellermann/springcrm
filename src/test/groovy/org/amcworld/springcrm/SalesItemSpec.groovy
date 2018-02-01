@@ -21,41 +21,40 @@
 package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
-class SalesItemSpec extends Specification
-    implements DomainUnitTest<SalesItem>
-{
+class SalesItemSpec extends Specification implements DomainUnitTest<SalesItem> {
 
 	//-- Feature methods ------------------------
 
     def 'Creating an empty item initializes the properties'() {
-        when: 'I create an empty sales item'
-        def s = new SalesItem()
+        when: 'an empty sales item is created'
+        def item = new SalesItem()
 
         then: 'the properties are initialized properly'
-        0i == s.number
-        null == s.type
-        null == s.name
-        0.0 == s.quantity
-        null == s.unit
-        0.0 == s.unitPrice
-        null == s.taxRate
-        null == s.purchasePrice
-        null == s.salesStart
-        null == s.salesEnd
-        null == s.description
-        null == s.pricing
-        null == s.dateCreated
-        null == s.lastUpdated
+        0i == item.number
+        null == item.type
+        null == item.name
+        0.0 == item.quantity
+        null == item.unit
+        0.0 == item.unitPrice
+        null == item.taxRate
+        null == item.purchasePrice
+        null == item.salesStart
+        null == item.salesEnd
+        null == item.description
+        null == item.pricing
+        null == item.dateCreated
+        null == item.lastUpdated
     }
 
     def 'Copy an empty instance using constructor'() {
         given: 'an empty sales item'
         def s1 = new SalesItem()
 
-        when: 'I copy the sales item using the constructor'
+        when: 'the sales item is copied using the constructor'
         def s2 = new SalesItem(s1)
 
         then: 'the properties are set properly'
@@ -98,7 +97,7 @@ class SalesItemSpec extends Specification
             lastUpdated: new Date()
         )
 
-        when: 'I copy the sales item using the constructor'
+        when: 'the sales item is copied using the constructor'
         def s2 = new SalesItem(s1)
 
         then: 'some properties are the equal'
@@ -127,68 +126,58 @@ class SalesItemSpec extends Specification
 
     def 'Set decimal values to null converts them to zero'() {
         given: 'an empty sales item'
-        def s = new SalesItem()
+        def item = new SalesItem()
 
         when: 'I set the decimal values to null'
-        s.quantity = null
-        s.unitPrice = null
+        item.quantity = null
+        item.unitPrice = null
 
         then: 'all decimal values are never null'
-        0.0 == s.quantity
-        0.0 == s.unitPrice
+        0.0 == item.quantity
+        0.0 == item.unitPrice
 
         when: 'I create a sales item with null values'
-        s = new SalesItem(quantity: null, unitPrice: null)
+        item = new SalesItem(quantity: null, unitPrice: null)
 
         then: 'all decimal values are never null'
-        0.0 == s.quantity
-        0.0 == s.unitPrice
+        0.0 == item.quantity
+        0.0 == item.unitPrice
     }
-
-	def 'Get the full number'() {
-		given: 'a sales item with mocked sequence number service'
-		def s = new SalesItem()
-		s.seqNumberService = Mock(SeqNumberService)
-		s.seqNumberService.format(_, _) >> 'P-11332'
-
-		expect:
-		'P-11332' == s.fullNumber
-	}
 
     def 'Get the total price'(BigDecimal q, BigDecimal up) {
         when: 'I create a sales item with quantity and unit price'
-        def s = new SalesItem(quantity: q, unitPrice: up)
+        def item = new SalesItem(quantity: q, unitPrice: up)
 
         then: 'I get a valid total price'
-        ((q ?: 0.0) * (up ?: 0.0)) == s.getTotal()
+        ((q ?: 0.0) * (up ?: 0.0)) == item.getTotal()
 
         where:
-        q           | up
-        null        | null
-        null        | 0.0
-        null        | 0.00000001
-        null        | 4.475
-        null        | 23874.45
-        0.0         | null
-        0.0         | 0.0
-        0.0         | 0.00000001
-        0.0         | 4.475
-        0.0         | 23874.45
-        0.00000001  | null
-        0.00000001  | 0.0
-        0.00000001  | 0.00000001
-        0.00000001  | 4.475
-        0.00000001  | 23874.45
-        4.475       | null
-        4.475       | 0.0
-        4.475       | 0.00000001
-        4.475       | 4.475
-        4.475       | 23874.45
-        23874.45    | null
-        23874.45    | 0.0
-        23874.45    | 0.00000001
-        23874.45    | 4.475
-        23874.45    | 23874.45
+        q           || up
+        null        || null
+        null        || 0.0
+        null        || 0.00000001
+        null        || 4.475
+        null        || 23874.45
+        0.0         || null
+        0.0         || 0.0
+        0.0         || 0.00000001
+        0.0         || 4.475
+        0.0         || 23874.45
+        0.00000001  || null
+        0.00000001  || 0.0
+        0.00000001  || 0.00000001
+        0.00000001  || 4.475
+        0.00000001  || 23874.45
+        4.475       || null
+        4.475       || 0.0
+        4.475       || 0.00000001
+        4.475       || 4.475
+        4.475       || 23874.45
+        23874.45    || null
+        23874.45    || 0.0
+        23874.45    || 0.00000001
+        23874.45    || 4.475
+        23874.45    || 23874.45
     }
 
     def 'Get the unit price without pricing'(BigDecimal up) {
@@ -254,38 +243,25 @@ class SalesItemSpec extends Specification
         up << [17.98, 45.0, 407.74, 588.06, 1123.09, 34093.47112]
     }
 
-	def 'Number is computed before insert'() {
-        given: 'a mocked sequence number service'
-		def s = new SalesItem()
-		s.seqNumberService = Mock(SeqNumberService)
-		s.seqNumberService.nextNumber(_) >> 92283
-
-		when: 'I simulate calling save() in insert mode'
-		s.beforeInsert()
-
-		then: 'the sequence number must be set'
-		92283 == s.number
-	}
-
     def 'Equals is null-safe'() {
         given: 'a sales item'
-        def s = new SalesItem()
+        def item = new SalesItem()
 
         expect:
-        null != s
-        s != null
-        !s.equals(null)
+        null != item
+        item != null
+        !item.equals(null)
     }
 
     def 'Instances of other types are always unequal'() {
         given: 'a sales item'
-        def s = new SalesItem()
+        def item = new SalesItem()
 
         expect:
-        s != 'foo'
-        s != 45
-        s != 45.3
-        s != new Date()
+        item != 'foo'
+        item != 45
+        item != 45.3
+        item != new Date()
     }
 
     def 'Not persisted instances are equal'() {
@@ -312,12 +288,13 @@ class SalesItemSpec extends Specification
 
     def 'Persisted instances are equal if they have the same ID'() {
         given: 'three instances with different properties but same IDs'
+        def id = new ObjectId()
         def s1 = new SalesItem(name: '8" pipe')
-        s1.id = 7403L
+        s1.id = id
         def s2 = new SalesItem(name: '10" pipe')
-        s2.id = 7403L
+        s2.id = id
         def s3 = new SalesItem(name: '12" pipe')
-        s3.id = 7403L
+        s3.id = id
 
         expect: 'equals() is reflexive'
         s1 == s1
@@ -338,11 +315,11 @@ class SalesItemSpec extends Specification
     def 'Persisted instances are unequal if they have the different ID'() {
         given: 'three instances with same properties but different IDs'
         def s1 = new SalesItem(name: '8" pipe')
-        s1.id = 7403L
+        s1.id = new ObjectId()
         def s2 = new SalesItem(name: '8" pipe')
-        s2.id = 7404L
+        s2.id = new ObjectId()
         def s3 = new SalesItem(name: '8" pipe')
-        s3.id = 8473L
+        s3.id = new ObjectId()
 
         expect: 'equals() is reflexive'
         s1 == s1
@@ -362,44 +339,46 @@ class SalesItemSpec extends Specification
 
     def 'Can compute hash code of an empty instance'() {
         given: 'an empty instance'
-        def i = new SalesItem()
+        def item = new SalesItem()
 
         expect:
-        0i == i.hashCode()
+        3937i == item.hashCode()
     }
 
     def 'Can compute hash code of a not persisted instance'() {
         given: 'an instance without ID'
-        def i = new SalesItem(name: '8" pipe')
+        def item = new SalesItem(name: '8" pipe')
 
         expect:
-        0i == i.hashCode()
+        3937i == item.hashCode()
     }
 
     def 'Hash codes are consistent'() {
         given: 'an instance with ID'
-        def i = new SalesItem(name: '8" pipe')
-        i.id = 7403L
+        def id = new ObjectId()
+        def item = new SalesItem(name: '8" pipe')
+        item.id = id
 
         when: 'I compute the hash code'
-        int h = i.hashCode()
+        int h = item.hashCode()
 
         then: 'the hash code remains consistent'
         for (int j = 0; j < 500; j++) {
-            i = new SalesItem(name: '10" pipe')
-            i.id = 7403L
-            h == i.hashCode()
+            item = new SalesItem(name: '10" pipe')
+            item.id = id
+            h == item.hashCode()
         }
     }
 
     def 'Equal instances produce the same hash code'() {
         given: 'three instances with different properties but same IDs'
+        def id = new ObjectId()
         def s1 = new SalesItem(name: '8" pipe')
-        s1.id = 7403L
+        s1.id = id
         def s2 = new SalesItem(name: '10" pipe')
-        s2.id = 7403L
+        s2.id = id
         def s3 = new SalesItem(name: '12" pipe')
-        s3.id = 7403L
+        s3.id = id
 
         expect:
         s1.hashCode() == s2.hashCode()
@@ -409,11 +388,11 @@ class SalesItemSpec extends Specification
     def 'Different instances produce different hash codes'() {
         given: 'three instances with same properties but different IDs'
         def s1 = new SalesItem(name: '8" pipe')
-        s1.id = 7403L
+        s1.id = new ObjectId()
         def s2 = new SalesItem(name: '8" pipe')
-        s2.id = 7404L
+        s2.id = new ObjectId()
         def s3 = new SalesItem(name: '8" pipe')
-        s3.id = 8473L
+        s3.id = new ObjectId()
 
         expect:
         s1.hashCode() != s2.hashCode()
@@ -421,14 +400,11 @@ class SalesItemSpec extends Specification
     }
 
     def 'Can convert to string'(String name) {
-        given: 'an empty item'
-        def s = new SalesItem()
+        given: 'an instance'
+        def item = new SalesItem(name: name)
 
-        when: 'I set the name'
-        s.name = name
-
-        then: 'I get a valid string representation'
-        (name ?: '') == s.toString()
+        expect:
+        (name?.trim() ?: '') == item.toString()
 
         where:
         name << [null, '', '   ', 'a', 'abc', '  foo  ', 'Services']
@@ -436,7 +412,7 @@ class SalesItemSpec extends Specification
 
     def 'Type must not be blank and max one char long'(String t, boolean v) {
         given: 'a quite valid sales item'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             name: '8" pipe',
             quantity: 45,
@@ -445,16 +421,15 @@ class SalesItemSpec extends Specification
         )
 
         when: 'I set the type'
-        s.type = t
+        item.type = t
 
         then: 'the instance is valid or not'
-        v == s.validate()
+        v == item.validate()
 
         where:
         t       || v
         null    || false
         ''      || false
-        '  \t ' || false
         'a'     || true
         'S'     || true
         'abc'   || false
@@ -464,7 +439,7 @@ class SalesItemSpec extends Specification
 
     def 'Name must not be blank'(String n, boolean v) {
         given: 'a quite valid sales item'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             type: 'S',
             quantity: 45,
@@ -473,16 +448,15 @@ class SalesItemSpec extends Specification
         )
 
         when: 'I set the name'
-        s.name = n
+        item.name = n
 
         then: 'the instance is valid or not'
-        v == s.validate()
+        v == item.validate()
 
         where:
         n       || v
         null    || false
         ''      || false
-        '  \t ' || false
         'a'     || true
         'abc'   || true
         'a  x ' || true
@@ -493,7 +467,7 @@ class SalesItemSpec extends Specification
                                                          boolean v)
     {
         given: 'a quite valid sales item with pricing'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             type: 'S',
             name: '8" pipe',
@@ -506,10 +480,10 @@ class SalesItemSpec extends Specification
         )
 
         when: 'I set the quantity'
-        s.quantity = q
+        item.quantity = q
 
         then: 'the instance is valid or not'
-        v == s.validate()
+        v == item.validate()
 
         where:
         q       || v
@@ -522,10 +496,11 @@ class SalesItemSpec extends Specification
         -450.31 || false
     }
 
-    def 'Quantity must be positive or zero if no pricing is available'(BigDecimal q, boolean v)
-    {
+    def 'Quantity must be positive or zero if no pricing is available'(
+        BigDecimal q, boolean v
+    ) {
         given: 'a quite valid sales item without pricing'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             type: 'S',
             name: '8" pipe',
@@ -534,10 +509,10 @@ class SalesItemSpec extends Specification
         )
 
         when: 'I set the quantity'
-        s.quantity = q
+        item.quantity = q
 
         then: 'the instance is valid or not'
-        v == s.validate()
+        v == item.validate()
 
         where:
         q       || v
@@ -552,7 +527,7 @@ class SalesItemSpec extends Specification
 
     def 'Unit must not be null if pricing available'() {
         given: 'a quite valid sales item with pricing'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             type: 'S',
             name: '8" pipe',
@@ -565,21 +540,21 @@ class SalesItemSpec extends Specification
         )
 
         when: 'I set the unit'
-        s.unit = new Unit()
+        item.unit = new Unit()
 
         then: 'the instance is valid'
-        s.validate()
+        item.validate()
 
         when: 'I unset the unit'
-        s.unit = null
+        item.unit = null
 
         then: 'the instance is not valid'
-        !s.validate()
+        !item.validate()
     }
 
     def 'Unit may be null if no pricing is available'() {
         given: 'a quite valid sales item with pricing'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             type: 'S',
             name: '8" pipe',
@@ -588,21 +563,21 @@ class SalesItemSpec extends Specification
         )
 
         when: 'I set the unit'
-        s.unit = new Unit()
+        item.unit = new Unit()
 
         then: 'the instance is valid'
-        s.validate()
+        item.validate()
 
         when: 'I unset the unit'
-        s.unit = null
+        item.unit = null
 
         then: 'the instance is valid'
-        s.validate()
+        item.validate()
     }
 
     def 'Unit price must be positive or zero'(BigDecimal up, boolean v) {
         given: 'a quite valid sales item without pricing'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             type: 'S',
             name: '8" pipe',
@@ -611,10 +586,10 @@ class SalesItemSpec extends Specification
         )
 
         when: 'I set the unit price'
-        s.unitPrice = up
+        item.unitPrice = up
 
         then: 'the instance is valid or not'
-        v == s.validate()
+        v == item.validate()
 
         where:
         up      || v
@@ -633,7 +608,7 @@ class SalesItemSpec extends Specification
         p.validate() >>> [true, false]
 
         and: 'a quite valid sales item with pricing'
-        def s = new SalesItem(
+        def item = new SalesItem(
             number: 39999,
             type: 'S',
             name: '8" pipe',
@@ -644,7 +619,7 @@ class SalesItemSpec extends Specification
         )
 
 		expect:
-        s.validate()
-        !s.validate()
+        item.validate()
+        !item.validate()
 	}
 }

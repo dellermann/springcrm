@@ -1,7 +1,7 @@
 #
-# call-form.coffee
+# phone-call-form.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -106,7 +106,4 @@ class CallFormPage
 
 #== Main ========================================
 
-new CallFormPage $('#call-form')
-
-# vim:set ts=2 sw=2 sts=2:
-
+new CallFormPage $('#phoneCall-form')

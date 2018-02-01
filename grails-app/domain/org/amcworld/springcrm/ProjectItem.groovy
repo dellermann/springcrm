@@ -1,7 +1,7 @@
 /*
  * ProjectItem.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,11 @@ package org.amcworld.springcrm
 
 
 /**
- * The class {@code ProjectItem} represents an item, such a task, call, notes,
- * quote, invoice etc. which belongs to a phase of a particular project.
+ * The class {@code ProjectItem} represents an item, such a task, phone call,
+ * notes, quote, invoice etc. which belongs to a phase of a particular project.
  *
  * @author	Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.3
  */
 class ProjectItem {

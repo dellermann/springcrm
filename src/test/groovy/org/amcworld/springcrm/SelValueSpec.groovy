@@ -135,7 +135,7 @@ class SelValueSpec extends Specification implements DomainUnitTest<SelValue> {
         def s = new SelValue()
 
         expect:
-        0i == s.hashCode()
+        3937i == s.hashCode()
     }
 
     def 'Can compute hash code of a not persisted instance'() {
@@ -143,7 +143,7 @@ class SelValueSpec extends Specification implements DomainUnitTest<SelValue> {
         def s = new SelValue(name: 'Mr.')
 
         expect:
-        0i == s.hashCode()
+        3937i == s.hashCode()
     }
 
     def 'Hash codes are consistent'() {
@@ -192,13 +192,13 @@ class SelValueSpec extends Specification implements DomainUnitTest<SelValue> {
 
     def 'Can convert to string'(String name) {
         given: 'an empty selection value'
-        def s = new SelValue()
+        def selValue = new SelValue()
 
         when: 'I set the name'
-        s.name = name
+        selValue.name = name
 
         then: 'I get a valid string representation'
-        (name ?: '') == s.toString()
+        (name ?: '') == selValue.toString()
 
         where:
         name << [null, '', '   ', 'a', 'abc', '  foo  ', 'Services']
@@ -206,19 +206,17 @@ class SelValueSpec extends Specification implements DomainUnitTest<SelValue> {
 
     def 'Name must not be blank'(String n, boolean v) {
         given: 'a quite valid selection value'
-        def s = new SelValue()
+        def selValue = new SelValue()
 
         when: 'I set the name'
-        s.name = n
+        selValue.name = n
 
         then: 'the instance is valid or not'
-        v == s.validate()
+        v == selValue.validate()
 
         where:
         n       || v
         null    || false
-        ''      || false
-        '  \t ' || false
         'a'     || true
         'abc'   || true
         'a  x ' || true

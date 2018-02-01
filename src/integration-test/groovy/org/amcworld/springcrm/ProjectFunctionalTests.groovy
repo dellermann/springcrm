@@ -171,8 +171,8 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
 
         checkProjectItems 0, [
             [
-                url: '/call/show/', icon: 'phone',
-                label: 'Bitte um Angebot', editUrl: '/call/edit'
+                url: '/phoneCall/show/', icon: 'phone',
+                label: 'Bitte um Angebot', editUrl: '/phoneCall/edit'
             ],
             [
                 url: '/note/show/', icon: 'pencil',
@@ -226,20 +226,20 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         dialog.findElement(By.xpath('./preceding-sibling::div/button')).click()
         wait.until(ExpectedConditions.invisibilityOfElementLocated(dlgBy))
 
-        createProjectItem 2, 7, '/call/create'
+        createProjectItem 2, 7, '/phoneCall/create'
         checkTitles 'Anruf anlegen', 'Anrufe', 'Neuer Anruf'
         assert 'Landschaftsbau Duvensee GbR' == getAutocompleteExValue('organization')
         assert 'Henry Brackmann' == getAutocompleteExValue('person')
         setInputValue 'subject', 'Mitteilung von Änderungswünschen'
         setInputValue 'start_date', '16.02.2013'
         setInputValue 'start_time', '14:30'
-        setInputValue 'status', 'completed'
+        setInputValue 'status', 'COMPLETED'
         submitForm getUrl('/project/show/')
 
         checkCurrentProjectPhase 2
         checkProjectItems 2, [
             [
-                url: '/call/show/', icon: 'phone',
+                url: '/phoneCall/show/', icon: 'phone',
                 label: 'Mitteilung von Änderungswünschen'
             ],
             [
@@ -247,7 +247,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
                 label: 'Werbekampagne Frühjahr 2013'
             ]
         ]
-        assert 2 == Call.count()
+        assert 2 == PhoneCall.count()
         assert 0 == CreditMemo.count()
         assert 0 == Dunning.count()
         assert 1 == Invoice.count()
@@ -289,7 +289,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         checkCurrentProjectPhase 2
         checkProjectItems 2, [
             [
-                url: '/call/show/', icon: 'phone',
+                url: '/phoneCall/show/', icon: 'phone',
                 label: 'Mitteilung von Änderungswünschen'
             ],
             [
@@ -301,7 +301,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
-        assert 2 == Call.count()
+        assert 2 == PhoneCall.count()
         assert 0 == CreditMemo.count()
         assert 0 == Dunning.count()
         assert 1 == Invoice.count()
@@ -325,7 +325,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
                 label: 'Auftragserteilung Werbekampagne Frühjahr 2013'
             ]
         ]
-        assert 2 == Call.count()
+        assert 2 == PhoneCall.count()
         assert 0 == CreditMemo.count()
         assert 0 == Dunning.count()
         assert 1 == Invoice.count()
@@ -376,7 +376,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
-        assert 2 == Call.count()
+        assert 2 == PhoneCall.count()
         assert 0 == CreditMemo.count()
         assert 0 == Dunning.count()
         assert 1 == Invoice.count()
@@ -433,7 +433,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
-        assert 2 == Call.count()
+        assert 2 == PhoneCall.count()
         assert 0 == CreditMemo.count()
         assert 0 == Dunning.count()
         assert 2 == Invoice.count()
@@ -487,7 +487,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
-        assert 2 == Call.count()
+        assert 2 == PhoneCall.count()
         assert 1 == CreditMemo.count()
         assert 0 == Dunning.count()
         assert 2 == Invoice.count()
@@ -534,7 +534,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
-        assert 2 == Call.count()
+        assert 2 == PhoneCall.count()
         assert 1 == CreditMemo.count()
         assert 1 == Dunning.count()
         assert 2 == Invoice.count()
@@ -553,11 +553,11 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         clickListItem 0, 1, '/project/show'
         checkTitles 'Projekt anzeigen', 'Projekte', 'Marketing-Aktion Frühjahr'
 
-        selectProjectItem 0, 'call'
+        selectProjectItem 0, 'phoneCall'
         checkCurrentProjectPhase 0
         checkProjectItems 0, [
             [
-                url: '/call/show/', icon: 'phone',
+                url: '/phoneCall/show/', icon: 'phone',
                 label: 'Bitte um Angebot'
             ]
         ]
@@ -566,7 +566,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 0
         checkProjectItems 0, [
             [
-                url: '/call/show/', icon: 'phone',
+                url: '/phoneCall/show/', icon: 'phone',
                 label: 'Bitte um Angebot'
             ],
             [
@@ -779,7 +779,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         items = getProjectItems(0)
         assert 1 == items.size()
         assert 4 == ProjectItem.count()
-        assert 1 == Call.count()
+        assert 1 == PhoneCall.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -791,7 +791,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         items = getProjectItems(0)
         assert 0 == items.size()
         assert 3 == ProjectItem.count()
-        assert 1 == Call.count()
+        assert 1 == PhoneCall.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -806,7 +806,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         items = getProjectItems(2)
         assert 0 == items.size()
         assert 2 == ProjectItem.count()
-        assert 1 == Call.count()
+        assert 1 == PhoneCall.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -821,7 +821,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         items = getProjectItems(4)
         assert 0 == items.size()
         assert 1 == ProjectItem.count()
-        assert 1 == Call.count()
+        assert 1 == PhoneCall.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -836,7 +836,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         items = getProjectItems(7)
         assert 0 == items.size()
         assert 0 == ProjectItem.count()
-        assert 1 == Call.count()
+        assert 1 == PhoneCall.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -858,7 +858,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
 
         assert 0 == Project.count()
         assert 0 == ProjectItem.count()
-        assert 1 == Call.count()
+        assert 1 == PhoneCall.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -874,7 +874,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
 
         assert 1 == Project.count()
         assert 5 == ProjectItem.count()
-        assert 1 == Call.count()
+        assert 1 == PhoneCall.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -1031,7 +1031,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         if (data.phoneCall) {
             project.addToItems(new ProjectItem(
                 phase: ProjectPhase.planning,
-                controller: 'call',
+                controller: 'phoneCall',
                 itemId: data.phoneCall.id,
                 title: data.phoneCall.toString()
             ))

@@ -244,10 +244,10 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         fieldSet = getFieldset(dataSheet, 8)
         assert fieldSet.getAttribute('class').contains('remote-list')
         assert param == fieldSet.getAttribute('data-load-params')
-        assert '/springcrm/call/list-embedded' == fieldSet.getAttribute('data-load-url')
+        assert '/springcrm/phoneCall/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Anrufe' == fieldSet.findElement(By.tagName('h3')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="buttons"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl("/call/create?person.id=${id}&organization.id=${organizationId}"))
+        assert link.getAttribute('href').startsWith(getUrl("/phoneCall/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Anruf anlegen' == link.text
         assert waitForEmptyRemoteList(8)
 
@@ -268,7 +268,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
         link = actions.findElement(By.xpath('li[1]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('href').startsWith(getUrl("/call/create?person.id=${id}&organization.id=${organizationId}"))
+        assert link.getAttribute('href').startsWith(getUrl("/phoneCall/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Anruf anlegen' == link.text
         link = actions.findElement(By.xpath('li[2]/a'))
         assert link.getAttribute('class').contains('button')

@@ -20,12 +20,14 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
 class InstallerDisabledInterceptorSpec extends Specification
-    implements InterceptorUnitTest<InstallerDisabledInterceptor>
+    implements InterceptorUnitTest<InstallerDisabledInterceptor>,
+        DomainUnitTest<Config>
 {
 
     //-- Feature methods ------------------------
@@ -41,13 +43,13 @@ class InstallerDisabledInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'install'           | null                  || true
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'install'           | 'index'               || true
-        'call'              | 'save'                || false
+        'phoneCall'         | 'save'                || false
         'organization'      | 'save'                || false
         'install'           | 'save'                || true
     }

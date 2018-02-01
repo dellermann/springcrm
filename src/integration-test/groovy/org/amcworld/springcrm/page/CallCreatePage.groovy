@@ -26,5 +26,5 @@ class CallCreatePage extends CallFormPage {
     //-- Class variables ------------------------
 
     static at = { title == 'Anruf anlegen' }
-    static url = 'call/create'
+    static url = 'phoneCall/create'
 }

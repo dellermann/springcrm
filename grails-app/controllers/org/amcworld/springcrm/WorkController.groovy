@@ -96,7 +96,7 @@ class WorkController {
     }
 
     def get(String id) {
-        respond workService.get(new ObjectId(id))
+        respond id == null ? null : workService.get(new ObjectId(id))
     }
 
     def index() {

@@ -34,7 +34,7 @@ class RedirectInterceptorSpec extends Specification
         String a, boolean b
     ) {
         when: 'I use a particular request'
-        withRequest controller: 'Call', action: a
+        withRequest controller: 'PhoneCall', action: a
 
         then: 'the interceptor does match or not'
         b == interceptor.doesMatch()
@@ -64,14 +64,14 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Configuration actions redirect if view is unset'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         when: 'I call the interceptor method'
         interceptor.after()
 
         then: 'a redirect to the index action has been set'
-        '/call/index' == response.redirectedUrl
+        '/phoneCall/index' == response.redirectedUrl
 
         where:
         a << ['saveSelValues', 'saveSeqNumbers', 'saveTaxRates']
@@ -79,7 +79,7 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Configuration actions return to URL if view is unset'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a return URL'
@@ -97,7 +97,7 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Configuration actions do not redirect if view is set'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a return URL'
@@ -118,7 +118,7 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Other actions do not redirect if domain is unset'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         when: 'I call the interceptor method'
@@ -133,7 +133,7 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Other actions do not redirect if a wrong domain is set'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain with an invalid name'
@@ -151,27 +151,27 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Delete action redirects'() {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = 'delete'
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         when: 'I call the interceptor method'
         interceptor.after()
 
         then: 'the user is redirected'
-        '/call/index' == response.redirectedUrl
+        '/phoneCall/index' == response.redirectedUrl
     }
 
     def 'Delete action redirects with parameters'() {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = 'delete'
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'redirect parameters'
@@ -181,16 +181,16 @@ class RedirectInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the user is redirected'
-        '/call/index?foo=bar&whee=1' == response.redirectedUrl
+        '/phoneCall/index?foo=bar&whee=1' == response.redirectedUrl
     }
 
     def 'Delete action returns to URL'() {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = 'delete'
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a return URL'
@@ -205,11 +205,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Delete action returns to URL ignoring parameters'() {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = 'delete'
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a return URL'
@@ -227,18 +227,18 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions redirect'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         when: 'I call the interceptor method'
         interceptor.after()
 
         then: 'the user is redirected'
-        '/call/edit/56' == response.redirectedUrl
+        '/phoneCall/edit/56' == response.redirectedUrl
 
         where:
         a << ['save', 'update', 'updatePayment']
@@ -246,11 +246,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions redirect with parameters'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'redirect parameters'
@@ -260,7 +260,7 @@ class RedirectInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the user is redirected'
-        '/call/edit/56?foo=bar&whee=1' == response.redirectedUrl
+        '/phoneCall/edit/56?foo=bar&whee=1' == response.redirectedUrl
 
         where:
         a << ['save', 'update', 'updatePayment']
@@ -268,11 +268,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions redirect with return URL'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a return URL'
@@ -282,7 +282,7 @@ class RedirectInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the user is returned'
-        '/call/edit/56?returnUrl=%2Forganization%2Fshow%2F3' == response.redirectedUrl
+        '/phoneCall/edit/56?returnUrl=%2Forganization%2Fshow%2F3' == response.redirectedUrl
 
         where:
         a << ['save', 'update', 'updatePayment']
@@ -290,11 +290,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions redirect with return URL and parameters'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a return URL'
@@ -307,7 +307,7 @@ class RedirectInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the user is returned'
-        '/call/edit/56?foo=bar&whee=1&returnUrl=%2Forganization%2Fshow%2F3' ==
+        '/phoneCall/edit/56?foo=bar&whee=1&returnUrl=%2Forganization%2Fshow%2F3' ==
             response.redirectedUrl
 
         where:
@@ -316,11 +316,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions redirect at close'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a close parameter'
@@ -330,7 +330,7 @@ class RedirectInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the user is redirected'
-        '/call/show/56' == response.redirectedUrl
+        '/phoneCall/show/56' == response.redirectedUrl
 
         where:
         a << ['save', 'update', 'updatePayment']
@@ -338,11 +338,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions redirect at close with parameters'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a close parameter'
@@ -355,7 +355,7 @@ class RedirectInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the user is redirected'
-        '/call/show/56?foo=bar&whee=1' == response.redirectedUrl
+        '/phoneCall/show/56?foo=bar&whee=1' == response.redirectedUrl
 
         where:
         a << ['save', 'update', 'updatePayment']
@@ -363,11 +363,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions return to URL at close'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a close parameter'
@@ -388,11 +388,11 @@ class RedirectInterceptorSpec extends Specification
 
     def 'Save actions return to URL at close ignoring parameters'(String a) {
         given: 'a particular controller and action'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
         webRequest.actionName = a
 
         and: 'a domain'
-        request.callInstance = new Call()
+        request.callInstance = new PhoneCall()
         request.callInstance.id = 56
 
         and: 'a close parameter'

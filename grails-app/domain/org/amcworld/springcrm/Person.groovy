@@ -77,9 +77,9 @@ class Person implements GormEntity<Person>, NumberedDomain {
     static belongsTo = [organization: Organization]
     static embedded = ['mailingAddr', 'otherAddr']
     static hasMany = [
-        calls: Call, noteEntries: Note, quotes: Quote, salesOrders: SalesOrder,
-        invoices: Invoice, creditMemos: CreditMemo, dunnings: Dunning,
-        projects: Project
+        calls: PhoneCall, noteEntries: Note, quotes: Quote,
+        salesOrders: SalesOrder, invoices: Invoice, creditMemos: CreditMemo,
+        dunnings: Dunning, projects: Project
     ]
     static mapping = {
         calls column: 'Person'

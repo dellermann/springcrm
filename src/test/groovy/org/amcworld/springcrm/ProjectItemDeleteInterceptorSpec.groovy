@@ -41,13 +41,13 @@ class ProjectItemDeleteInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'delete'              || true
+        'phoneCall'         | 'delete'              || true
         'organization'      | 'delete'              || true
         'user'              | 'delete'              || true
     }
@@ -63,7 +63,7 @@ class ProjectItemDeleteInterceptorSpec extends Specification
         makeProject()
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'I call the interceptor'
         interceptor.after()
@@ -77,7 +77,7 @@ class ProjectItemDeleteInterceptorSpec extends Specification
         makeProject()
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'an item ID'
         params.id = 456
@@ -94,7 +94,7 @@ class ProjectItemDeleteInterceptorSpec extends Specification
         def p = makeProject()
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'an item ID and a confirmed flag'
         params.id = 456
@@ -129,7 +129,7 @@ class ProjectItemDeleteInterceptorSpec extends Specification
 		)
         p.items = [
             new ProjectItem(
-                phase: ProjectPhase.planning, controller: 'call',
+                phase: ProjectPhase.planning, controller: 'phoneCall',
                 itemId: 456, title: 'Call to client', project: p
             ),
             new ProjectItem(
@@ -137,7 +137,7 @@ class ProjectItemDeleteInterceptorSpec extends Specification
                 itemId: 4730, title: 'Order #3', project: p
             ),
             new ProjectItem(
-                phase: ProjectPhase.implementation, controller: 'call',
+                phase: ProjectPhase.implementation, controller: 'phoneCall',
                 itemId: 456, title: 'Call to client', project: p
             )
         ]

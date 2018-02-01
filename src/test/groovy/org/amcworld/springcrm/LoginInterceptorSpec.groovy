@@ -47,43 +47,43 @@ class LoginInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || true
+        'phoneCall'         | null                  || true
         'organization'      | null                  || true
         'user'              | null                  || true
         'assets'            | null                  || false
         'help'              | null                  || false
         'install'           | null                  || false
-        'call'              | 'index'               || true
+        'phoneCall'         | 'index'               || true
         'organization'      | 'index'               || true
         'user'              | 'index'               || true
         'assets'            | 'index'               || false
         'help'              | 'index'               || false
         'install'           | 'index'               || false
-        'call'              | 'save'                || true
+        'phoneCall'         | 'save'                || true
         'organization'      | 'save'                || true
         'user'              | 'save'                || true
         'assets'            | 'save'                || false
         'help'              | 'save'                || false
         'install'           | 'save'                || false
-        'call'              | 'login'               || false
+        'phoneCall'         | 'login'               || false
         'organization'      | 'login'               || false
         'user'              | 'login'               || false
         'assets'            | 'login'               || false
         'help'              | 'login'               || false
         'install'           | 'login'               || false
-        'call'              | 'authenticate'        || false
+        'phoneCall'         | 'authenticate'        || false
         'organization'      | 'authenticate'        || false
         'user'              | 'authenticate'        || false
         'assets'            | 'authenticate'        || false
         'help'              | 'authenticate'        || false
         'install'           | 'authenticate'        || false
-        'call'              | 'frontend'            || false
+        'phoneCall'         | 'frontend'            || false
         'organization'      | 'frontend'            || false
         'user'              | 'frontend'            || false
         'assets'            | 'frontend'            || false
         'help'              | 'frontend'            || false
         'install'           | 'frontend'            || false
-        'call'              | 'frontendSave'        || false
+        'phoneCall'         | 'frontendSave'        || false
         'organization'      | 'frontendSave'        || false
         'user'              | 'frontendSave'        || false
         'assets'            | 'frontendSave'        || false

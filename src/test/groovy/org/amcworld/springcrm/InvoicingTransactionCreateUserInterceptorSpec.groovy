@@ -41,19 +41,19 @@ class InvoicingTransactionCreateUserInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'quote'             | null                  || false
         'salesOrder'        | null                  || false
         'invoice'           | null                  || false
         'creditMemo'        | null                  || false
         'dunning'           | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'quote'             | 'index'               || false
         'salesOrder'        | 'index'               || false
         'invoice'           | 'index'               || false
         'creditMemo'        | 'index'               || false
         'dunning'           | 'index'               || false
-        'call'              | 'create'              || false
+        'phoneCall'         | 'create'              || false
         'quote'             | 'create'              || true
         'salesOrder'        | 'create'              || true
         'invoice'           | 'create'              || true

@@ -60,7 +60,7 @@ class LoginInterceptor implements Interceptor {
      * installer if the application has not been initialized yet and redirects
      * to the login page if the user has no session.
      *
-     * @return  {@code true} to call the action of the controller;
+     * @return  {@code true} to phoneCall the action of the controller;
      *          {@code false} otherwise
      */
     boolean before() {

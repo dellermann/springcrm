@@ -41,13 +41,13 @@ class ProjectItemUpdateInterceptorSpec extends Specification
 
         where:
         c                   | a                     || b
-        'call'              | null                  || false
+        'phoneCall'         | null                  || false
         'organization'      | null                  || false
         'user'              | null                  || false
-        'call'              | 'index'               || false
+        'phoneCall'         | 'index'               || false
         'organization'      | 'index'               || false
         'user'              | 'index'               || false
-        'call'              | 'update'              || true
+        'phoneCall'         | 'update'              || true
         'organization'      | 'update'              || true
         'user'              | 'update'              || true
     }
@@ -60,7 +60,7 @@ class ProjectItemUpdateInterceptorSpec extends Specification
 
     def 'No instance does not update project item'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         when: 'I call the interceptor'
         interceptor.after()
@@ -80,7 +80,7 @@ class ProjectItemUpdateInterceptorSpec extends Specification
 
     def 'No entity does not update project item'() {
         given: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a request attribute which is no entity'
         request.callInstance = 'bar'
@@ -97,10 +97,10 @@ class ProjectItemUpdateInterceptorSpec extends Specification
         def p = makeProject()
 
         and: 'a controller name'
-        webRequest.controllerName = 'call'
+        webRequest.controllerName = 'phoneCall'
 
         and: 'a request attribute which is no entity'
-        def call = new Call(subject: 'Phone call')
+        def call = new PhoneCall(subject: 'Phone call')
         call.id = 456
         request.callInstance = call
 
@@ -113,7 +113,7 @@ class ProjectItemUpdateInterceptorSpec extends Specification
 
         and: 'two project items have been altered'
         ProjectItem.findAllByItemId(456).every {
-            it.controller == 'call' && it.title == 'Phone call'
+            it.controller == 'phoneCall' && it.title == 'Phone call'
         }
 
         and: 'one project item remained unchanged'
@@ -137,7 +137,7 @@ class ProjectItemUpdateInterceptorSpec extends Specification
 		)
         p.items = [
             new ProjectItem(
-                phase: ProjectPhase.planning, controller: 'call',
+                phase: ProjectPhase.planning, controller: 'phoneCall',
                 itemId: 456, title: 'Call to client', project: p
             ),
             new ProjectItem(
@@ -145,7 +145,7 @@ class ProjectItemUpdateInterceptorSpec extends Specification
                 itemId: 4730, title: 'Order #3', project: p
             ),
             new ProjectItem(
-                phase: ProjectPhase.implementation, controller: 'call',
+                phase: ProjectPhase.implementation, controller: 'phoneCall',
                 itemId: 456, title: 'Call to client', project: p
             )
         ]

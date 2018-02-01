@@ -1,7 +1,7 @@
 /*
  * GeneralFunctionalTestCase.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -352,8 +352,8 @@ abstract class GeneralFunctionalTestCase { //extends DbUnitTestCase {
      * performs an optional check for the given URL.  If the URL check is done
      * an numeric value is expected after the given URL (normally an ID) which
      * is returned.  So for example, if {@code expectedUrl} is set to
-     * {@code /call/show} a URL of {@code /call/show/n} is expected, where
-     * {@code n} is an number which in turn is returned.
+     * {@code /phoneCall/show} a URL of {@code /phoneCall/show/n} is expected,
+     * where {@code n} is an number which in turn is returned.
      *
      * @param rowIdx        the zero-based index of the row to click
      * @param colIdx        the zero-based index of the column to click
@@ -686,15 +686,15 @@ abstract class GeneralFunctionalTestCase { //extends DbUnitTestCase {
      * @param p     the person the phone call belongs to
      * @return      the prepared phone call
      */
-    protected Call prepareCall(Organization org, Person p) {
-        def call = new Call(
+    protected PhoneCall prepareCall(Organization org, Person p) {
+        def call = new PhoneCall(
             subject: 'Bitte um Angebot',
             start: new GregorianCalendar(2013, Calendar.FEBRUARY, 13, 9, 15, 0).time,
             organization: org,
             person: p,
             phone: '04543 31233',
-            type: CallType.incoming,
-            status: CallStatus.completed,
+            type: PhoneCallType.INCOMING,
+            status: PhoneCallStatus.COMPLETED,
             notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
         )
         call.save flush: true, failOnError: true
