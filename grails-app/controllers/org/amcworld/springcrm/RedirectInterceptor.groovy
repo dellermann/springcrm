@@ -1,7 +1,7 @@
 /*
  * RedirectInterceptor.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import org.grails.datastore.gorm.GormEntity
  * actions concerning parameter {@code redirectUrl}.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  * @since   2.2
  */
 @CompileStatic
@@ -42,7 +42,7 @@ class RedirectInterceptor implements Interceptor {
      * Creates a new instance of the interceptor.
      */
     RedirectInterceptor() {
-        match action: ~/(delete|save|saveSelValues|saveSeqNumbers|saveTaxRates|update|updatePayment)/
+        match action: ~/(delete|save|update|updatePayment)/
     }
 
 
@@ -57,27 +57,20 @@ class RedirectInterceptor implements Interceptor {
         Map<String, Object> args = [: ]
         String action = actionName
 
-        if (view == null
-            && (action == 'saveSelValues' || action == 'saveSeqNumbers'
-                || action == 'saveTaxRates'))
-        {
-            setActionOrUrl args, 'index'
-        } else {
-            GormEntity<?> inst = domainInstance
-            if (inst) {
-                args.params = request['redirectParams'] ?: [: ]
-                if (action == 'delete') {
-                    setActionOrUrl args, 'index'
+        GormEntity<?> inst = domainInstance
+        if (inst != null) {
+            args.params = request['redirectParams'] ?: [: ]
+            if (action == 'delete') {
+                setActionOrUrl args, 'index'
+            } else {
+                args.id = inst.ident()
+                if (params.close) {
+                    setActionOrUrl args, 'show'
                 } else {
-                    args.id = inst.ident()
-                    if (params.close) {
-                        setActionOrUrl args, 'show'
-                    } else {
-                        args.action = 'edit'
-                        String returnUrl = params.returnUrl
-                        if (returnUrl) {
-                            args.params['returnUrl'] = returnUrl
-                        }
+                    args.action = 'edit'
+                    String returnUrl = params.returnUrl
+                    if (returnUrl) {
+                        args.params['returnUrl'] = returnUrl
                     }
                 }
             }
@@ -101,7 +94,7 @@ class RedirectInterceptor implements Interceptor {
      *          been stored
      */
     private GormEntity<?> getDomainInstance() {
-        (GormEntity<?>) request["${controllerName}Instance"]
+        (GormEntity<?>) request[controllerName]
     }
 
     /**

@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import groovy.transform.EqualsAndHashCode
+import org.bson.types.ObjectId
 
 
 /**
@@ -39,9 +40,19 @@ class UserSetting {
         name blank: false, unique: 'user'
         value nullable: true
     }
+    static mapping = {
+        compoundIndex(
+            user: 1, name: 1, indexAttributes: [unique:true, dropDups:true]
+        )
+    }
 
 
     //-- Fields ---------------------------------
+
+    /**
+     * The ID of the user setting.
+     */
+    ObjectId id
 
     /**
      * The name of the user setting.

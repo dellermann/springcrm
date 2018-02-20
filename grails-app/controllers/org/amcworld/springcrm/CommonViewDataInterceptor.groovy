@@ -1,7 +1,7 @@
 /*
  * CommonViewDataInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import groovy.transform.CompileStatic
  * model of each view, if any.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
@@ -37,7 +37,8 @@ class CommonViewDataInterceptor implements Interceptor {
 
     //-- Fields ---------------------------------
 
-    int order = 10
+    int order = 10i
+    SelValueService selValueService
     UserService userService
 
 
@@ -61,20 +62,20 @@ class CommonViewDataInterceptor implements Interceptor {
      */
     boolean after() {
         if (model != null) {
-            Config.withNewSession {
-                Locale l = userService.currentLocale
-                model.locale = l.toString().replace('_', '-')
-                model.lang = l.language
-                model.currencySymbol = userService.currencySymbol
-                model.numFractionDigits = userService.numFractionDigits
-                model.numFractionDigitsExt = userService.numFractionDigitsExt
-                model.decimalSeparator = userService.decimalSeparator
-                model.groupingSeparator = userService.groupingSeparator
+//            Config.withNewSession {
+            Locale l = userService.currentLocale
+            model.locale = l.toString().replace('_', '-')
+            model.lang = l.language
+            model.currencySymbol = userService.currencySymbol
+            model.numFractionDigits = userService.numFractionDigits
+            model.numFractionDigitsExt = userService.numFractionDigitsExt
+            model.decimalSeparator = userService.decimalSeparator
+            model.groupingSeparator = userService.groupingSeparator
 
-                List<TaxRate> taxRates = TaxRate.list(sort: 'orderId')
-                model.taxRatesString =
-                    taxRates.collect { it.taxValue * 100 }.join ','
-            }
+            List<TaxRate> taxRates = selValueService.findAllByClass(TaxRate)
+            model.taxRatesString =
+                taxRates.collect { it.taxValue * 100 }.join ','
+//            }
         }
 
         true

@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import java.beans.Introspector
+import org.bson.types.ObjectId
 import org.grails.datastore.mapping.services.Service
 import spock.lang.Specification
 
@@ -163,6 +164,20 @@ class ConfigServiceSpec extends Specification
         '975397503' || 975397503
     }
 
+    void 'Can get MongoDB ID value'(ObjectId value) {
+        given:
+        def config = new Config(value: value?.toString())
+        config.id = 'a'
+        mockDomain Config, [config]
+        Config.count()      // use to persist instances
+
+        expect:
+        value == service.getObjectId('a')
+
+        where:
+        value << [null, new ObjectId()]
+    }
+
     void 'Can get string value'(String value, String s) {
         given:
         def config = new Config(value: value)
@@ -185,27 +200,69 @@ class ConfigServiceSpec extends Specification
         'foo'   || 'foo'
     }
 
+    void 'Load tenant data as object'() {
+        given: 'some tenant data'
+        def tenantData = makeTenantFixture()
+        mockDomain Config, tenantData.collect {
+            def config = new Config(value: it.value)
+            config.id = 'tenant' + it.key.capitalize()
+
+            config
+        }
+        Config.count()      // XXX needed to really persist objects
+
+        expect:
+        new Tenant(tenantData) == service.loadTenant()
+    }
+
+    void 'Load tenant data as map'() {
+        given: 'some tenant data'
+        def tenantData = makeTenantFixture()
+        mockDomain Config, tenantData.collect {
+            def config = new Config(value: it.value)
+            config.id = 'tenant' + it.key.capitalize()
+
+            config
+        }
+        Config.count()      // XXX needed to really persist objects
+
+        expect:
+        tenantData == service.loadTenantAsMap()
+    }
+
     void 'Can store configuration value'(Object value, String e) {
-        when:
+        when: 'the configuration is stored'
         Config config = service.store('a', value)
 
-        then:
+        then: 'the return value is correct'
         'a' == config.id
         e == config.value
 
-        and:
+        and: 'there is one configuration'
         1 == Config.count()
 
-        and:
-        Config c = Config.get('a')
-        null != c
-        'a' == c.id
-        e == c.value
+        and: 'that configuration has been correctly stored'
+        Config c1 = Config.get('a')
+        null != c1
+        'a' == c1.id
+        e == c1.value
+
+        when: 'the configuration is stored again'
+        service.store('a', 'new value')
+
+        then: 'the previous configuration has been overwritten'
+        1 == Config.count()
+
+        and: 'that configuration has been correctly overwritten'
+        Config c2 = Config.get('a')
+        null != c2
+        'a' == c2.id
+        'new value' == c2.value
 
         where:
         value           || e
         null            || null
-        ''              || null
+        ''              || ''
         false           || 'false'
         true            || 'true'
         'abcdef'        || 'abcdef'
@@ -214,8 +271,45 @@ class ConfigServiceSpec extends Specification
         35_495_453_731  || '35495453731'
     }
 
+    void 'Store tenant data'() {
+        given: 'some tenant data'
+        def tenantData = makeTenantFixture()
+        Tenant tenant = new Tenant(tenantData)
+
+        when: 'the tenant is stored'
+        service.storeTenant tenant
+
+        then: 'the configuration data have been stored correctly'
+        tenantData.size() == Config.countByIdLike('tenant%')
+        Config.findAllByIdLike('tenant%').each {
+            assert tenantData.remove(it.id.substring(6).uncapitalize()) ==
+                it.value
+        }
+    }
+
 
     //-- Public methods -------------------------
+
+    /**
+     * Creates a fixture with tenant data.
+     *
+     * @return  the tenant data
+     */
+    private static Map<String, String> makeTenantFixture() {
+        [
+            name: 'MyOrganization Ltd.',
+            street: '45, Park Ave.',
+            postalCode: 'NY-39344',
+            location: 'Santa Barbara',
+            phone: '+1 21 20404044',
+            fax: '+1 21 20404049',
+            email: 'info@myorganization.example',
+            website: 'www.myorganization.example',
+            bankName: 'YourBank',
+            bankCode: '123456789',
+            accountNumber: '987654321'
+        ]
+    }
 
     /*
      * XXX moved down from DataTest because line

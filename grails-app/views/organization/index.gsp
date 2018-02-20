@@ -1,3 +1,4 @@
+<%@ page import="com.mongodb.client.model.Filters" %>
 <%@ page import="org.amcworld.springcrm.Organization" %>
 
 <html>
@@ -27,22 +28,22 @@
         list: organizationList,
         type: 'organization'
       ]">
+      <g:set var="letterBarFilters" value="${
+        params.listType ? Filters.in('recType', [params.listType, 3]) : null
+      }"/>
       <div class="visible-xs">
         <g:letterBar params="[listType: params.listType]"
-          clazz="${Organization}" property="name"
-          where='${params.listType ? "o.recType in (${params.listType}, 3)" : ""}'
+          clazz="${Organization}" property="name" where="${letterBarFilters}"
           numLetters="5" separator="-"/>
       </div>
       <div class="visible-sm">
         <g:letterBar params="[listType: params.listType]"
-          clazz="${Organization}" property="name"
-          where='${params.listType ? "o.recType in (${params.listType}, 3)" : ""}'
+          clazz="${Organization}" property="name" where="${letterBarFilters}"
           numLetters="3"/>
       </div>
       <div class="hidden-xs hidden-sm">
         <g:letterBar params="[listType: params.listType]"
-          clazz="${Organization}" property="name"
-          where='${params.listType ? "o.recType in (${params.listType}, 3)" : ""}'/>
+          clazz="${Organization}" property="name" where="${letterBarFilters}"/>
       </div>
       <div class="table-responsive">
         <table class="table data-table">

@@ -38,13 +38,13 @@ class CommonViewDataInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         expect:
         interceptor.after()
         interceptor.before()
     }
 
-    def 'No model is not populated'() {
+    void 'No model is not populated'() {
         when: 'I call the interceptor'
         interceptor.before()
 
@@ -52,37 +52,33 @@ class CommonViewDataInterceptorSpec extends Specification
         null == interceptor.model
     }
 
-    def 'A model is populated by important data'() {
-
-        /*
-         * IMPLEMENTATION NOTES:
-         * Testing tax rates does not work because they are loaded in a
-         * different Hibernate session.  It seems that is not supported yet.
-         */
-
-        given: 'a user service'
+    void 'A model is populated by important data'() {
+        given: 'a user service instance'
         UserService service = Mock()
-        service.currentLocale >> Locale.GERMANY
-        service.currencySymbol >> '€'
-        service.numFractionDigits >> 3
-        service.numFractionDigitsExt >> 2
-        service.decimalSeparator >> ','
-        service.groupingSeparator >> '.'
+        1 * service.currentLocale >> Locale.GERMANY
+        1 * service.currencySymbol >> '€'
+        1 * service.numFractionDigits >> 3
+        1 * service.numFractionDigitsExt >> 2
+        1 * service.decimalSeparator >> ','
+        1 * service.groupingSeparator >> '.'
         interceptor.userService = service
 
-//        and: 'some tax rates'
-//        new TaxRate(name: '7 %', taxValue: 0.07, orderId: 2)
-//            .save failOnError: true
-//        new TaxRate(name: '19 %', taxValue: 0.19, orderId: 1)
-//            .save failOnError: true
+        and: 'some tax rates'
+        def tr1 = new TaxRate(name: '7 %', taxValue: 0.07, orderId: 2i)
+        def tr2 = new TaxRate(name: '19 %', taxValue: 0.19, orderId: 1i)
+
+        and: 'a selection value service instance'
+        SelValueService selValueService = Mock()
+        1 * selValueService.findAllByClass(TaxRate) >> [tr2, tr1]
+        interceptor.selValueService = selValueService
 
         and: 'an empty model'
         interceptor.model = [: ]
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is executed'
         interceptor.after()
 
-        then: 'the model is populated correctly'
+        then: 'the model is correctly populated'
         'de-DE' == interceptor.model.locale
         'de' == interceptor.model.lang
         '€' == interceptor.model.currencySymbol
@@ -90,6 +86,6 @@ class CommonViewDataInterceptorSpec extends Specification
         2 == interceptor.model.numFractionDigitsExt
         ',' == interceptor.model.decimalSeparator
         '.' == interceptor.model.groupingSeparator
-//        '19.00,7.00' == interceptor.model.taxRatesString
+        '19.00,7.00' == interceptor.model.taxRatesString
     }
 }

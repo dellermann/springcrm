@@ -21,7 +21,6 @@
 package org.amcworld.springcrm
 
 import groovy.transform.EqualsAndHashCode
-import org.grails.datastore.gorm.GormEntity
 
 
 /**
@@ -32,7 +31,7 @@ import org.grails.datastore.gorm.GormEntity
  * @version 3.0
  */
 @EqualsAndHashCode(includes = ['id'])
-class SelValue implements GormEntity<SelValue> {
+class SelValue {
 
     //-- Class fields ---------------------------
 
@@ -40,11 +39,11 @@ class SelValue implements GormEntity<SelValue> {
         name blank: false
     }
     static mapping = {
-        sort 'orderId'
         id(
-            generator: 'org.hibernate.id.enhanced.SequenceStyleGenerator',
+            generator: 'sequence',
             params: [initial_value: 50000]
         )
+        sort 'orderId'
     }
 
 
@@ -63,7 +62,7 @@ class SelValue implements GormEntity<SelValue> {
     /**
      * A value used to order various selection values.
      */
-    int orderId = 0
+    int orderId = 0i
 
 
     //-- Public methods -------------------------

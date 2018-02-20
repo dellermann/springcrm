@@ -111,6 +111,12 @@ abstract class UserSettingService implements IUserSettingService {
      * @return      the stored user setting
      */
     UserSetting store(User user, String name, Object value) {
-        save new UserSetting(user: user, name: name, value: value?.toString())
+        UserSetting setting = findByUserAndName(user, name)
+        if (setting == null) {
+            setting = new UserSetting(user: user, name: name)
+        }
+        setting.value = value?.toString()
+
+        save setting
     }
 }

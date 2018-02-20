@@ -1,7 +1,7 @@
 /*
  * NoteController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,92 +20,182 @@
 
 package org.amcworld.springcrm
 
+import static org.springframework.http.HttpStatus.*
+
+import grails.validation.ValidationException
+import org.bson.types.ObjectId
+import org.springframework.web.bind.annotation.RequestAttribute
+
 
 /**
  * The class {@code NoteController} contains actions which manage notes.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
-class NoteController extends GeneralController<Note> {
+class NoteController {
 
-    //-- Constructors ---------------------------
+    //-- Fields -------------------------------------
 
-    NoteController() {
-        super(Note)
-    }
+    NoteService noteService
+    OrganizationService organizationService
+    PersonService personService
 
 
     //-- Public methods -------------------------
 
-    def copy(Long id) {
-        super.copy id
+    def copy(Note note) {
+        respond new Note(note), view: 'create'
     }
 
     def create() {
-        super.create()
+        respond new Note(params)
     }
 
-    def delete(Long id) {
-        super.delete id
+    def delete(String id) {
+        if (id == null) {
+            notFound()
+            return
+        }
+
+        Note note = noteService.delete new ObjectId(id)
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.deleted.message',
+                    args: [message(code: 'note.label'), note]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NO_CONTENT }
+        }
     }
 
-    def edit(Long id) {
-        super.edit id
+    def edit(String id) {
+        respond id == null ? null : noteService.get(new ObjectId(id))
     }
 
     def index() {
-        if (params.letter) {
+        String letter = params.letter?.toString()
+        if (letter) {
             int max = params.int('max')
-            int num = Note.countByTitleLessThan(params.letter.toString())
+            int num = noteService.countByTitleLessThan(letter)
             params.sort = 'title'
-            params.offset = Math.floor(num / max) * max
-            params.search = null
+            params.offset = (int) (Math.floor(num.toDouble() / max) * max)
+            params.remove 'search'
         }
 
         List<Note> list
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Note.findAllByTitleLike(searchFilter, params)
-            count = Note.countByTitleLike(searchFilter)
+            list = noteService.findAllByTitleLike(searchFilter, params)
+            count = noteService.countByTitleLike(searchFilter)
         } else {
-            list = Note.list(params)
-            count = Note.count()
+            list = noteService.list(params)
+            count = noteService.count()
         }
 
-        getIndexModel list, count
+        respond list, model: [noteCount: count]
     }
 
-    def listEmbedded(Long organization, Long person) {
+    def listEmbedded(@RequestAttribute('organization') String organizationId,
+                     @RequestAttribute('person') String personId) {
         List<Note> list = null
-        int count = 0
-        Map<String, Object> linkParams = null
+        Map model = null
 
-        if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            list = Note.findAllByOrganization(organizationInstance, params)
-            count = Note.countByOrganization(organizationInstance)
-            linkParams = [organization: organizationInstance.id]
-        } else if (person) {
-            Person personInstance = Person.get(person)
-            list = Note.findAllByPerson(personInstance, params)
-            count = Note.countByPerson(personInstance)
-            linkParams = [person: personInstance.id]
+        if (organizationId) {
+            Organization organization =
+                organizationService.get(new ObjectId(organizationId))
+            if (organization != null) {
+                list = noteService.findAllByOrganization(organization, params)
+                model = [
+                    noteCount: noteService.countByOrganization(organization),
+                    linkParams: [organization: organization.id.toString()]
+                ]
+            }
+        } else if (personId) {
+            Person person = personService.get(new ObjectId(personId))
+            if (person != null) {
+                list = noteService.findAllByPerson(person, params)
+                model = [
+                    noteCount: noteService.countByPerson(person),
+                    linkParams: [person: person.id.toString()]
+                ]
+            }
         }
 
-        getListEmbeddedModel list, count, linkParams
+        respond list, model: model
     }
 
-    def save() {
-        super.save()
+    def save(Note note) {
+        if (note == null) {
+            notFound()
+            return
+        }
+
+        try {
+            noteService.save note
+        } catch (ValidationException ignored) {
+            respond note.errors, view: 'create'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.created.message',
+                    args: [message(code: 'note.label'), note]
+                ) as Object
+                redirect note
+            }
+            '*' { respond note, [status: CREATED] }
+        }
     }
 
-    def show(Long id) {
-        super.show id
+    def show(String id) {
+        respond id == null ? null : noteService.get(new ObjectId(id))
     }
 
-    def update(Long id) {
-        super.update id
+    def update(Note note) {
+        if (note == null) {
+            notFound()
+            return
+        }
+
+        try {
+            noteService.save note
+        } catch (ValidationException ignored) {
+            respond note.errors, view: 'edit'
+            return
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.updated.message',
+                    args: [message(code: 'note.label'), note]
+                ) as Object
+                redirect note
+            }
+            '*' { respond note, [status: OK] }
+        }
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    private void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.not.found.message',
+                    args: [message(code: 'note.label'), params.id]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NOT_FOUND }
+        }
     }
 }

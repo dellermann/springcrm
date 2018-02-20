@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta name="layout" content="install" />
-    <title><g:message code="install.clientData.title" /></title>
+    <title><g:message code="install.tenantData.title" /></title>
   </head>
 
   <body>
@@ -15,20 +15,20 @@
     </content>
 
     <div class="install-description">
-      <p><g:message code="install.clientData.description" /></p>
+      <p><g:message code="install.tenantData.description" /></p>
     </div>
     <g:form action="clientDataSave" elementId="client-data-form"
       name="client-data-form" method="post"
       class="form-horizontal data-form form-view">
       <section>
         <header>
-          <h3><g:message code="install.clientData.fieldset.general.label" /></h3>
+          <h3><g:message code="install.tenantData.fieldset.general.label" /></h3>
         </header>
         <div class="column-group">
           <div class="column">
             <div class="form-group">
               <label for="name" class="control-label">
-                <g:message code="install.clientData.name.label" />
+                <g:message code="install.tenantData.name.label" />
               </label>
               <div class="control-container">
                 <g:textField name="name" value="${client.name}"
@@ -45,7 +45,7 @@
             </div>
             <div class="form-group">
               <label for="street" class="control-label">
-                <g:message code="install.clientData.street.label" />
+                <g:message code="install.tenantData.street.label" />
               </label>
               <div class="control-container">
                 <g:textField name="street" value="${client.street}"
@@ -62,7 +62,7 @@
             </div>
             <div class="form-group">
               <label for="postalCode" class="control-label">
-                <g:message code="install.clientData.postalCode.label" />
+                <g:message code="install.tenantData.postalCode.label" />
               </label>
               <div class="control-container">
                 <g:textField name="postalCode" value="${client.postalCode}"
@@ -79,7 +79,7 @@
             </div>
             <div class="form-group">
               <label for="location" class="control-label">
-                <g:message code="install.clientData.location.label" />
+                <g:message code="install.tenantData.location.label" />
               </label>
               <div class="control-container">
                 <g:textField name="location" value="${client.location}"
@@ -98,7 +98,7 @@
           <div class="column">
             <div class="form-group">
               <label for="phone" class="control-label">
-                <g:message code="install.clientData.phone.label" />
+                <g:message code="install.tenantData.phone.label" />
               </label>
               <div class="control-container">
                 <g:textField name="phone" value="${client.phone}"
@@ -115,7 +115,7 @@
             </div>
             <div class="form-group">
               <label for="fax" class="control-label">
-                <g:message code="install.clientData.fax.label" />
+                <g:message code="install.tenantData.fax.label" />
               </label>
               <div class="control-container">
                 <g:textField name="fax" value="${client.fax}"
@@ -129,7 +129,7 @@
             </div>
             <div class="form-group">
               <label for="email" class="control-label">
-                <g:message code="install.clientData.email.label" />
+                <g:message code="install.tenantData.email.label" />
               </label>
               <div class="control-container">
                 <g:field type="email" name="email" value="${client.email}"
@@ -146,7 +146,7 @@
             </div>
             <div class="form-group">
               <label for="website" class="control-label">
-                <g:message code="install.clientData.website.label" />
+                <g:message code="install.tenantData.website.label" />
               </label>
               <div class="control-container">
                 <g:field type="url" name="website" value="${client.website}"
@@ -164,14 +164,14 @@
       <section>
         <header>
           <h3
-            ><g:message code="install.clientData.fieldset.bankData.label"
+            ><g:message code="install.tenantData.fieldset.bankData.label"
           /></h3>
         </header>
         <div class="column-group">
           <div class="column">
             <div class="form-group">
               <label for="bankName" class="control-label">
-                <g:message code="install.clientData.bankName.label" />
+                <g:message code="install.tenantData.bankName.label" />
               </label>
               <div class="control-container">
                 <g:textField name="bankName" value="${client.bankName}"
@@ -185,7 +185,7 @@
             </div>
             <div class="form-group">
               <label for="bankCode" class="control-label">
-                <g:message code="install.clientData.bankCode.label" />
+                <g:message code="install.tenantData.bankCode.label" />
               </label>
               <div class="control-container">
                 <g:textField name="bankCode" value="${client.bankCode}"
@@ -199,7 +199,7 @@
             </div>
             <div class="form-group">
               <label for="accountNumber" class="control-label">
-                <g:message code="install.clientData.accountNumber.label" />
+                <g:message code="install.tenantData.accountNumber.label" />
               </label>
               <div class="control-container">
                 <g:textField name="accountNumber"

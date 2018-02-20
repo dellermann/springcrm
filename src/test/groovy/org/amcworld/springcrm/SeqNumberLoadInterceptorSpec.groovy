@@ -78,7 +78,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.loadSeqNumber()
+        0 * interceptor.seqNumberService.get(_)
     }
 
     def 'An empty model leaves it unmodified'() {
@@ -92,7 +92,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.loadSeqNumber()
+        0 * interceptor.seqNumberService.get(_)
     }
 
     def 'A non-existing sequence number leaves model unmodified'() {
@@ -104,12 +104,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'note',
             prefix: 'N',
             suffix: 'Y',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'note'
 
         and: 'a controller name'
         webRequest.controllerName = 'phoneCall'
@@ -118,7 +118,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.loadSeqNumber()
+        0 * interceptor.seqNumberService.get(_)
     }
 
     def 'An existing sequence number model sets prefix and suffix'() {
@@ -130,12 +130,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'note',
             prefix: 'N',
             suffix: 'X',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'note'
 
         and: 'a controller and action name'
         webRequest.controllerName = 'note'
@@ -145,7 +145,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('note') >> seqNumber
+        1 * interceptor.seqNumberService.get('note') >> seqNumber
         0 * interceptor.seqNumberService.nextNumber('note')
 
         and: 'prefix and suffix are correct'
@@ -165,12 +165,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'note',
             prefix: 'N',
             suffix: 'X',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'note'
 
         and: 'a controller and action name'
         webRequest.controllerName = 'note'
@@ -180,7 +180,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('note') >> seqNumber
+        1 * interceptor.seqNumberService.get('note') >> seqNumber
         0 * interceptor.seqNumberService.nextNumber('note')
 
         and: 'prefix and suffix are correct'
@@ -197,12 +197,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'note',
             prefix: 'N',
             suffix: 'X',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'note'
 
         and: 'a controller and action name'
         webRequest.controllerName = 'note'
@@ -212,7 +212,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('note') >> seqNumber
+        1 * interceptor.seqNumberService.get('note') >> seqNumber
         0 * interceptor.seqNumberService.nextNumber('note')
 
         and: 'prefix and suffix are correct'
@@ -229,12 +229,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'phoneCall',
             prefix: 'T',
             suffix: 'Y',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'phoneCall'
 
         and: 'a controller and action name'
         webRequest.controllerName = 'phoneCall'
@@ -244,7 +244,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('phoneCall') >> seqNumber
+        1 * interceptor.seqNumberService.get('phoneCall') >> seqNumber
         0 * interceptor.seqNumberService.nextNumber('phoneCall')
 
         and: 'prefix and suffix are correct'
@@ -261,12 +261,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'phoneCall',
             prefix: 'T',
             suffix: 'Y',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'phoneCall'
 
         and: 'a controller and action name'
         webRequest.controllerName = 'phoneCall'
@@ -276,7 +276,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('phoneCall') >> seqNumber
+        1 * interceptor.seqNumberService.get('phoneCall') >> seqNumber
         0 * interceptor.seqNumberService.nextNumber('phoneCall')
 
         and: 'prefix and suffix are correct'
@@ -293,12 +293,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'note',
             prefix: 'N',
             suffix: 'X',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'note'
 
         and: 'a controller and action name'
         webRequest.controllerName = 'note'
@@ -308,7 +308,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('note') >> seqNumber
+        1 * interceptor.seqNumberService.get('note') >> seqNumber
         1 * interceptor.seqNumberService.nextNumber('note') >> 15700i
 
         and: 'prefix and suffix are correct'
@@ -328,12 +328,12 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
-            controllerName: 'note',
             prefix: 'N',
             suffix: 'X',
             startValue: 10_000,
             endValue: 99_999
         )
+        seqNumber.id = 'note'
 
         and: 'a controller and action name'
         webRequest.controllerName = 'note'
@@ -343,7 +343,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.loadSeqNumber('note') >> seqNumber
+        1 * interceptor.seqNumberService.get('note') >> seqNumber
         1 * interceptor.seqNumberService.nextNumber('note') >> 15700i
 
         and: 'prefix and suffix are correct'

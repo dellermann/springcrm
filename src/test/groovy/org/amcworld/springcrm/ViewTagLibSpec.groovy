@@ -20,8 +20,15 @@
 
 package org.amcworld.springcrm
 
+import com.github.fakemongo.Fongo
+import com.mongodb.client.MongoCollection
 import grails.testing.web.taglib.TagLibUnitTest
 import org.apache.commons.lang.time.FastDateFormat
+import org.bson.Document as MDocument
+import org.grails.plugins.web.taglib.ApplicationTagLib
+import org.grails.plugins.web.taglib.FormatTagLib
+import org.grails.taglib.TagOutput
+import spock.lang.Ignore
 import spock.lang.Specification
 
 
@@ -31,251 +38,432 @@ class ViewTagLibSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'AutoNumber without value'() {
-        when: 'I use the tag without parameters'
-        String s = applyTemplate('<g:autoNumber />')
+    void 'Tag autoNumber without value renders correct output'() {
+        when: 'the tag is used without parameters'
+        String s = applyTemplate('<g:autoNumber/>')
 
-        then: 'I get an empty autonumber widget'
-        '<div class="auto-number"><div class="input-group"><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="" size="10" disabled="disabled"/>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a prefix'
-        s = applyTemplate('<g:autoNumber prefix="R" />')
+        when: 'the tag is used with a prefix'
+        s = applyTemplate('<g:autoNumber prefix="R"/>')
 
-        then: 'I get an empty autonumber widget with prefix'
-        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+      <span class="input-group-addon">R-</span>
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="" size="10" disabled="disabled"/>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a sensitive prefix'
-        s = applyTemplate('<g:autoNumber prefix="${prefix}" />', [prefix: 'R&'])
+        when: 'the tag is used with a sensitive prefix'
+        s = applyTemplate('<g:autoNumber prefix="${prefix}"/>', [prefix: 'R&'])
 
-        then: 'I get an empty autonumber widget with prefix'
-        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R&amp;-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+      <span class="input-group-addon">R&amp;-</span>
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="" size="10" disabled="disabled"/>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a suffix'
-        s = applyTemplate('<g:autoNumber suffix="M" />')
+        when: 'the tag is used with a suffix'
+        s = applyTemplate('<g:autoNumber suffix="M"/>')
 
-        then: 'I get an empty autonumber widget with suffix'
-        '<div class="auto-number"><div class="input-group"><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="" size="10" disabled="disabled"/>
+    
+      <span class="input-group-addon">-M</span>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a sensitive suffix'
-        s = applyTemplate('<g:autoNumber suffix="${suffix}" />', [suffix: '&M'])
+        when: 'the tag is used with a sensitive suffix'
+        s = applyTemplate('<g:autoNumber suffix="${suffix}"/>', [suffix: '&M'])
 
-        then: 'I get an empty autonumber widget with suffix'
-        '<div class="auto-number"><div class="input-group"><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-&amp;M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="" size="10" disabled="disabled"/>
+    
+      <span class="input-group-addon">-&amp;M</span>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a prefix and a suffix'
-        s = applyTemplate('<g:autoNumber prefix="R" suffix="M" />')
+        when: 'the tag is used with a prefix and a suffix'
+        s = applyTemplate('<g:autoNumber prefix="R" suffix="M"/>')
 
-        then: 'I get an empty autonumber widget with prefix and suffix'
-        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+      <span class="input-group-addon">R-</span>
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="" size="10" disabled="disabled"/>
+    
+      <span class="input-group-addon">-M</span>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a sensitive prefix and suffix'
+        when: 'the tag is used with a sensitive prefix and suffix'
         s = applyTemplate(
-            '<g:autoNumber prefix="${prefix}" suffix="${suffix}" />',
+            '<g:autoNumber prefix="${prefix}" suffix="${suffix}"/>',
             [prefix: 'R&', suffix: '&M']
         )
 
-        then: 'I get an empty autonumber widget with suffix'
-        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R&amp;-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-&amp;M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+      <span class="input-group-addon">R&amp;-</span>
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="" size="10" disabled="disabled"/>
+    
+      <span class="input-group-addon">-&amp;M</span>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
     }
 
-    def 'AutoNumber with value'() {
-        when: 'I use the tag with a prefix, a suffix, and a value'
+    void 'Tag autoNumber with value renders correct output'() {
+        when: 'the tag is used with a prefix, a suffix and a value'
         String s = applyTemplate(
-            '<g:autoNumber prefix="R" suffix="M" value="38473" />'
+            '<g:autoNumber prefix="R" suffix="M" value="38473"/>'
         )
 
-        then: 'I get an autonumber widget with prefix and suffix'
-        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="38473" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+      <span class="input-group-addon">R-</span>
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="38473" size="10" disabled="disabled"/>
+    
+      <span class="input-group-addon">-M</span>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a prefix, a suffix, a value, and the checkbox set'
+        when: 'the tag is used with a prefix, a suffix, a value and the checkbox set'
         params._autoNumber = true
         params.autoNumber = true
-        s = applyTemplate(
-            '<g:autoNumber prefix="R" suffix="M" value="38473" />'
-        )
+        s = applyTemplate('<g:autoNumber prefix="R" suffix="M" value="38473"/>')
 
-        then: 'I get an autonumber widget with prefix, suffix, and checkbox checked'
-        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="38473" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+      <span class="input-group-addon">R-</span>
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="38473" size="10" disabled="disabled"/>
+    
+      <span class="input-group-addon">-M</span>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
 
-        when: 'I use the tag with a prefix, a suffix, a value, and the checkbox unset'
+        when: 'the tag is used with a prefix, a suffix, a value and the checkbox unset'
         params._autoNumber = true
         params.autoNumber = false
-        s = applyTemplate(
-            '<g:autoNumber prefix="R" suffix="M" value="38473" />'
-        )
+        s = applyTemplate('<g:autoNumber prefix="R" suffix="M" value="38473"/>')
 
-        then: 'I get an autonumber widget with prefix, suffix, and checkbox unchecked'
-        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="38473" size="10" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<div class="auto-number">
+  <div class="input-group">
+    
+      <span class="input-group-addon">R-</span>
+    
+    <input type="number" name="number" id="number" class="form-control"
+      value="38473" size="10"/>
+    
+      <span class="input-group-addon">-M</span>
+    
+  </div>
+  <div class="checkbox">
+    <label class="checkbox-inline">
+      <input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" aria-controls="number" id="autoNumber"  />
+      default.number.auto.label
+    </label>
+  </div>
+</div>
+''' == s
     }
 
-    def 'BackLink'() {
-        when: 'I use the tag without return URL'
+    void 'Tag backLink renders correct output'() {
+        given: 'a mocked tag library'
+        mockTagLib ApplicationTagLib
+
+        when: 'the tag is used without a return URL'
         String s = applyTemplate(
             '<g:backLink controller="foo" action="index">Link</g:backLink>'
         )
 
-        then: 'I get a default link'
+        then: 'the correct link is rendered'
         '<a href="/foo/index">Link</a>' == s
 
-        when: 'I use the tag with a return URL'
+        when: 'the tag is used with a return URL'
         params.returnUrl = '/organization/show/5'
         s = applyTemplate(
             '<g:backLink controller="foo" action="index">Link</g:backLink>'
         )
 
-        then: 'I get a link referring the return URL instead'
+        then: 'the correct link is rendered'
         '<a href="/organization/show/5">Link</a>' == s
     }
 
-    def 'Button as button element'() {
-        setup:
+    void 'Tag button renders a correct button'() {
+        given: 'a mocked tag library'
+        mockTagLib ApplicationTagLib
+
+        and: 'a mocked message'
         tagLib.metaClass.message = { Map args -> "${args.code}" }
 
-        when: 'I use the tag without any attribute'
+        when: 'the tag is used without any attribute'
         String s = applyTemplate('<g:button>Link</g:button>')
 
-        then: 'I get a button as <button> element'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn">Link</button>' == s
 
-        when: 'I use the tag with a color'
+        when: 'the tag is used with a color'
         s = applyTemplate('<g:button color="success">Link</g:button>')
 
-        then: 'I get a button as <button> element with color'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn btn-success">Link</button>' == s
 
-        when: 'I use the tag with a size'
+        when: 'the tag is used with a size'
         s = applyTemplate('<g:button size="xs">Link</g:button>')
 
-        then: 'I get a button as <button> element with a particular size'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn btn-xs">Link</button>' == s
 
-        when: 'I use the tag with an additional classes'
+        when: 'the tag is used with an additional classes'
         s = applyTemplate('<g:button class="important right">Link</g:button>')
 
-        then: 'I get a button as <button> element with the given classes'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn important right">Link</button>' == s
 
-        when: 'I use the tag with color, size, and additional classes'
+        when: 'the tag is used with color, size, and additional classes'
         s = applyTemplate(
             '<g:button color="primary" size="lg" class="important right">Link</g:button>'
         )
 
-        then: 'I get a button as <span> element with these attributes'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn btn-primary btn-lg important right">Link</button>' == s
 
-        when: 'I use the tag with an ID'
-        s = applyTemplate(
-            '<g:button elementId="print-btn">Link</g:button>'
-        )
+        when: 'the tag is used with an ID'
+        s = applyTemplate('<g:button elementId="print-btn">Link</g:button>')
 
-        then: 'I get a button as <span> element with these attributes'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn" id="print-btn">Link</button>' == s
 
-        when: 'I use the tag with any other attributes'
+        when: 'the tag is used with any other attributes'
         s = applyTemplate(
             '<g:button style="text-decoration: underline;" onclick="alert(\'Help\');">Link</g:button>'
         )
 
-        then: 'I get a button as <span> element with these attributes'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn" style="text-decoration: underline;" onclick="alert(&#39;Help&#39;);">Link</button>' == s
 
-        when: 'I use the tag with an icon'
+        when: 'the tag is used with an icon'
         s = applyTemplate(
             '<g:button icon="cog">Link</g:button>'
         )
 
-        then: 'I get a button as <span> element with this icon'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn"><i class="fa fa-cog"></i> Link</button>' == s
 
-        when: 'I use the tag with an icon and message key'
+        when: 'the tag is used with an icon and message key'
         s = applyTemplate(
             '<g:button icon="cog" message="default.print.btn">Link</g:button>'
         )
 
-        then: 'I get a button as <span> element with this icon'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn"><i class="fa fa-cog"></i> default.print.btn</button>' == s
     }
 
-    def 'Button as anchor element'() {
-        setup:
+    void 'Tag button renders a correct anchor element'() {
+        given: 'a mocked tag library'
+        mockTagLib ApplicationTagLib
+
+        and: 'a mocked message'
         tagLib.metaClass.message = { Map args -> "${args.code}" }
 
-        when: 'I use the tag only with link attributes'
+        when: 'the tag is used only with link attributes'
         String s = applyTemplate('<g:button controller="foo" action="index">Link</g:button>')
 
-        then: 'I get a button as <a> element'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" class="btn" role="button">Link</a>' == s
 
-        when: 'I use the tag with link attributes and color'
+        when: 'the tag is used with link attributes and color'
         s = applyTemplate(
             '<g:button controller="foo" action="index" color="success">Link</g:button>'
         )
 
-        then: 'I get a button as <a> element'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" class="btn btn-success" role="button">Link</a>' == s
 
-        when: 'I use the tag with link attributes and size'
+        when: 'the tag is used with link attributes and size'
         s = applyTemplate(
             '<g:button controller="foo" action="index" size="sm">Link</g:button>'
         )
 
-        then: 'I get a button as <a> element'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" class="btn btn-sm" role="button">Link</a>' == s
 
-        when: 'I use the tag with link attributes and additional classes'
+        when: 'the tag is used with link attributes and additional classes'
         s = applyTemplate(
             '<g:button controller="foo" action="index" class="important right">Link</g:button>'
         )
 
-        then: 'I get a button as <a> element'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" class="btn important right" role="button">Link</a>' == s
 
-        when: 'I use the tag with link attributes, color, size, and additional classes'
+        when: 'the tag is used with link attributes, color, size, and additional classes'
         s = applyTemplate(
             '<g:button controller="foo" action="index" color="danger" size="xs" class="important right">Link</g:button>'
         )
 
-        then: 'I get a button as <a> element'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" class="btn btn-danger btn-xs important right" role="button">Link</a>' == s
 
-        when: 'I use the tag with link attributes and additional attributes'
+        when: 'the tag is used with link attributes and additional attributes'
         s = applyTemplate(
             '<g:button controller="foo" action="index" elementId="print-btn" style="text-transform: uppercase;">Link</g:button>'
         )
 
-        then: 'I get a button as <a> element'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" id="print-btn" style="text-transform: uppercase;" class="btn" role="button">Link</a>' == s
 
-        when: 'I use the tag with link attributes and an icon'
+        when: 'the tag is used with link attributes and an icon'
         s = applyTemplate(
             '<g:button controller="foo" action="index" icon="cog">Link</g:button>'
         )
 
-        then: 'I get a button as <a> element with this icon'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" class="btn" role="button"><i class="fa fa-cog"></i> Link</a>' == s
 
-        when: 'I use the tag with link attributes, an icon, and message key'
+        when: 'the tag is used with link attributes, an icon, and message key'
         s = applyTemplate(
             '<g:button controller="foo" action="index" icon="cog" message="default.print.btn">Link</g:button>'
         )
 
-        then: 'I get a button as <a> element with this icon'
+        then: 'the correct HTML is rendered'
         '<a href="/foo/index" class="btn" role="button"><i class="fa fa-cog"></i> default.print.btn</a>' == s
     }
 
-    def 'Button as back link'() {
-        when: 'I use the tag with the back attribute and there is a return URL'
+    void 'Tag button renders a correct back link'() {
+        when: 'the tag is used with the back attribute and there is a return URL'
         params.returnUrl = '/organization/show/5'
         String s = applyTemplate('<g:button back="true">Link</g:button>')
 
-        then: 'I get a button as <a> element referring this URL'
+        then: 'the correct HTML is rendered'
         '<a href="/organization/show/5" class="btn" role="button">Link</a>' == s
 
         when: 'there is, however, no return URL'
         params.returnUrl = null
         s = applyTemplate('<g:button back="true">Link</g:button>')
 
-        then: 'I get a button as <span> element'
+        then: 'the correct HTML is rendered'
         '<button type="button" class="btn">Link</button>' == s
     }
 
@@ -371,100 +559,69 @@ class ViewTagLibSpec extends Specification
 //        '<a href="/calendar-event/month" class="button">Link</a>' == s
 //    }
 
-    def 'Create back link'() {
-        when: 'I use the tag and there is a return URL'
-        params.returnUrl = '/organization/show/5'
-        String s = applyTemplate(
-            '<g:createBackLink controller="foo" action="bar" />'
-        )
+    void 'Tag currency with German locale renders output'(String currency,
+                                                          String e)
+    {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        tagLib.userService = userService
 
-        then: 'I get that URL'
-        '/organization/show/5' == s
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        1 * configService.getString('currency') >> currency
+        tagLib.configService = configService
 
-        when: 'I use the tag and there is no return URL'
-        params.returnUrl = null
-        s = applyTemplate('<g:createBackLink controller="foo" action="bar" />')
+        expect:
+        e == applyTemplate('<g:currency/>')
 
-        then: 'I get the requested URL'
-        '/foo/bar' == s
+        where:
+        currency    || e
+        null        || '€'
+        ''          || '€'
+        'XX'        || '€'
+        'EUR'       || '€'
+        'GBP'       || 'GBP'
+        'XYZ'       || '€'
+        'XXXX'      || '€'
     }
 
-    def 'Currency Euro'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >>> [
-            Locale.GERMANY, Locale.UK, Locale.US, new Locale('xy', 'z')
-        ]
+    void 'Tag currency with English locale renders output'(String currency,
+                                                           String e)
+    {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.UK
+        tagLib.userService = userService
 
-        and:
-        new Config(name: 'currency', value: 'EUR').save failOnError: true
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        1 * configService.getString('currency') >> currency
+        tagLib.configService = configService
 
-        expect: 'Euro in locale specific representations'
-        '€' == applyTemplate('<g:currency />')
-        '€' == applyTemplate('<g:currency />')
-        'EUR' == applyTemplate('<g:currency />')
-        'EUR' == applyTemplate('<g:currency />')
+        expect:
+        e == applyTemplate('<g:currency/>')
+
+        where:
+        currency    || e
+        null        || '€'
+        ''          || '€'
+        'XX'        || '€'
+        'EUR'       || '€'
+        'GBP'       || '£'
+        'XYZ'       || '£'
+        'XXXX'      || '€'
     }
 
-    def 'Currency British Pound'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >>> [
-            Locale.GERMANY, Locale.UK, Locale.US, new Locale('xy', 'z')
-        ]
-
-        and:
-        new Config(name: 'currency', value: 'GBP').save failOnError: true
-
-        expect: 'British Pound in locale specific representations'
-        'GBP' == applyTemplate('<g:currency />')
-        '£' == applyTemplate('<g:currency />')
-        'GBP' == applyTemplate('<g:currency />')
-        'GBP' == applyTemplate('<g:currency />')
-    }
-
-    def 'Currency invalid currency'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >>> [
-            Locale.GERMANY, Locale.UK, Locale.US, new Locale('xy', 'z')
-        ]
-
-        and:
-        new Config(name: 'currency', value: 'XYZ').save failOnError: true
-
-        expect: 'the local currency in locale specific representation'
-        '€' == applyTemplate('<g:currency />')
-        '£' == applyTemplate('<g:currency />')
-        '$' == applyTemplate('<g:currency />')
-
-        and: 'Euro as default currency for unknown countries'
-        'EUR' == applyTemplate('<g:currency />')
-    }
-
-    def 'Currency unset currency'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >>> [
-            Locale.GERMANY, Locale.UK, Locale.US, new Locale('xy', 'z')
-        ]
-
-        expect: 'Euro as default currency if currency is unset'
-        '€' == applyTemplate('<g:currency />')
-        '€' == applyTemplate('<g:currency />')
-        'EUR' == applyTemplate('<g:currency />')
-        'EUR' == applyTemplate('<g:currency />')
-    }
-
-    def 'Data type icon'() {
-        setup:
+    void 'Tag dataTypeIcon renders correct output'(String c, String icon) {
+        given: 'a mocked message'
         tagLib.metaClass.message = { Map args -> "${args.code}" }
 
-        when: 'I use the tag with the given controller'
-        String s = applyTemplate("<g:dataTypeIcon controller='${c}' />")
-
-        then: 'I get a <i> element representing the associated icon'
-        "<i class=\"fa fa-fw fa-${icon} data-type-icon\" title=\"${c}.label\"></i> ".toString() == s
+        expect:
+        """\
+<i class="fa fa-fw fa-${icon} data-type-icon"
+  title="${c}.label"></i>
+""" == applyTemplate("<g:dataTypeIcon controller='${c}'/>")
 
         where:
         c               | icon
@@ -478,118 +635,147 @@ class ViewTagLibSpec extends Specification
         ''              | ''
     }
 
-    def 'DateInput without value'() {
-        when: 'I use the tag only with the name attribute'
-        String s = applyTemplate('<g:dateInput name="start" />')
+    void 'Tag dateInput without value renders correct output'() {
+        when: 'the tag is used only with the name attribute'
+        String s = applyTemplate('<g:dateInput name="start"/>')
 
-        then: 'I get an empty date/time widget'
-        '''<input type="hidden" name="start"
-  value="" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value=""
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value=""
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value=""/>
 
-        when: 'I use the tag with the name and ID attribute'
-        s = applyTemplate('<g:dateInput name="start" id="event-start" />')
+  <div class="input-group date-time-control">
 
-        then: 'I get an empty date/time widget with this ID'
-        '''<input type="hidden" name="start"
-  value="" />
-<div class="input-group date-time-control"><input type="text" id="event-start-date" name="start_date"
-  value=""
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="event-start-time" name="start_time"
-  value=""
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
 
-        when: 'I use the tag with the name attribute and precision minute'
-        s = applyTemplate('<g:dateInput name="start" precision="minute" />')
-
-        then: 'I get an empty date/time widget'
-        '''<input type="hidden" name="start"
-  value="" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value=""
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value=""
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
-
-        when: 'I use the tag with the name attribute and precision hour'
-        s = applyTemplate('<g:dateInput name="start" precision="hour" />')
-
-        then: 'I get an empty date/time widget'
-        '''<input type="hidden" name="start"
-  value="" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value=""
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value=""
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
-
-        when: 'I use the tag with the name attribute and precision day'
-        s = applyTemplate('<g:dateInput name="start" precision="day" />')
-
-        then: 'I get an empty date widget'
-        '''<input type="hidden" name="start"
-  value="" />
 <input type="text" id="start-date" name="start_date"
   value=""
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
 
-        when: 'I use the tag with the name attribute and precision month'
-        s = applyTemplate('<g:dateInput name="start" precision="month" />')
+  <input type="text" id="start-time" name="start_time"
+    value=""
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
 
-        then: 'I get an empty date widget'
-        '''<input type="hidden" name="start"
-  value="" />
+        when: 'the tag is used with the name and ID attribute'
+        s = applyTemplate('<g:dateInput name="start" id="event-start"/>')
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value=""/>
+
+  <div class="input-group date-time-control">
+
+
+<input type="text" id="event-start-date" name="start_date"
+  value=""
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>
+
+  <input type="text" id="event-start-time" name="start_time"
+    value=""
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision minute'
+        s = applyTemplate('<g:dateInput name="start" precision="minute"/>')
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value=""/>
+
+  <div class="input-group date-time-control">
+
+
 <input type="text" id="start-date" name="start_date"
   value=""
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
 
-        when: 'I use the tag with the name attribute and precision year'
-        s = applyTemplate('<g:dateInput name="start" precision="year" />')
+  <input type="text" id="start-time" name="start_time"
+    value=""
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
 
-        then: 'I get an empty date widget'
-        '''<input type="hidden" name="start"
-  value="" />
+        when: 'the tag is used with the name attribute and precision hour'
+        s = applyTemplate('<g:dateInput name="start" precision="hour"/>')
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value=""/>
+
+  <div class="input-group date-time-control">
+
+
 <input type="text" id="start-date" name="start_date"
   value=""
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
+
+  <input type="text" id="start-time" name="start_time"
+    value=""
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision day'
+        s = applyTemplate('<g:dateInput name="start" precision="day"/>')
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value=""/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value=""
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision month'
+        s = applyTemplate('<g:dateInput name="start" precision="month"/>')
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value=""/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value=""
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision year'
+        s = applyTemplate('<g:dateInput name="start" precision="year"/>')
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value=""/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value=""
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
     }
 
-    def 'DateInput with Calendar value'() {
+    void 'Tag dateInput with Calendar value renders correct output'() {
         given: 'a value map containing the calendar date'
         def map = [c: new GregorianCalendar(2014, Calendar.JANUARY, 8, 19, 5)]
 
         and: 'a mock implementation to format date and time'
-        tagLib.metaClass.formatDate = { Map args ->
+        FormatTagLib formatTagLib = tagLib.tagLibraryLookup.lookupTagLibrary(
+            TagOutput.DEFAULT_NAMESPACE, 'formatDate'
+        ) as FormatTagLib
+        formatTagLib.formatDate = { Map args ->
             String pattern = null
             switch (args.formatName) {
             case 'default.format.date':
@@ -613,133 +799,162 @@ class ViewTagLibSpec extends Specification
             ''
         }
 
-        when: 'I use the tag with the name and value attribute'
+        when: 'the tag is used with the name and value attribute'
         String s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" />', map
+            '<g:dateInput name="start" value="${c}"/>', map
         )
 
-        then: 'I get a date/time widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
 
-        when: 'I use the tag with the name, value, and ID attribute'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" id="event-start" />', map
-        )
+  <div class="input-group date-time-control">
 
-        then: 'I get a date/time widget with this ID'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="event-start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="event-start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
 
-        when: 'I use the tag with the name and value attribute and precision minute'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="minute" />', map
-        )
-
-        then: 'I get a date/time widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
-
-        when: 'I use the tag with the name attribute and precision hour'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="hour" />', map
-        )
-
-        then: 'I get a date/time widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
-
-        when: 'I use the tag with the name attribute and precision day'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="day" />', map
-        )
-
-        then: 'I get a date widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014" />
 <input type="text" id="start-date" name="start_date"
   value="08.01.2014"
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
 
-        when: 'I use the tag with the name attribute and precision month'
+  <input type="text" id="start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name, value and ID attribute'
         s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="month" />', map
+            '<g:dateInput name="start" value="${c}" id="event-start"/>', map
         )
 
-        then: 'I get a date widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014" />
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
+
+  <div class="input-group date-time-control">
+
+
+<input type="text" id="event-start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>
+
+  <input type="text" id="event-start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name and value attribute and precision minute'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="minute"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
+
+  <div class="input-group date-time-control">
+
+
 <input type="text" id="start-date" name="start_date"
   value="08.01.2014"
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
 
-        when: 'I use the tag with the name attribute and precision year'
+  <input type="text" id="start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision hour'
         s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="year" />', map
+            '<g:dateInput name="start" value="${c}" precision="hour"/>', map
         )
 
-        then: 'I get a date widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014" />
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
+
+  <div class="input-group date-time-control">
+
+
 <input type="text" id="start-date" name="start_date"
   value="08.01.2014"
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
+
+  <input type="text" id="start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision day'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="day"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014"/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision month'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="month"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014"/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision year'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="year"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014"/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
     }
 
-    def 'DateInput with Date value'() {
-        given: 'a value map containing the calendar date'
+    void 'Tag dateInput with Date value renders correct output'() {
+        given: 'a value map containing the date'
         def map = [
             c: new GregorianCalendar(2014, Calendar.JANUARY, 8, 19, 5).time
         ]
 
         and: 'a mock implementation to format date and time'
-        tagLib.metaClass.formatDate = { Map args ->
+        FormatTagLib formatTagLib = tagLib.tagLibraryLookup.lookupTagLibrary(
+            TagOutput.DEFAULT_NAMESPACE, 'formatDate'
+        ) as FormatTagLib
+        formatTagLib.formatDate = { Map args ->
             String pattern = null
             switch (args.formatName) {
             case 'default.format.date':
@@ -763,639 +978,708 @@ class ViewTagLibSpec extends Specification
             ''
         }
 
-        when: 'I use the tag with the name and value attribute'
+        when: 'the tag is used with the name and value attribute'
         String s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" />', map
+            '<g:dateInput name="start" value="${c}"/>', map
         )
 
-        then: 'I get a date/time widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
 
-        when: 'I use the tag with the name, value, and ID attribute'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" id="event-start" />', map
-        )
+  <div class="input-group date-time-control">
 
-        then: 'I get a date/time widget with this ID'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="event-start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="event-start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
 
-        when: 'I use the tag with the name and value attribute and precision minute'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="minute" />', map
-        )
-
-        then: 'I get a date/time widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
-
-        when: 'I use the tag with the name attribute and precision hour'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="hour" />', map
-        )
-
-        then: 'I get a date/time widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" />
-<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
-  value="08.01.2014"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-<input type="text" id="start-time" name="start_time"
-  value="19:05"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-''' == s
-
-        when: 'I use the tag with the name attribute and precision day'
-        s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="day" />', map
-        )
-
-        then: 'I get a date widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014" />
 <input type="text" id="start-date" name="start_date"
   value="08.01.2014"
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
 
-        when: 'I use the tag with the name attribute and precision month'
+  <input type="text" id="start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name, value and ID attribute'
         s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="month" />', map
+            '<g:dateInput name="start" value="${c}" id="event-start"/>', map
         )
 
-        then: 'I get a date widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014" />
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
+
+  <div class="input-group date-time-control">
+
+
+<input type="text" id="event-start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>
+
+  <input type="text" id="event-start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name and value attribute and precision minute'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="minute"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
+
+  <div class="input-group date-time-control">
+
+
 <input type="text" id="start-date" name="start_date"
   value="08.01.2014"
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
 
-        when: 'I use the tag with the name attribute and precision year'
+  <input type="text" id="start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision hour'
         s = applyTemplate(
-            '<g:dateInput name="start" value="${c}" precision="year" />', map
+            '<g:dateInput name="start" value="${c}" precision="hour"/>', map
         )
 
-        then: 'I get a date widget'
-        '''<input type="hidden" name="start"
-  value="08.01.2014" />
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014 19:05"/>
+
+  <div class="input-group date-time-control">
+
+
 <input type="text" id="start-date" name="start_date"
   value="08.01.2014"
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-''' == s
+  maxlength="10"/>
+
+  <input type="text" id="start-time" name="start_time"
+    value="19:05"
+    class="form-control date-input-control date-input-time-control"
+    maxlength="5"/>
+  </div>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision day'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="day"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014"/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision month'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="month"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014"/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
+
+        when: 'the tag is used with the name attribute and precision year'
+        s = applyTemplate(
+            '<g:dateInput name="start" value="${c}" precision="year"/>', map
+        )
+
+        then: 'the correct HTML is rendered'
+        '''\
+<input type="hidden" name="start"
+  value="08.01.2014"/>
+
+
+<input type="text" id="start-date" name="start_date"
+  value="08.01.2014"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10"/>''' == s.trim()
     }
 
-    def 'FormatCurrency with zero and without displayZero'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
+    void 'Tag formatCurrency with zero and without displayZero'() {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
+        tagLib.userService = userService
 
         and: 'a value map containing the number to format'
         def map = [n: 0]
 
-        expect: 'always an empty string'
-        '' == applyTemplate('<g:formatCurrency number="${n}" />', map)
-        '' == applyTemplate('<g:formatCurrency number="${n}" />', map)
-        '' == applyTemplate('<g:formatCurrency number="${n}" />', map)
-        '' == applyTemplate('<g:formatCurrency number="${n}" />', map)
-        '' == applyTemplate('<g:formatCurrency number="${n}" />', map)
+        expect:
+        '' == applyTemplate('<g:formatCurrency number="${n}"/>', map)
+        '' == applyTemplate('<g:formatCurrency number="${n}"/>', map)
+        '' == applyTemplate('<g:formatCurrency number="${n}"/>', map)
+        '' == applyTemplate('<g:formatCurrency number="${n}"/>', map)
+        '' == applyTemplate('<g:formatCurrency number="${n}"/>', map)
     }
 
-    def 'FormatCurrency with zero and displayZero'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
-        tagLib.userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1]
+    void 'Tag formatCurrency with zero and displayZero'() {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0] * 3
+        userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1] * 3
+        tagLib.userService = userService
+
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        configService.getString('currency') >> 'EUR'
+        tagLib.configService = configService
 
         and: 'a value map containing the number to format'
         def map = [n: 0]
 
         expect:
         '0,00 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" />', map
+            '<g:formatCurrency number="${n}" displayZero="true"/>', map
         )
         '0,000 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" />', map
+            '<g:formatCurrency number="${n}" displayZero="true"/>', map
         )
         '0,0000 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" />', map
+            '<g:formatCurrency number="${n}" displayZero="true"/>', map
         )
         '0,0 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" />', map
+            '<g:formatCurrency number="${n}" displayZero="true"/>', map
         )
         '0 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" />', map
-        )
-    }
-
-    def 'FormatCurrency with zero and minFractionDigits'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >> 2
-        tagLib.userService.getNumFractionDigitsExt() >> 3
-
-        expect:
-        def map = [n: 0, d: d]
-        s == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" minFractionDigits="${d}" />', map
-        )
-
-        where:
-        d       | s
-        0       | '0 €'
-        1       | '0,0 €'
-        2       | '0,00 €'
-        3       | '0,000 €'
-        4       | '0,0000 €'
-        null    | '0,00 €'
-    }
-
-    def 'FormatCurrency with zero and numberOnly'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
-        tagLib.userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1]
-
-        and: 'a value map containing the number to format'
-        def map = [n: 0]
-
-        expect:
-        '0,00' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" numberOnly="true" />', map
-        )
-        '0,000' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" numberOnly="true" />', map
-        )
-        '0,0000' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" numberOnly="true" />', map
-        )
-        '0,0' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" numberOnly="true" />', map
-        )
-        '0' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" numberOnly="true" />', map
-        )
-    }
-
-    def 'FormatCurrency with zero and external'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
-        tagLib.userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1]
-
-        and: 'a value map containing the number to format'
-        def map = [n: 0]
-
-        expect:
-        '0,000 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" external="true" />', map
-        )
-        '0,0000 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" external="true" />', map
-        )
-        '0,00000 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" external="true" />', map
-        )
-        '0,00 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" external="true" />', map
-        )
-        '0,0 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" displayZero="true" external="true" />', map
-        )
-    }
-
-    def 'FormatCurrency with non-zero'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
-        tagLib.userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1]
-
-        and: 'a value map containing the number to format'
-        def map = [n: 14739.358079]
-
-        expect:
-        '14.739,36 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" />', map
-        )
-        '14.739,358 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" />', map
-        )
-        '14.739,3581 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" />', map
-        )
-        '14.739,4 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" />', map
-        )
-        '14.739 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" />', map
-        )
-    }
-
-    def 'FormatCurrency with non-zero and minFractionDigits'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >> 2
-        tagLib.userService.getNumFractionDigitsExt() >> 3
-
-        expect:
-        def map = [n: 14739.358079, d: d]
-        s == applyTemplate(
-            '<g:formatCurrency number="${n}" minFractionDigits="${d}" />', map
-        )
-
-        where:
-        d       | s
-        0       | '14.739 €'
-        1       | '14.739,4 €'
-        2       | '14.739,36 €'
-        3       | '14.739,358 €'
-        4       | '14.739,3581 €'
-        null    | '14.739,36 €'
-    }
-
-    def 'FormatCurrency with non-zero and numberOnly'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
-        tagLib.userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1]
-
-        and: 'a value map containing the number to format'
-        def map = [n: 14739.358079]
-
-        expect:
-        '14.739,36' == applyTemplate(
-            '<g:formatCurrency number="${n}" numberOnly="true" />', map
-        )
-        '14.739,358' == applyTemplate(
-            '<g:formatCurrency number="${n}" numberOnly="true" />', map
-        )
-        '14.739,3581' == applyTemplate(
-            '<g:formatCurrency number="${n}" numberOnly="true" />', map
-        )
-        '14.739,4' == applyTemplate(
-            '<g:formatCurrency number="${n}" numberOnly="true" />', map
-        )
-        '14.739' == applyTemplate(
-            '<g:formatCurrency number="${n}" numberOnly="true" />', map
-        )
-    }
-
-    def 'FormatCurrency with non-zero and groupingUsed'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [
-            3, 4, 5, 2, 1, 3, 4, 5, 2, 1
-        ]
-        tagLib.userService.getNumFractionDigitsExt() >>> [
-            2, 3, 4, 1, 0, 2, 3, 4, 1, 0
-        ]
-
-        and: 'a value map containing the number to format'
-        def map = [n: 14739.358079]
-
-        expect:
-        '14.739,358 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="true" />', map
-        )
-        '14.739,3581 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="true" />', map
-        )
-        '14.739,35808 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="true" />', map
-        )
-        '14.739,36 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="true" />', map
-        )
-        '14.739,4 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="true" />', map
+            '<g:formatCurrency number="${n}" displayZero="true"/>', map
         )
 
         and:
-        '14739,358 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="false" />', map
+        '0,00' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'numberOnly="true"/>', map
         )
-        '14739,3581 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="false" />', map
+        '0,000' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'numberOnly="true"/>', map
         )
-        '14739,35808 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="false" />', map
+        '0,0000' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'numberOnly="true"/>', map
         )
-        '14739,36 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="false" />', map
+        '0,0' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'numberOnly="true"/>', map
         )
-        '14739,4 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" groupingUsed="false" />', map
+        '0' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'numberOnly="true"/>', map
+        )
+
+        and:
+        '0,000 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'external="true" />', map
+        )
+        '0,0000 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'external="true" />', map
+        )
+        '0,00000 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'external="true" />', map
+        )
+        '0,00 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'external="true" />', map
+        )
+        '0,0 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'external="true" />', map
         )
     }
 
-    def 'FormatCurrency with non-zero and external'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
-        tagLib.userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
-        tagLib.userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1]
+    void 'Tag formatCurrency with zero and minFractionDigits'(Integer d,
+                                                              String s)
+    {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        userService.getNumFractionDigits() >> 2
+        userService.getNumFractionDigitsExt() >> 3
+        tagLib.userService = userService
+
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        configService.getString('currency') >> 'EUR'
+        tagLib.configService = configService
+
+        and: 'a value map containing the number to format'
+        def map = [n: 0, d: d]
+
+        expect:
+        s == applyTemplate(
+            '<g:formatCurrency number="${n}" displayZero="true" ' +
+                'minFractionDigits="${d}"/>', map
+        )
+
+        where:
+        d       || s
+        0       || '0 €'
+        1       || '0,0 €'
+        2       || '0,00 €'
+        3       || '0,000 €'
+        4       || '0,0000 €'
+        null    || '0,00 €'
+    }
+
+    void 'Tag formatCurrency with non-zero'() {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0] * 5
+        userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1] * 5
+        tagLib.userService = userService
+
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        configService.getString('currency') >> 'EUR'
+        tagLib.configService = configService
 
         and: 'a value map containing the number to format'
         def map = [n: 14739.358079]
 
         expect:
+        '14.739,36 €' == applyTemplate(
+            '<g:formatCurrency number="${n}"/>', map
+        )
         '14.739,358 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" external="true" />', map
+            '<g:formatCurrency number="${n}"/>', map
         )
         '14.739,3581 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" external="true" />', map
-        )
-        '14.739,35808 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" external="true" />', map
-        )
-        '14.739,36 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" external="true" />', map
+            '<g:formatCurrency number="${n}"/>', map
         )
         '14.739,4 €' == applyTemplate(
-            '<g:formatCurrency number="${n}" external="true" />', map
+            '<g:formatCurrency number="${n}"/>', map
+        )
+        '14.739 €' == applyTemplate(
+            '<g:formatCurrency number="${n}"/>', map
+        )
+
+        and:
+        '14.739,36' == applyTemplate(
+            '<g:formatCurrency number="${n}" numberOnly="true"/>', map
+        )
+        '14.739,358' == applyTemplate(
+            '<g:formatCurrency number="${n}" numberOnly="true"/>', map
+        )
+        '14.739,3581' == applyTemplate(
+            '<g:formatCurrency number="${n}" numberOnly="true"/>', map
+        )
+        '14.739,4' == applyTemplate(
+            '<g:formatCurrency number="${n}" numberOnly="true"/>', map
+        )
+        '14.739' == applyTemplate(
+            '<g:formatCurrency number="${n}" numberOnly="true"/>', map
+        )
+
+        and:
+        '14.739,36 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="true"/>', map
+        )
+        '14.739,358 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="true"/>', map
+        )
+        '14.739,3581 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="true"/>', map
+        )
+        '14.739,4 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="true"/>', map
+        )
+        '14.739 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="true"/>', map
+        )
+
+        and:
+        '14739,36 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="false"/>', map
+        )
+        '14739,358 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="false"/>', map
+        )
+        '14739,3581 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="false"/>', map
+        )
+        '14739,4 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="false"/>', map
+        )
+        '14739 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" groupingUsed="false"/>', map
+        )
+
+        and:
+        '14.739,358 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" external="true"/>', map
+        )
+        '14.739,3581 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" external="true"/>', map
+        )
+        '14.739,35808 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" external="true"/>', map
+        )
+        '14.739,36 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" external="true"/>', map
+        )
+        '14.739,4 €' == applyTemplate(
+            '<g:formatCurrency number="${n}" external="true"/>', map
         )
     }
 
-    def 'FormatSize without groupingUsed'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
+    void 'Tag formatCurrency with non-zero and minFractionDigits'(Integer d,
+                                                                  String s)
+    {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        userService.getNumFractionDigits() >> 2
+        userService.getNumFractionDigitsExt() >> 3
+        tagLib.userService = userService
 
-        expect:
-        s == applyTemplate('<g:formatSize number="${n}" />', [n: n])
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        configService.getString('currency') >> 'EUR'
+        tagLib.configService = configService
 
-        where:
-        n                   | s
-                        0   |      ''
-                        1   |     '1 B'
-                      145   |   '145 B'
-                    1_023   | '1.023 B'
-                    1_024   |     '1 K'
-                    1_025   |     '1 K'
-                    1_030   |     '1,01 K'
-                   14_384   |    '14,05 K'
-                  174_284   |   '170,2 K'
-                1_048_575   | '1.024 K'
-                1_048_576   |     '1 M'
-                1_153_434   |     '1,1 M'
-                6_081_741   |     '5,8 M'
-               17_511_219   |    '16,7 M'
-               40_265_318   |    '38,4 M'
-              478_505_180   |   '456,34 M'
-            1_073_741_824   |     '1 G'
-            2_631_741_210   |     '2,45 G'
-           34_003_470_830   |    '31,67 G'
-          907_850_000_682   |   '845,5 G'
-        1_099_511_627_775   | '1.024 G'
-        1_099_511_627_776   |     '1 T'
-        2_670_054_036_891   |     '2,43 T'
-    }
-
-    def 'FormatSize with groupingUsed true'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
+        and: 'a value map containing the number to format'
+        def map = [n: 14739.358079, d: d]
 
         expect:
         s == applyTemplate(
-            '<g:formatSize number="${n}" groupingUsed="true" />', [n: n]
+            '<g:formatCurrency number="${n}" minFractionDigits="${d}"/>', map
         )
 
         where:
-        n                   | s
-                        0   |      ''
-                        1   |     '1 B'
-                      145   |   '145 B'
-                    1_023   | '1.023 B'
-                    1_024   |     '1 K'
-                    1_025   |     '1 K'
-                    1_030   |     '1,01 K'
-                   14_384   |    '14,05 K'
-                  174_284   |   '170,2 K'
-                1_048_575   | '1.024 K'
-                1_048_576   |     '1 M'
-                1_153_434   |     '1,1 M'
-                6_081_741   |     '5,8 M'
-               17_511_219   |    '16,7 M'
-               40_265_318   |    '38,4 M'
-              478_505_180   |   '456,34 M'
-            1_073_741_824   |     '1 G'
-            2_631_741_210   |     '2,45 G'
-           34_003_470_830   |    '31,67 G'
-          907_850_000_682   |   '845,5 G'
-        1_099_511_627_775   | '1.024 G'
-        1_099_511_627_776   |     '1 T'
-        2_670_054_036_891   |     '2,43 T'
+        d       || s
+        0       || '14.739 €'
+        1       || '14.739,4 €'
+        2       || '14.739,36 €'
+        3       || '14.739,358 €'
+        4       || '14.739,3581 €'
+        null    || '14.739,36 €'
     }
 
-    def 'FormatSize with groupingUsed false'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.GERMANY
+    void 'Tag formatSize without groupingUsed'(BigInteger n, String s) {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        tagLib.userService = userService
 
         expect:
+        s == applyTemplate('<g:formatSize number="${n}"/>', [n: n])
         s == applyTemplate(
-            '<g:formatSize number="${n}" groupingUsed="false" />', [n: n]
+            '<g:formatSize number="${n}" groupingUsed="true"/>', [n: n]
         )
 
         where:
-        n                   | s
-                        0   |      ''
-                        1   |     '1 B'
-                      145   |   '145 B'
-                    1_023   |  '1023 B'
-                    1_024   |     '1 K'
-                    1_025   |     '1 K'
-                    1_030   |     '1,01 K'
-                   14_384   |    '14,05 K'
-                  174_284   |   '170,2 K'
-                1_048_575   |  '1024 K'
-                1_048_576   |     '1 M'
-                1_153_434   |     '1,1 M'
-                6_081_741   |     '5,8 M'
-               17_511_219   |    '16,7 M'
-               40_265_318   |    '38,4 M'
-              478_505_180   |   '456,34 M'
-            1_073_741_824   |     '1 G'
-            2_631_741_210   |     '2,45 G'
-           34_003_470_830   |    '31,67 G'
-          907_850_000_682   |   '845,5 G'
-        1_099_511_627_775   |  '1024 G'
-        1_099_511_627_776   |     '1 T'
-        2_670_054_036_891   |     '2,43 T'
+        n                   || s
+                        0   ||      ''
+                        1   ||     '1 B'
+                      145   ||   '145 B'
+                    1_023   || '1.023 B'
+                    1_024   ||     '1 K'
+                    1_025   ||     '1 K'
+                    1_030   ||     '1,01 K'
+                   14_384   ||    '14,05 K'
+                  174_284   ||   '170,2 K'
+                1_048_575   || '1.024 K'
+                1_048_576   ||     '1 M'
+                1_153_434   ||     '1,1 M'
+                6_081_741   ||     '5,8 M'
+               17_511_219   ||    '16,7 M'
+               40_265_318   ||    '38,4 M'
+              478_505_180   ||   '456,34 M'
+            1_073_741_824   ||     '1 G'
+            2_631_741_210   ||     '2,45 G'
+           34_003_470_830   ||    '31,67 G'
+          907_850_000_682   ||   '845,5 G'
+        1_099_511_627_775   || '1.024 G'
+        1_099_511_627_776   ||     '1 T'
+        2_670_054_036_891   ||     '2,43 T'
     }
 
-    def 'FormatSize with other locale'() {
-        setup:
-        tagLib.userService = Mock(UserService)
-        tagLib.userService.getCurrentLocale() >> Locale.UK
+    void 'Tag formatSize with groupingUsed false'(BigInteger n, String s) {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        tagLib.userService = userService
 
-        expect:
-        s == applyTemplate('<g:formatSize number="${n}" />', [n: n])
-
-        where:
-        n                   | s
-                        0   |      ''
-                        1   |     '1 B'
-                      145   |   '145 B'
-                    1_023   | '1,023 B'
-                    1_024   |     '1 K'
-                    1_025   |     '1 K'
-                    1_030   |     '1.01 K'
-                   14_384   |    '14.05 K'
-                  174_284   |   '170.2 K'
-                1_048_575   | '1,024 K'
-                1_048_576   |     '1 M'
-                1_153_434   |     '1.1 M'
-                6_081_741   |     '5.8 M'
-               17_511_219   |    '16.7 M'
-               40_265_318   |    '38.4 M'
-              478_505_180   |   '456.34 M'
-            1_073_741_824   |     '1 G'
-            2_631_741_210   |     '2.45 G'
-           34_003_470_830   |    '31.67 G'
-          907_850_000_682   |   '845.5 G'
-        1_099_511_627_775   | '1,024 G'
-        1_099_511_627_776   |     '1 T'
-        2_670_054_036_891   |     '2.43 T'
-    }
-
-    def 'InstallStep'() {
         expect:
         s == applyTemplate(
-            '<g:installStep step="${step}" current="${c}"><b>Text</b></g:installStep>',
+            '<g:formatSize number="${n}" groupingUsed="false"/>', [n: n]
+        )
+
+        where:
+        n                   || s
+                        0   ||      ''
+                        1   ||     '1 B'
+                      145   ||   '145 B'
+                    1_023   ||  '1023 B'
+                    1_024   ||     '1 K'
+                    1_025   ||     '1 K'
+                    1_030   ||     '1,01 K'
+                   14_384   ||    '14,05 K'
+                  174_284   ||   '170,2 K'
+                1_048_575   ||  '1024 K'
+                1_048_576   ||     '1 M'
+                1_153_434   ||     '1,1 M'
+                6_081_741   ||     '5,8 M'
+               17_511_219   ||    '16,7 M'
+               40_265_318   ||    '38,4 M'
+              478_505_180   ||   '456,34 M'
+            1_073_741_824   ||     '1 G'
+            2_631_741_210   ||     '2,45 G'
+           34_003_470_830   ||    '31,67 G'
+          907_850_000_682   ||   '845,5 G'
+        1_099_511_627_775   ||  '1024 G'
+        1_099_511_627_776   ||     '1 T'
+        2_670_054_036_891   ||     '2,43 T'
+    }
+
+    void 'Tag formatSize with other locale'(BigInteger n, String s) {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.UK
+        tagLib.userService = userService
+
+        expect:
+        s == applyTemplate('<g:formatSize number="${n}"/>', [n: n])
+
+        where:
+        n                   || s
+                        0   ||      ''
+                        1   ||     '1 B'
+                      145   ||   '145 B'
+                    1_023   || '1,023 B'
+                    1_024   ||     '1 K'
+                    1_025   ||     '1 K'
+                    1_030   ||     '1.01 K'
+                   14_384   ||    '14.05 K'
+                  174_284   ||   '170.2 K'
+                1_048_575   || '1,024 K'
+                1_048_576   ||     '1 M'
+                1_153_434   ||     '1.1 M'
+                6_081_741   ||     '5.8 M'
+               17_511_219   ||    '16.7 M'
+               40_265_318   ||    '38.4 M'
+              478_505_180   ||   '456.34 M'
+            1_073_741_824   ||     '1 G'
+            2_631_741_210   ||     '2.45 G'
+           34_003_470_830   ||    '31.67 G'
+          907_850_000_682   ||   '845.5 G'
+        1_099_511_627_775   || '1,024 G'
+        1_099_511_627_776   ||     '1 T'
+        2_670_054_036_891   ||     '2.43 T'
+    }
+
+    void 'Tag fullNumber renders correct output'() {
+        given: 'a sequence number service instance'
+        SeqNumberService seqNumberService = Mock()
+        tagLib.seqNumberService = seqNumberService
+
+        and: 'an instance'
+        def invoice = new Invoice()
+
+        when: 'the tag is used'
+        String s = tagLib.fullNumber([bean: invoice])
+
+        then: 'the output is correctly rendered'
+        1 * seqNumberService.getFullNumber(invoice) >> 'I-16012-45037'
+        'I-16012-45037' == s
+    }
+
+    void 'Tag installStep renders correct output'(int step, String s) {
+        expect:
+        s == applyTemplate(
+            '<g:installStep step="${step}" current="${c}">' +
+                '<b>Text</b></g:installStep>',
             [step: step, c: 2]
         )
 
         where:
-        step    | s
-        0       | '<li><b>Text</b></li>'
-        1       | '<li><b>Text</b></li>'
-        2       | '<li class="active"><b>Text</b></li>'
-        3       | '<li><b>Text</b></li>'
-        4       | '<li><b>Text</b></li>'
+        step    || s
+        0       || '<li><b>Text</b></li>'
+        1       || '<li><b>Text</b></li>'
+        2       || '<li class="active"><b>Text</b></li>'
+        3       || '<li><b>Text</b></li>'
+        4       || '<li><b>Text</b></li>'
     }
 
-    // TODO test letterBar
-    // TODO test menuButton
+    @Ignore('Fongo aggregating does not work in the moment')
+    void 'Tag letterBar renders correct output'() {
+        given: 'a fake mongo instance'
+        Fongo fongo = new Fongo('mongo test server')
+        tagLib.mongo = fongo.mongo
 
-    def 'Nl2Br with value'() {
+        and: 'some note instances'
+        String dbName = grailsApplication.config.getProperty(
+            'grails.mongodb.databaseName'
+        )
+        MongoCollection<MDocument> collection =
+            fongo.mongo.getDatabase(dbName).getCollection('note')
+        ['A', 'B', 'E', 'S', 'Z'].each {
+            MDocument doc = new MDocument()
+            doc.append 'title', it + ' test'
+            doc.append 'content', 'Sample note'
+            collection.insertOne doc
+        }
+
+        when: 'the tag is used'
+        String s = applyTemplate(
+            '<g:letterBar clazz="${c}" property="title"/>', [c: Note]
+        )
+        println s
+
+        then: 'the output is correctly rendered'
+        '''\
+''' != s.trim()
+    }
+
+    void 'Tag month renders correct output'(int month, int year, String s) {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        tagLib.userService = userService
+
         expect:
-        s == applyTemplate('<g:nl2br value="${v}" />', [v: v])
+        s == applyTemplate(
+            '<g:month month="${m}" year="${y}"/>', [m: month, y: year]
+        )
 
         where:
-        v                       | s
-        ''                      | ''
-        '\r\n'                  | '<br />'
-        '\r'                    | '<br />'
-        '\n'                    | '<br />'
-        '\r\r'                  | '<br /><br />'
-        '\n\n'                  | '<br /><br />'
-        '\n\r'                  | '<br /><br />'
-        '\r\n\r\n'              | '<br /><br />'
-        ' \r\n '                | ' <br /> '
-        ' \r '                  | ' <br /> '
-        ' \n '                  | ' <br /> '
-        ' \r\r '                | ' <br /><br /> '
-        ' \n\n '                | ' <br /><br /> '
-        ' \n\r '                | ' <br /><br /> '
-        ' \r\n\r\n '            | ' <br /><br /> '
-        'foo\r\nbar'            | 'foo<br />bar'
-        'foo\rwhee\nbar'        | 'foo<br />whee<br />bar'
-        'foo\rbar'              | 'foo<br />bar'
-        'foo\nbar'              | 'foo<br />bar'
-        'foo\r\rbar'            | 'foo<br /><br />bar'
-        'foo\rwhee\rbar'        | 'foo<br />whee<br />bar'
-        'foo\n\nbar'            | 'foo<br /><br />bar'
-        'foo\nwhee\nbar'        | 'foo<br />whee<br />bar'
-        'foo\n\rbar'            | 'foo<br /><br />bar'
-        'foo\nwhee\rbar'        | 'foo<br />whee<br />bar'
-        'foo\r\n\r\nbar'        | 'foo<br /><br />bar'
-        'foo\r\nwhee\r\nbar'    | 'foo<br />whee<br />bar'
-        'foo\rx\nwhee\ry\nbar'  | 'foo<br />x<br />whee<br />y<br />bar'
+        month   | year  || s
+        1       | 1980  || 'Januar 1980'
+        5       | 1975  || 'Mai 1975'
+        9       | 2000  || 'September 2000'
+        12      | 2017  || 'Dezember 2017'
     }
 
-    def 'Nl2Br with body'() {
+    void 'Tag monthBar renders correct output'() {
+        given: 'a user service instance'
+        UserService userService = Mock()
+        userService.getCurrentLocale() >> Locale.GERMANY
+        tagLib.userService = userService
+
+        when: 'the tag is used'
+        String s = applyTemplate('<g:monthBar action="show"/>')
+
+        then: 'the output is correctly rendered'
+        '<a href="/test/show" class="btn btn-default btn-month" title="Januar" data-month="1">Jan</a><a href="/test/show" class="btn btn-default btn-month" title="Februar" data-month="2">Feb</a><a href="/test/show" class="btn btn-default btn-month" title="M&auml;rz" data-month="3">Mär</a><a href="/test/show" class="btn btn-default btn-month" title="April" data-month="4">Apr</a><a href="/test/show" class="btn btn-default btn-month" title="Mai" data-month="5">Mai</a><a href="/test/show" class="btn btn-default btn-month" title="Juni" data-month="6">Jun</a><a href="/test/show" class="btn btn-default btn-month" title="Juli" data-month="7">Jul</a><a href="/test/show" class="btn btn-default btn-month" title="August" data-month="8">Aug</a><a href="/test/show" class="btn btn-default btn-month" title="September" data-month="9">Sep</a><a href="/test/show" class="btn btn-default btn-month" title="Oktober" data-month="10">Okt</a><a href="/test/show" class="btn btn-default btn-month" title="November" data-month="11">Nov</a><a href="/test/show" class="btn btn-default btn-month" title="Dezember" data-month="12">Dez</a>' == s
+
+        when: 'the tag is used'
+        s = applyTemplate('<g:monthBar action="show" activeMonth="2"/>')
+
+        then: 'the output is correctly rendered'
+        '<a href="/test/show" class="btn btn-default btn-month" title="Januar" data-month="1">Jan</a><a href="/test/show" class="btn btn-default btn-month active" title="Februar" data-month="2">Feb</a><a href="/test/show" class="btn btn-default btn-month" title="M&auml;rz" data-month="3">Mär</a><a href="/test/show" class="btn btn-default btn-month" title="April" data-month="4">Apr</a><a href="/test/show" class="btn btn-default btn-month" title="Mai" data-month="5">Mai</a><a href="/test/show" class="btn btn-default btn-month" title="Juni" data-month="6">Jun</a><a href="/test/show" class="btn btn-default btn-month" title="Juli" data-month="7">Jul</a><a href="/test/show" class="btn btn-default btn-month" title="August" data-month="8">Aug</a><a href="/test/show" class="btn btn-default btn-month" title="September" data-month="9">Sep</a><a href="/test/show" class="btn btn-default btn-month" title="Oktober" data-month="10">Okt</a><a href="/test/show" class="btn btn-default btn-month" title="November" data-month="11">Nov</a><a href="/test/show" class="btn btn-default btn-month" title="Dezember" data-month="12">Dez</a>' == s
+    }
+
+    void 'Tag nl2Br with value renders correct output'(String v, String s) {
+        expect:
+        s == applyTemplate('<g:nl2br value="${v}"/>', [v: v])
+
+        where:
+        v                       || s
+        ''                      || ''
+        '\r\n'                  || '<br />'
+        '\r'                    || '<br />'
+        '\n'                    || '<br />'
+        '\r\r'                  || '<br /><br />'
+        '\n\n'                  || '<br /><br />'
+        '\n\r'                  || '<br /><br />'
+        '\r\n\r\n'              || '<br /><br />'
+        ' \r\n '                || ' <br /> '
+        ' \r '                  || ' <br /> '
+        ' \n '                  || ' <br /> '
+        ' \r\r '                || ' <br /><br /> '
+        ' \n\n '                || ' <br /><br /> '
+        ' \n\r '                || ' <br /><br /> '
+        ' \r\n\r\n '            || ' <br /><br /> '
+        'foo\r\nbar'            || 'foo<br />bar'
+        'foo\rwhee\nbar'        || 'foo<br />whee<br />bar'
+        'foo\rbar'              || 'foo<br />bar'
+        'foo\nbar'              || 'foo<br />bar'
+        'foo\r\rbar'            || 'foo<br /><br />bar'
+        'foo\rwhee\rbar'        || 'foo<br />whee<br />bar'
+        'foo\n\nbar'            || 'foo<br /><br />bar'
+        'foo\nwhee\nbar'        || 'foo<br />whee<br />bar'
+        'foo\n\rbar'            || 'foo<br /><br />bar'
+        'foo\nwhee\rbar'        || 'foo<br />whee<br />bar'
+        'foo\r\n\r\nbar'        || 'foo<br /><br />bar'
+        'foo\r\nwhee\r\nbar'    || 'foo<br />whee<br />bar'
+        'foo\rx\nwhee\ry\nbar'  || 'foo<br />x<br />whee<br />y<br />bar'
+    }
+
+    void 'Tag nl2Br with body renders correct output'(String v, String s) {
         expect:
         s == applyTemplate("<g:nl2br>${v}</g:nl2br>")
 
         where:
-        v                       | s
-        ''                      | ''
-        '\r\n'                  | '<br />'
-        '\r'                    | '<br />'
-        '\n'                    | '<br />'
-        '\r\r'                  | '<br /><br />'
-        '\n\n'                  | '<br /><br />'
-        '\n\r'                  | '<br /><br />'
-        '\r\n\r\n'              | '<br /><br />'
-        ' \r\n '                | ' <br /> '
-        ' \r '                  | ' <br /> '
-        ' \n '                  | ' <br /> '
-        ' \r\r '                | ' <br /><br /> '
-        ' \n\n '                | ' <br /><br /> '
-        ' \n\r '                | ' <br /><br /> '
-        ' \r\n\r\n '            | ' <br /><br /> '
-        'foo\r\nbar'            | 'foo<br />bar'
-        'foo\rwhee\nbar'        | 'foo<br />whee<br />bar'
-        'foo\rbar'              | 'foo<br />bar'
-        'foo\nbar'              | 'foo<br />bar'
-        'foo\r\rbar'            | 'foo<br /><br />bar'
-        'foo\rwhee\rbar'        | 'foo<br />whee<br />bar'
-        'foo\n\nbar'            | 'foo<br /><br />bar'
-        'foo\nwhee\nbar'        | 'foo<br />whee<br />bar'
-        'foo\n\rbar'            | 'foo<br /><br />bar'
-        'foo\nwhee\rbar'        | 'foo<br />whee<br />bar'
-        'foo\r\n\r\nbar'        | 'foo<br /><br />bar'
-        'foo\r\nwhee\r\nbar'    | 'foo<br />whee<br />bar'
-        'foo\rx\nwhee\ry\nbar'  | 'foo<br />x<br />whee<br />y<br />bar'
+        v                       || s
+        ''                      || ''
+        '\r\n'                  || '<br />'
+        '\r'                    || '<br />'
+        '\n'                    || '<br />'
+        '\r\r'                  || '<br /><br />'
+        '\n\n'                  || '<br /><br />'
+        '\n\r'                  || '<br /><br />'
+        '\r\n\r\n'              || '<br /><br />'
+        ' \r\n '                || ' <br /> '
+        ' \r '                  || ' <br /> '
+        ' \n '                  || ' <br /> '
+        ' \r\r '                || ' <br /><br /> '
+        ' \n\n '                || ' <br /><br /> '
+        ' \n\r '                || ' <br /><br /> '
+        ' \r\n\r\n '            || ' <br /><br /> '
+        'foo\r\nbar'            || 'foo<br />bar'
+        'foo\rwhee\nbar'        || 'foo<br />whee<br />bar'
+        'foo\rbar'              || 'foo<br />bar'
+        'foo\nbar'              || 'foo<br />bar'
+        'foo\r\rbar'            || 'foo<br /><br />bar'
+        'foo\rwhee\rbar'        || 'foo<br />whee<br />bar'
+        'foo\n\nbar'            || 'foo<br /><br />bar'
+        'foo\nwhee\nbar'        || 'foo<br />whee<br />bar'
+        'foo\n\rbar'            || 'foo<br /><br />bar'
+        'foo\nwhee\rbar'        || 'foo<br />whee<br />bar'
+        'foo\r\n\r\nbar'        || 'foo<br /><br />bar'
+        'foo\r\nwhee\r\nbar'    || 'foo<br />whee<br />bar'
+        'foo\rx\nwhee\ry\nbar'  || 'foo<br />x<br />whee<br />y<br />bar'
     }
 
-    // TODO test paginate, searchResults, title and url
+    // TODO test paginate
+    // TODO test searchResults
+    // TODO test title
+
+    void 'Tag url renders correct output'() {
+        expect:
+        'http://localhost:8080/test/index' == applyTemplate('<g:url/>')
+    }
 }

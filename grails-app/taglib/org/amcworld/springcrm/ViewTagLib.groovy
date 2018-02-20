@@ -20,16 +20,20 @@
 
 package org.amcworld.springcrm
 
+import com.mongodb.MongoClient
+import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Sorts
 import grails.artefact.TagLibrary
+import grails.util.GrailsNameUtils
 import grails.web.mapping.UrlMapping
 import java.text.DateFormatSymbols
 import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.StringUtils
-import org.springframework.web.servlet.support.RequestContextUtils as RCU
 import org.bson.Document as MDocument
+import org.bson.conversions.Bson
+import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
 /**
@@ -71,6 +75,7 @@ class ViewTagLib implements TagLibrary {
 
     CalendarEventService calendarEventService
     ConfigService configService
+    MongoClient mongo
     SeqNumberService seqNumberService
     UserService userService
 
@@ -100,15 +105,23 @@ class ViewTagLib implements TagLibrary {
      * Creates a link to the former page (back link), if available, or creates
      * a link using the given attributes.
      *
-     * @attr action     the name of the action to use in the link, if not specified the default action will be linked
-     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr action     the name of the action to use in the link, if not
+     *                  specified the default action will be linked
+     * @attr controller the name of the controller to use in the link, if not
+     *                  specified the current controller will be linked
      * @attr id         the id to use in the link
      * @attr fragment   the link fragment (often called anchor tag) to use
      * @attr mapping    the named URL mapping to use to rewrite the link
      * @attr params     a map containing URL query parameters
      * @attr url        a map containing the action, controller, id etc.
-     * @attr absolute   if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
-     * @attr base       sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
+     * @attr absolute   if set to "true" will prefix the link target address
+     *                  with the value of the grails.serverURL property from
+     *                  Config, or http://localhost:<port> if no value in Config
+     *                  and not running in production.
+     * @attr base       sets the prefix to be added to the link target address,
+     *                  typically an absolute server URL. This overrides the
+     *                  behavior of the absolute property, if both are
+     *                  specified.
      */
     def backLink = { attrs, body ->
         if (params.returnUrl) {
@@ -127,17 +140,26 @@ class ViewTagLib implements TagLibrary {
      * @attr size       the size of the button, e. g. lg, sm or xs
      * @attr icon       the icon which should be used, e. g. floppy-o, trash-o
      * @attr class      further CSS classes to apply
-     * @attr message    a message code which is used to render the button text; if specified, the body will not be evaluated
-     * @attr action     the name of the action to use in the link, if not specified the default action will be linked
-     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr message    a message code which is used to render the button text;
+     *                  if specified, the body will not be evaluated
+     * @attr action     the name of the action to use in the link, if not
+     *                  specified the default action will be linked
+     * @attr controller the name of the controller to use in the link, if not
+     *                  specified the current controller will be linked
      * @attr id         the id to use in the link
      * @attr fragment   the link fragment (often called anchor tag) to use
      * @attr mapping    the named URL mapping to use to rewrite the link
      * @attr params     a map containing URL query parameters
      * @attr url        a map containing the action, controller, id etc.
-     * @attr absolute   if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
-     * @attr base       sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
-     * @attr back       if true and a return URL is set in the parameters a back link is generated
+     * @attr absolute   if set to "true" will prefix the link target address
+     *                  with the value of the grails.serverURL property from
+     *                  Config, or http://localhost:<port> if no value in Config
+     *                  and not running in production.
+     * @attr base       sets the prefix to be added to the link target address,
+     *                  typically an absolute server URL. This overrides the
+     *                  behavior of the absolute property, if both are specified.
+     * @attr back       if true and a return URL is set in the parameters a back
+     *                  link is generated
      */
     def button = { attrs, body ->
         StringBuilder buf = new StringBuilder('btn')
@@ -217,34 +239,11 @@ class ViewTagLib implements TagLibrary {
     }
 
     /**
-     * Returns the URL of the former page (back link), if available, or creates
-     * the URL using the given attributes.
-     *
-     * @attr action     the name of the action to use in the link, if not specified the default action will be linked
-     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
-     * @attr id         the id to use in the link
-     * @attr fragment   the link fragment (often called anchor tag) to use
-     * @attr mapping    the named URL mapping to use to rewrite the link
-     * @attr params     a map containing URL query parameters
-     * @attr url        a map containing the action, controller, id etc.
-     * @attr absolute   if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
-     * @attr base       sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
-     */
-    def createBackLink = { attrs, body ->
-        if (params.returnUrl) {
-            out << (params.returnUrl as String)
-        } else {
-            out << (createLink(attrs, body) as String)
-        }
-    }
-
-    /**
      * Renders the currency symbol from the application configuration.
      */
     def currency = {
-        Locale locale = userService.currentLocale
-        Currency currency = getCurrency(locale)
-        out << ((currency == null) ? '' : currency.getSymbol(locale))
+        Locale locale = userService.getCurrentLocale()
+        out << getCurrencyForLocale(locale).getSymbol(locale)
     }
 
     /**
@@ -270,9 +269,12 @@ class ViewTagLib implements TagLibrary {
      * values according to the formatting rules of the current locale.
      *
      * @attr name REQUIRED  the name of the input field
-     * @attr value          the value of the input field; this may be either a Date or a Calendar object
+     * @attr value          the value of the input field; this may be either a
+     *                      Date or a Calendar object
      * @attr id             the ID of the input field; defaults to name
-     * @attr precision      the precision of the date/time input fields; possible values are "year", "month", "day", "hour", or "minute"
+     * @attr precision      the precision of the date/time input fields;
+     *                      possible values are "year", "month", "day", "hour"
+     *                      or "minute"
      */
     def dateInput = { attrs, body ->
 
@@ -302,7 +304,7 @@ class ViewTagLib implements TagLibrary {
         Calendar c = null
         if (value instanceof Calendar) {
             c = value
-        } else if (value != null) {
+        } else if (value instanceof Date) {
             c = new GregorianCalendar()
             c.setTime value
         }
@@ -326,20 +328,29 @@ class ViewTagLib implements TagLibrary {
      * application configuration.
      *
      * @attr number REQUIRED    the number to format
-     * @attr minFractionDigits  the minimum number of digits allowed in the fraction portion of a number; defaults to either the default number of fraction digits for the currency of the selected locale or the number of fraction digits defined in the configuration (the latter has precedence)
-     * @attr groupingUsed       whether or not grouping will be used in this format; defaults to true
-     * @attr displayZero        if true zero is displayed as number, otherwise an empty string is generated; defaults to false
-     * @attr numberOnly         if true the formatted value is display without the currency symbol; defaults to false
-     * @attr external           if true the value is formatted with the number of fraction digits used in external prices
+     * @attr minFractionDigits  the minimum number of digits allowed in the
+     *                          fraction portion of a number; defaults to either
+     *                          the default number of fraction digits for the
+     *                          currency of the selected locale or the number of
+     *                          fraction digits defined in the configuration
+     *                          (the latter has precedence)
+     * @attr groupingUsed       whether or not grouping will be used in this
+     *                          format; defaults to true
+     * @attr displayZero        if true zero is displayed as number, otherwise
+     *                          an empty string is generated; defaults to false
+     * @attr numberOnly         if true the formatted value is display without
+     *                          the currency symbol; defaults to false
+     * @attr external           if true the value is formatted with the number
+     *                          of fraction digits used in external prices
      */
     def formatCurrency = { attrs, body ->
         def number = attrs.number
         if (number || attrs.displayZero) {
-            Locale locale = userService.currentLocale
-            Currency currency = getCurrency(locale)
+            Locale locale = userService.getCurrentLocale()
+            Currency currency = getCurrencyForLocale(locale)
             int fractionDigits = attrs.external \
-                ? userService.numFractionDigitsExt \
-                : userService.numFractionDigits
+                ? userService.getNumFractionDigitsExt() \
+                : userService.getNumFractionDigits()
             if (attrs.minFractionDigits != null) {
                 fractionDigits = attrs.minFractionDigits
             }
@@ -363,7 +374,8 @@ class ViewTagLib implements TagLibrary {
      * for example, "2.5 K" or "158 M".
      *
      * @attr number REQUIRED    the number to format
-     * @attr groupingUsed       whether or not grouping will be used in this format; defaults to true
+     * @attr groupingUsed       whether or not grouping will be used in this
+     *                          format; defaults to true
      * @since                   1.4
      */
     def formatSize = { attrs, body ->
@@ -383,7 +395,7 @@ class ViewTagLib implements TagLibrary {
 
             out << (formatNumber(
                 number: value, minFractionDigits: 0, maxFractionDigits: 2,
-                type: 'number', locale: userService.currentLocale,
+                type: 'number', locale: userService.getCurrentLocale(),
                 groupingUsed: attrs.groupingUsed ?: true
             ) as String)
             out << ' ' << unit
@@ -398,56 +410,6 @@ class ViewTagLib implements TagLibrary {
      */
     def fullNumber = { attrs ->
         out << seqNumberService.getFullNumber(attrs.bean as NumberedDomain)
-    }
-
-    /**
-     * Renders a bar of letters which allows the user to switch to a page where
-     * the elements with the property value with the respective initial letter
-     * reside.
-     *
-     * @attr clazz REQUIRED     the class instance of the domain class that letters are to render
-     * @attr property REQUIRED  the name of the property that values are used to obtain the initial letters
-     * @attr controller         the controller which is called when the user clicks a letter; if not specified the current controller name is used
-     * @attr action             the action which is called when the user clicks a letter; if not specified the current action name is used
-     * @attr params             a map containing URL query parameters
-     * @attr where              an optional HSQL WHERE clause which is used in the SQL query for the initial letters
-     * @attr numLetters         the number of letters which are combined to one link; defaults to 1
-     * @attr separator          the separator used to represent ranges of letters like A-C; if not specified the letters are not represented as range
-     */
-    def letterBar = { attrs, body ->
-        Class<?> cls = attrs.clazz
-        String prop = attrs.property
-
-        List<String> letters = cls.collection.aggregate([
-            Aggregates.project(
-                Projections.computed(
-                    'letter',
-                    new MDocument(
-                        '$toUpper',
-                        new MDocument('$substrCP', ['$' + prop, 0, 1])
-                    )
-                )
-            ),
-            Aggregates.group('$letter'),
-            Aggregates.sort(Sorts.orderBy(Sorts.ascending('_id')))
-        ])*._id
-
-        out << (render(
-            template: '/tags/view/letterBar',
-            model: [
-                action: attrs.action ?: actionName,
-                availableLetters: message(
-                    code: 'default.letterBar.letters',
-                    default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                ),
-                controller: attrs.controller ?: controllerName,
-                letters: letters,
-                linkParams: attrs.params ?: [: ],
-                max: params.max ?: 10,
-                numLetters: (attrs.numLetters ?: 1) as int,
-                separator: attrs.separator
-            ]
-        ) as String)
     }
 
     /**
@@ -469,79 +431,67 @@ class ViewTagLib implements TagLibrary {
     }
 
     /**
-     * Creates a menu button with optional icon either as link or a
-     * <code>&lt;button></code> element.  If any of the link attributes are
-     * specified, a link is generated.  The menu items <code>&lt;li></code>
-     * must be specified in the body of the tag.
+     * Renders a bar of letters which allows the user to switch to a page where
+     * the elements with the property value with the respective initial letter
+     * reside.
      *
-     * @attr message REQUIRED   a message code which is used to render the button text
-     * @attr color              the color of the button, e. g. white, green, blue
-     * @attr size               the size of the button, e. g. small, medium
-     * @attr icon               the icon which should be used, e. g. save, trash
-     * @attr class              further CSS classes to apply to the first button
-     * @attr action             the name of the action to use in the link, if not specified the default action will be linked
-     * @attr controller         the name of the controller to use in the link, if not specified the current controller will be linked
-     * @attr id                 the id to use in the link
-     * @attr fragment           the link fragment (often called anchor tag) to use
-     * @attr mapping            the named URL mapping to use to rewrite the link
+     * @attr clazz REQUIRED     the class instance of the domain class that
+     *                          letters are to render
+     * @attr property REQUIRED  the name of the property that values are used
+     *                          to obtain the initial letters
+     * @attr controller         the controller which is called when the user
+     *                          clicks a letter; if not specified the current
+     *                          controller name is used
+     * @attr action             the action which is called when the user clicks
+     *                          a letter; if not specified the current action
+     *                          name is used
      * @attr params             a map containing URL query parameters
-     * @attr url                a map containing the action, controller, id etc.
-     * @attr absolute           if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
-     * @attr base               sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
+     * @attr where              an optional MongoDB filter which is used in the
+     *                          query for the initial letters
+     * @attr numLetters         the number of letters which are combined to one
+     *                          link; defaults to 1
+     * @attr separator          the separator used to represent ranges of
+     *                          letters like A-C; if not specified the letters
+     *                          are not represented as range
      */
-    def menuButton = { attrs, body ->
-        StringBuilder buf = new StringBuilder('button')
-        String s = attrs.remove('color')
-        if (s) {
-            buf << ' ' << s
-        }
-        s = attrs.remove('size')
-        if (s) {
-            buf << ' ' << s
-        }
-        String baseCssClass = buf.toString()
-        s = attrs.remove('class')
-        if (s) {
-            buf << ' ' << s
-        }
-        String cssClass = buf.toString()
+    def letterBar = { attrs, body ->
+        Class<?> clazz = attrs.clazz
+        String prop = attrs.property
 
-        buf = new StringBuilder()
-        s = attrs.remove('icon')
-        if (s) {
-            buf << '<i class="fa fa-' << s << '"></i>'
+        List<Bson> pipeline = []
+        if (attrs.where) {
+            pipeline << Aggregates.match(attrs.where as Bson)
         }
-        s = attrs.remove('message')
-        def args = attrs.remove('args')
-        def defValue = attrs.remove('default')
-        buf << message(code: s, args: args, default: defValue)
-        String content = buf.toString()
+        pipeline << Aggregates.project(
+            Projections.computed(
+                'letter',
+                new MDocument(
+                    '$toUpper', new MDocument('$substrCP', ['$' + prop, 0, 1])
+                )
+            )
+        )
+        pipeline << Aggregates.group('$letter')
+        pipeline << Aggregates.sort(Sorts.orderBy(Sorts.ascending('_id')))
+        List<String> letters =
+            getCollection(clazz).aggregate(pipeline)*.getAt('_id') as
+                List<String>
 
-        out << '<div class="button-group">'
-        if (attrs.remove('back') && params.returnUrl) {
-            attrs.url = params.returnUrl
-        }
-        if (attrs.action || attrs.controller || attrs.id || attrs.mapping ||
-            attrs.params || attrs.uri || attrs.url)
-        {
-            def data = attrs + [class: cssClass]
-            out << link(data) { content }
-        } else {
-            out << '<span class="' << cssClass << '"'
-            def id = attrs.remove('elementId')
-            if (id) {
-                out << ' id="' << id << '"'
-            }
-            def remainingKeys = attrs.keySet()
-            for (key in remainingKeys) {
-                out << ' ' << key << '="' << attrs[key]?.encodeAsHTML() << '"'
-            }
-            out << '>' << content << '</span>'
-        }
-        out << '<span class="' << baseCssClass << ' dropdown">'
-        out << '<i class="fa fa-caret-down"></i></span>'
-        out << '<ul class="dropdown-menu">' << body() << '</ul>'
-        out << '</div>'
+        out << (render(
+            template: '/tags/view/letterBar',
+            model: [
+                action: attrs.action ?: actionName,
+                availableLetters: message(
+                    code: 'default.letterBar.letters',
+                    default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                ),
+                controller: attrs.controller ?: controllerName,
+                letters: letters,
+                linkParams: attrs.params ?: [: ],
+                max: params.max ?: 10,
+                numLetters: (attrs.numLetters ?: 1) as int,
+                separator: attrs.separator
+            ]
+        ) as String)
     }
 
     /**
@@ -553,10 +503,11 @@ class ViewTagLib implements TagLibrary {
      */
     def month = { attrs, body ->
         DateFormatSymbols dfs = DateFormatSymbols.getInstance(
-            userService.currentLocale
+            userService.getCurrentLocale()
         )
 
-        out << dfs.months[attrs.month - 1] << ' ' << attrs.year
+        out << dfs.months[(attrs.month as int) - 1] << ' '
+        out << (attrs.year as int)
     }
 
     /**
@@ -566,29 +517,29 @@ class ViewTagLib implements TagLibrary {
      * @attr action         the action the link should contain
      * @attr activeMonth    the one-based index of the month to mark as active;
      *                      zero or {@code null} if no month is active
+     * @attr params         any query parameters which should be rendered to the
+     *                      links
      * @since 2.0
      */
     def monthBar = { attrs, body ->
         String action = attrs.remove('action')
-        int activeMonth = attrs.remove('activeMonth') ?: 0
+        int activeMonth = (attrs.remove('activeMonth') ?: 0) as int
         def linkParams = attrs.remove('params')
 
         DateFormatSymbols dfs = DateFormatSymbols.getInstance(
-            userService.currentLocale
+            userService.getCurrentLocale()
         )
         String [] shortMonthNames = dfs.shortMonths
         String [] longMonthNames = dfs.months
 
         for (int i = 0; i < 12; i++) {
-            StringBuilder buf = new StringBuilder('btn btn-default')
+            StringBuilder buf = new StringBuilder('btn btn-default btn-month')
             if (i + 1 == activeMonth) {
                 buf << ' active'
             }
-            buf << ' btn-month'
-            String cssClass = buf.toString()
 
             out << link(
-                    action: action, params: linkParams, class: cssClass,
+                    action: action, params: linkParams, class: buf.toString(),
                     title: longMonthNames[i], 'data-month': i + 1
                 ) {
                     shortMonthNames[i]
@@ -599,7 +550,8 @@ class ViewTagLib implements TagLibrary {
     /**
      * Converts LF and CR to HTML <br /> tags.
      *
-     * @attr value  the value to convert; if not specified the body of the tag is used
+     * @attr value  the value to convert; if not specified the body of the tag
+     *              is used
      */
     def nl2br = { attrs, body ->
         String s = (attrs.value ?: body()) ?: ''
@@ -831,7 +783,7 @@ class ViewTagLib implements TagLibrary {
         switch (actionName) {
         case 'edit':
         case 'show':
-            def instance = pageScope."${controllerName}Instance"
+            def instance = pageScope."${controllerName}"
             out << message(
                 code: "default.${actionName}.label",
                 args: [instance?.toString() ?: entityName]
@@ -855,18 +807,29 @@ class ViewTagLib implements TagLibrary {
 
     //-- Non-public methods ---------------------
 
-    private callLink(Map attrs, Object body) {
-        TagOutput.captureTagOutput(tagLibraryLookup, 'g', 'link', attrs, body, webRequest)
+    /**
+     * Gets the MongoDB collection of the given domain model class.
+     *
+     * @param clazz the given domain model class
+     * @return      the MongoDB collection
+     */
+    private MongoCollection getCollection(Class<?> clazz) {
+        mongo.getDatabase(
+                grailsApplication.config.getProperty(
+                    'grails.mongodb.databaseName'
+                )
+            )
+            .getCollection(GrailsNameUtils.getPropertyName(clazz))
     }
 
     /**
      * Gets the currently active currency.
      *
      * @param locale    the given locale
-     * @return          the currency; {@code null} if no currency is defined
+     * @return          the currency
      * @since           1.3
      */
-    protected Currency getCurrency(Locale locale) {
+    private Currency getCurrencyForLocale(Locale locale) {
         String currencyId = configService.getString('currency')
 
         /* fix for old currency symbols in table config */
@@ -885,6 +848,7 @@ class ViewTagLib implements TagLibrary {
                 currency = Currency.getInstance(locale)
             } catch (IllegalArgumentException ignored) { /* ignored */ }
         }
+
         currency ?: Currency.getInstance('EUR')
     }
 }

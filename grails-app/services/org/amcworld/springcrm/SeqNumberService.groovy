@@ -48,13 +48,13 @@ interface ISeqNumberService {
     //-- Public methods -----------------------------
 
     /**
-     * Finds a sequence number by the given controller name.
+     * Gets the sequence number with the given ID.
      *
-     * @param controllerName    the given controller name
-     * @return                  the found sequence number or {@code null} if no
-     *                          such sequence number exists
+     * @param id    the given ID
+     * @return      the sequence number or {@code null} if no such sequence
+     *              number has been found
      */
-    SeqNumber findByControllerName(String controllerName)
+    SeqNumber get(String id)
 
     /**
      * Lists all sequence numbers.
@@ -63,6 +63,15 @@ interface ISeqNumberService {
      * @return      the list of sequence numbers
      */
     List<SeqNumber> list(Map args)
+
+    /**
+     * Creates or updates the given sequence number.
+     *
+     * @param work  the given sequence number
+     * @return      the saved sequence number or {@code null} if an error
+     *              occurred
+     */
+    SeqNumber save(SeqNumber work)
 }
 
 
@@ -138,7 +147,7 @@ abstract class SeqNumberService implements ISeqNumberService {
 
         List<SeqNumber> res = list(readOnly: true)
         for (SeqNumber sn : res) {
-            Class<?> cls = domainNameToClass(sn.controllerName)
+            Class<?> cls = domainNameToClass(sn.id)
             if (InvoicingTransaction.isAssignableFrom(cls)) {
                 Class<? extends InvoicingTransaction> c =
                     (Class<? extends InvoicingTransaction>) cls
@@ -182,26 +191,15 @@ abstract class SeqNumberService implements ISeqNumberService {
     }
 
     /**
-     * Loads the sequence number data for the given controller.
-     *
-     * @param controllerName    the given controller name
-     * @return                  the sequence number data; {@code null} if no
-     *                          such data are stored for the given controller
-     */
-    SeqNumber loadSeqNumber(String controllerName) {
-        findByControllerName controllerName
-    }
-
-    /**
      * Loads the sequence number data for the controller which is associated to
      * the given class.
      *
-     * @param controllerName    the given class
-     * @return                  the sequence number data; {@code null} if no
-     *                          such data are stored for the controller
+     * @param cls   the given class
+     * @return      the sequence number data; {@code null} if no such sequence
+     *              number exists for the class
      */
     SeqNumber loadSeqNumber(Class cls) {
-        loadSeqNumber classToDomainName(cls)
+        get classToDomainName(cls)
     }
 
     /**
@@ -212,7 +210,7 @@ abstract class SeqNumberService implements ISeqNumberService {
      * @return                  the next available sequence number
      */
     int nextNumber(String controllerName) {
-        SeqNumber seq = loadSeqNumber(controllerName)
+        SeqNumber seq = get(controllerName)
         Class<?> clazz = domainNameToClass(controllerName)
 
         List<Bson> filters = [Filters.lte('number', seq.endValue)]
@@ -332,6 +330,6 @@ abstract class SeqNumberService implements ISeqNumberService {
                     'grails.mongodb.databaseName'
                 )
             )
-            .getCollection(GrailsNameUtils.getLogicalName(clazz, ''))
+            .getCollection(GrailsNameUtils.getPropertyName(clazz))
     }
 }

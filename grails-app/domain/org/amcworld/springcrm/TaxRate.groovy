@@ -1,7 +1,7 @@
 /*
  * TaxRate.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@ import org.grails.datastore.gorm.GormEntity
  * The class {@code TaxRate} represents tax rates.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class TaxRate extends SelValue implements GormEntity<TaxRate> {
+class TaxRate extends SelValue {
 
     //-- Class fields ---------------------------
 

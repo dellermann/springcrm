@@ -25,7 +25,7 @@ import grails.converters.XML
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.TypeCheckingMode
-import org.amcworld.springcrm.Client
+import org.amcworld.springcrm.ConfigService
 import org.amcworld.springcrm.InvoicingItem
 import org.amcworld.springcrm.InvoicingTransaction
 import org.amcworld.springcrm.SeqNumberService
@@ -66,6 +66,8 @@ class InvoicingTransactionXML extends XML {
 
 
     //-- Fields ---------------------------------
+
+    ConfigService configService
 
     /**
      * The internal data structure which is transformed to XML.
@@ -229,7 +231,7 @@ class InvoicingTransactionXML extends XML {
                 total: transaction.total
             ],
             watermark: '',
-            client: Client.loadAsMap()
+            client: configService.loadTenantAsMap()
         ]
     }
 

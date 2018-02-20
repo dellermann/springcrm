@@ -4,7 +4,7 @@
       <span class="input-group-addon">${prefix}-</span>
     </g:if>
     <input type="number" name="number" id="number" class="form-control"
-      value="${value}" size="10"${checked ? ' disabled="disabled"' : ''}/>
+      value="${value}" size="10"${raw(checked ? ' disabled="disabled"' : '')}/>
     <g:if test="${suffix}">
       <span class="input-group-addon">-${suffix}</span>
     </g:if>

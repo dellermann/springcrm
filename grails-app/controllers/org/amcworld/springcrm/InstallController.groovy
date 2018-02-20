@@ -1,7 +1,7 @@
 /*
  * InstallController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ class InstallController {
 
     //-- Fields ---------------------------------
 
+    ConfigService configService
     InstallService installService
     UserService userService
 
@@ -46,15 +47,15 @@ class InstallController {
     //-- Public methods -------------------------
 
     def clientData() {
-        respond client: Client.load(), step: 2
+        respond client: configService.loadTenant(), step: 2
     }
 
-    def clientDataSave(Client client) {
+    def clientDataSave(Tenant client) {
         if (client.hasErrors()) {
             respond([client: client, step: 2], [view: 'clientData'])
             return
         }
-        client.save()
+        configService.storeTenant client
 
         redirect action: 'createAdmin'
     }

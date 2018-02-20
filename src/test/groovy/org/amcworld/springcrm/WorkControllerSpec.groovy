@@ -270,7 +270,7 @@ class WorkControllerSpec extends Specification
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.workService = service
 
-        when: 'the action is executed without list type'
+        when: 'the action is executed'
         params.max = 10
         params.offset = 20
         controller.index()

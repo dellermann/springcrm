@@ -32,23 +32,19 @@ import org.grails.datastore.gorm.GormEntity
  * @author  Daniel Ellermann
  * @version 3.0
  */
-@EqualsAndHashCode(includes = ['controllerName'])
+@EqualsAndHashCode(includes = ['id'])
 class SeqNumber implements GormEntity<SeqNumber> {
 
     //-- Class fields ---------------------------
 
     static constraints = {
-        controllerName blank: false
         prefix maxSize: 5
         suffix maxSize: 5
-        startValue min: 0
-        endValue min: 0
-        orderId min: 0
+        startValue min: 0i
+        endValue min: 0i
+        orderId min: 0i
     }
     static mapping = {
-        controllerName(
-            index: true, indexAttributes: [unique: true, dropDups: true]
-        )
         sort 'orderId'
     }
 
@@ -56,19 +52,15 @@ class SeqNumber implements GormEntity<SeqNumber> {
     //-- Fields ---------------------------------
 
     /**
-     * The name of the controller the sequence numbers belong to.
-     */
-    String controllerName
-
-    /**
      * The end of the number range.
      */
     int endValue = 99999i
 
     /**
-     * The ID of the sequence number.
+     * The ID of the sequence number, which is the controller name the sequence
+     * number belongs to.
      */
-    ObjectId id
+    String id
 
     /**
      * A value specifying the order of the sequence number in a list.
@@ -95,6 +87,6 @@ class SeqNumber implements GormEntity<SeqNumber> {
 
     @Override
     String toString() {
-        controllerName
+        id
     }
 }

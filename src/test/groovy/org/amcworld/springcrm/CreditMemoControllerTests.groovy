@@ -34,7 +34,7 @@ class CreditMemoControllerTests {
 //        InvoicingTransaction.metaClass.seqNumberService = seqNumberService.createMock()
 
         SeqNumberService.metaClass.formatWithPrefix = { -> '10000' }
-        Client.metaClass.static.loadAsMap = { -> [: ] }
+        Tenant.metaClass.static.loadAsMap = { -> [: ] }
         grails.converters.XML.metaClass.static.toString = { -> '' }
 
         session.user = new User(username: 'dellermann')

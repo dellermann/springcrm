@@ -79,7 +79,7 @@ class PhoneCall {
     String notes
 
     /**
-     * The organization associated to the phone call
+     * The organization associated to the phone call.
      */
     Organization organization
 

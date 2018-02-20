@@ -1,5 +1,5 @@
 /*
- * PhoneCallControllerSpec.groovy
+ * NoteControllerSpec.groovy
  *
  * Copyright (c) 2011-2018, Daniel Ellermann
  *
@@ -24,32 +24,28 @@ import grails.testing.web.controllers.ControllerUnitTest
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.amcworld.springcrm.google.GoogleContactSync
 import org.bson.types.ObjectId
-import org.grails.web.util.GrailsApplicationAttributes
-import spock.lang.Ignore
 import spock.lang.Specification
 
 
-class PhoneCallControllerSpec extends Specification
-    implements ControllerUnitTest<PhoneCallController>
+class NoteControllerSpec extends Specification
+    implements ControllerUnitTest<NoteController>
 {
 
     //-- Feature methods ------------------------
 
     void 'The copy action returns the correct model and create view'() {
         given: 'an instance'
-        PhoneCall call = instance
+        Note note = instance
 
         when: 'the action is executed'
-        controller.copy call
+        controller.copy note
 
         then: 'the model is correctly created'
-        null != model.phoneCall
-        call.phone == model.phoneCall.phone
-        call.status == model.phoneCall.status
-        call.subject == model.phoneCall.subject
-        call.type == model.phoneCall.type
+        null != model.note
+        note.content == model.note.content
+        0i == model.note.number
+        note.title == model.note.title
 
         and: 'the view is correctly set'
         'create' == view
@@ -60,29 +56,27 @@ class PhoneCallControllerSpec extends Specification
         controller.create()
 
         then: 'the model is correctly created'
-        null != model.phoneCall
+        null != model.note
 
         when: 'the action is executed with parameters'
         populateValidParams params
         controller.create()
 
         then: 'the model is correctly created'
-        null != model.phoneCall
-        params.phone == model.phoneCall.phone
-        params.status == model.phoneCall.status
-        params.subject == model.phoneCall.subject
-        params.type == model.phoneCall.type
+        null != model.note
+        params.content == model.note.content
+        params.title == model.note.title
     }
 
     void 'The delete action deletes an instance if it exists'() {
         given: 'an instance'
-        PhoneCall phoneCall = instance
-        phoneCall.id = new ObjectId()
+        Note note = instance
+        note.id = new ObjectId()
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        service.delete(phoneCall.id) >> phoneCall
-        controller.phoneCallService = service
+        NoteService service = Mock()
+        service.delete(note.id) >> note
+        controller.noteService = service
 
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
@@ -91,7 +85,7 @@ class PhoneCallControllerSpec extends Specification
 
         then: 'a 404 error is returned'
         0 * service.delete(_)
-        '/phoneCall/index' == response.redirectedUrl
+        '/note/index' == response.redirectedUrl
         null != flash.message
 
         when: 'the action is called for a non-existing instance'
@@ -99,37 +93,37 @@ class PhoneCallControllerSpec extends Specification
         controller.delete new ObjectId().toString()
 
         then: 'a 404 error is returned'
-        0 * service.delete(phoneCall.id)
-        '/phoneCall/index' == response.redirectedUrl
+        0 * service.delete(note.id)
+        '/note/index' == response.redirectedUrl
         null != flash.message
 
         when: 'the action is called for an existing instance'
         response.reset()
-        controller.delete phoneCall.id.toString()
+        controller.delete note.id.toString()
 
         then: 'the instance is deleted'
-        1 * service.delete(phoneCall.id) >> phoneCall
-        '/phoneCall/index' == response.redirectedUrl
+        1 * service.delete(note.id) >> note
+        '/note/index' == response.redirectedUrl
         null != flash.message
 
         when: 'the action is called with an LDAP service'
         response.reset()
-        controller.delete phoneCall.id.toString()
+        controller.delete note.id.toString()
 
         then: 'the instance is deleted in LDAP, too'
-        1 * service.delete(phoneCall.id) >> phoneCall
-        '/phoneCall/index' == response.redirectedUrl
+        1 * service.delete(note.id) >> note
+        '/note/index' == response.redirectedUrl
         null != flash.message
     }
 
     void 'The edit action returns the correct model'() {
         given: 'an instance'
-        PhoneCall phoneCall = instance
-        phoneCall.id = new ObjectId()
+        Note note = instance
+        note.id = new ObjectId()
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        controller.phoneCallService = service
+        NoteService service = Mock()
+        controller.noteService = service
 
         when: 'the action is executed with a null domain'
         controller.edit null
@@ -143,31 +137,31 @@ class PhoneCallControllerSpec extends Specification
         controller.edit new ObjectId().toString()
 
         then: 'a 404 error is returned'
-        0 * service.get(phoneCall.id)
+        0 * service.get(note.id)
         404 == response.status
 
         when: 'the action is executed with an existing domain'
         response.reset()
-        controller.edit phoneCall.id.toString()
+        controller.edit note.id.toString()
 
         then: 'a model is populated containing the domain instance'
-        1 * service.get(phoneCall.id) >> phoneCall
-        phoneCall == model.phoneCall
+        1 * service.get(note.id) >> note
+        note == model.note
     }
 
     void 'The index action returns the correct model'() {
-        given: 'a list of phone calls'
+        given: 'a list of notes'
         def list = [
-            new PhoneCall(subject: 'Call 1'),
-            new PhoneCall(subject: 'Call 2'),
-            new PhoneCall(subject: 'Call 3'),
+            new Note(title: 'Note 1'),
+            new Note(title: 'Note 2'),
+            new Note(title: 'Note 3'),
         ]
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
+        NoteService service = Mock()
         1 * service.count() >> list.size()
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
-        controller.phoneCallService = service
+        controller.noteService = service
 
         when: 'the action is executed'
         params.max = 10
@@ -175,27 +169,27 @@ class PhoneCallControllerSpec extends Specification
         controller.index()
 
         then: 'the model is correct'
-        list.size() == model.phoneCallList.size()
-        list == (List) model.phoneCallList
-        list.size() == model.phoneCallCount
+        list.size() == model.noteList.size()
+        list == (List) model.noteList
+        list.size() == model.noteCount
     }
 
     void 'The index action with letter returns the correct model'() {
-        given: 'a list of phone calls'
+        given: 'a list of notes'
         def list = [
-            new PhoneCall(subject: 'Call 1'),
-            new PhoneCall(subject: 'Call 2'),
-            new PhoneCall(subject: 'Call 3'),
+            new Note(title: 'Note 1'),
+            new Note(title: 'Note 2'),
+            new Note(title: 'Note 3'),
         ]
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        2 * service.countBySubjectLessThan('E') >>> [45, 40]
+        NoteService service = Mock()
+        2 * service.countByTitleLessThan('E') >>> [45, 40]
         2 * service.count() >> list.size()
         2 * service.list(getParameterMap(
-            letter: 'E', max: 10, offset: 40, sort: 'subject'
+            letter: 'E', max: 10, offset: 40, sort: 'title'
         )) >> list
-        controller.phoneCallService = service
+        controller.noteService = service
 
         when: 'the action is executed without search parameter'
         params.letter = 'E'
@@ -204,9 +198,9 @@ class PhoneCallControllerSpec extends Specification
         controller.index()
 
         then: 'the model is correct'
-        list.size() == model.phoneCallList.size()
-        list == (List) model.phoneCallList
-        list.size() == model.phoneCallCount
+        list.size() == model.noteList.size()
+        list == (List) model.noteList
+        list.size() == model.noteCount
 
         when: 'the action is executed with search parameter'
         response.reset()
@@ -217,45 +211,45 @@ class PhoneCallControllerSpec extends Specification
         controller.index()
 
         then: 'the model is correct'
-        list.size() == model.phoneCallList.size()
-        list == (List) model.phoneCallList
-        list.size() == model.phoneCallCount
+        list.size() == model.noteList.size()
+        list == (List) model.noteList
+        list.size() == model.noteCount
     }
 
     void 'The index action with search term returns the correct model'() {
-        given: 'a list of phone calls'
+        given: 'a list of notes'
         def list = [
-            new PhoneCall(subject: 'Call 1'),
-            new PhoneCall(subject: 'Call 2'),
-            new PhoneCall(subject: 'Call 3'),
+            new Note(title: 'Note 1'),
+            new Note(title: 'Note 2'),
+            new Note(title: 'Note 3'),
         ]
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        1 * service.countBySubjectLike('%all%') >> list.size()
-        1 * service.findAllBySubjectLike(
-            '%all%', getParameterMap(max: 10, offset: 20, search: 'all')
+        NoteService service = Mock()
+        1 * service.countByTitleLike('%ote%') >> list.size()
+        1 * service.findAllByTitleLike(
+            '%ote%', getParameterMap(max: 10, offset: 20, search: 'ote')
         ) >> list
-        controller.phoneCallService = service
+        controller.noteService = service
 
         when: 'the action is executed'
         params.max = 10
         params.offset = 20
-        params.search = 'all'
+        params.search = 'ote'
         controller.index()
 
         then: 'the model is correct'
-        list.size() == model.phoneCallList.size()
-        list == (List) model.phoneCallList
-        list.size() == model.phoneCallCount
+        list.size() == model.noteList.size()
+        list == (List) model.noteList
+        list.size() == model.noteCount
     }
 
     void 'The listEmbedded action returns the correct model'() {
-        given: 'a list of phone calls'
+        given: 'a list of notes'
         def list = [
-            new PhoneCall(subject: 'Call 1'),
-            new PhoneCall(subject: 'Call 2'),
-            new PhoneCall(subject: 'Call 3'),
+            new Note(title: 'Note 1'),
+            new Note(title: 'Note 2'),
+            new Note(title: 'Note 3'),
         ]
 
         and: 'an organization'
@@ -267,8 +261,8 @@ class PhoneCallControllerSpec extends Specification
         person.id = new ObjectId()
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        controller.phoneCallService = service
+        NoteService service = Mock()
+        controller.noteService = service
 
         and: 'an organization service instance'
         OrganizationService organizationService = Mock()
@@ -318,8 +312,8 @@ class PhoneCallControllerSpec extends Specification
         1 * service.countByOrganization(org) >> list.size()
         0 * service.findAllByPerson(_, _)
         0 * service.countByPerson(_)
-        list == (List) model.phoneCallList
-        list.size() == model.phoneCallCount
+        list == (List) model.noteList
+        list.size() == model.noteCount
         [organization: org.id.toString()] == (Map) model.linkParams
 
         when: 'the action is called for a non-existing person'
@@ -350,8 +344,8 @@ class PhoneCallControllerSpec extends Specification
             person, getParameterMap(max: 20, offset: 40)
         ) >> list
         1 * service.countByPerson(person) >> list.size()
-        list == (List) model.phoneCallList
-        list.size() == model.phoneCallCount
+        list == (List) model.noteList
+        list.size() == model.noteCount
         [person: person.id.toString()] == (Map) model.linkParams
 
         when: 'the action is called for a non-existing organization and a person'
@@ -382,19 +376,19 @@ class PhoneCallControllerSpec extends Specification
         1 * service.countByOrganization(org) >> list.size()
         0 * service.findAllByPerson(_, _)
         0 * service.countByPerson(_)
-        list == (List) model.phoneCallList
-        list.size() == model.phoneCallCount
+        list == (List) model.noteList
+        list.size() == model.noteCount
         [organization: org.id.toString()] == (Map) model.linkParams
     }
 
     void 'The save action correctly persists an instance'() {
         given: 'an instance'
-        PhoneCall phoneCall = instance
-        phoneCall.id = new ObjectId()
+        Note note = instance
+        note.id = new ObjectId()
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        controller.phoneCallService = service
+        NoteService service = Mock()
+        controller.noteService = service
 
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
@@ -403,38 +397,38 @@ class PhoneCallControllerSpec extends Specification
 
         then: 'a 404 error is returned'
         0 * service.save(_)
-        '/phoneCall/index' == response.redirectedUrl
+        '/note/index' == response.redirectedUrl
         null != flash.message
 
         when: 'the action is executed with an invalid instance'
         response.reset()
-        controller.save phoneCall
+        controller.save note
 
         then: 'the create view is rendered again with the correct model'
-        1 * service.save(phoneCall) >> {
-            throw new ValidationException('', new ValidationErrors(phoneCall))
+        1 * service.save(note) >> {
+            throw new ValidationException('', new ValidationErrors(note))
         }
-        phoneCall == model.phoneCall
+        note == model.note
         'create' == view
 
         when: 'the action is executed with a valid instance'
         response.reset()
-        controller.save phoneCall
+        controller.save note
 
         then: 'a redirect is issued to the show action'
-        1 * service.save(phoneCall) >> phoneCall
-        '/phoneCall/show/' + phoneCall.id == response.redirectedUrl
+        1 * service.save(note) >> note
+        '/note/show/' + note.id == response.redirectedUrl
         null != controller.flash.message
     }
 
     void 'The show action returns the correct model'() {
         given: 'an instance'
-        PhoneCall phoneCall = instance
-        phoneCall.id = new ObjectId()
+        Note note = instance
+        note.id = new ObjectId()
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        controller.phoneCallService = service
+        NoteService service = Mock()
+        controller.noteService = service
 
         when: 'the action is executed with a null domain'
         controller.show null
@@ -448,26 +442,26 @@ class PhoneCallControllerSpec extends Specification
         controller.show new ObjectId().toString()
 
         then: 'a 404 error is returned'
-        0 * service.get(phoneCall.id)
+        0 * service.get(note.id)
         404 == response.status
 
         when: 'the action is executed with an existing domain'
         response.reset()
-        controller.show phoneCall.id.toString()
+        controller.show note.id.toString()
 
         then: 'a model is populated containing the domain instance'
-        1 * service.get(phoneCall.id) >> phoneCall
-        phoneCall == model.phoneCall
+        1 * service.get(note.id) >> note
+        note == model.note
     }
 
     void 'The update action performs an update on a valid domain instance'() {
         given: 'an instance'
-        PhoneCall phoneCall = instance
-        phoneCall.id = new ObjectId()
+        Note note = instance
+        note.id = new ObjectId()
 
         and: 'a service instance'
-        PhoneCallService service = Mock()
-        controller.phoneCallService = service
+        NoteService service = Mock()
+        controller.noteService = service
 
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
@@ -476,50 +470,49 @@ class PhoneCallControllerSpec extends Specification
 
         then: 'a 404 error is returned'
         0 * service.save(_)
-        '/phoneCall/index' == response.redirectedUrl
+        '/note/index' == response.redirectedUrl
         null != flash.message
 
         when: 'an invalid domain instance is passed to the action'
         response.reset()
-        controller.update phoneCall
+        controller.update note
 
         then: 'the edit view is rendered again with the invalid instance'
-        1 * service.save(phoneCall) >> {
-            throw new ValidationException('', new ValidationErrors(phoneCall))
+        1 * service.save(note) >> {
+            throw new ValidationException('', new ValidationErrors(note))
         }
-        phoneCall == model.phoneCall
+        note == model.note
         'edit' == view
 
         when: 'a valid domain instance is passed to the action'
         response.reset()
-        controller.update phoneCall
+        controller.update note
 
         then: 'a redirect is issued to the show action'
-        1 * service.save(phoneCall) >> phoneCall
-        '/phoneCall/show/' + phoneCall.id == response.redirectedUrl
+        1 * service.save(note) >> note
+        '/note/show/' + note.id == response.redirectedUrl
         null != controller.flash.message
     }
 
 
     //-- Non-public methods -------------------------
 
-    private static PhoneCall getInstance() {
+    private static Note getInstance() {
         Map properties = [: ]
         populateValidParams properties
 
-        new PhoneCall(properties)
+        new Note(properties)
     }
 
     private GrailsParameterMap getParameterMap(Map map) {
         new GrailsParameterMap(map, request)
     }
 
-    private static void populateValidParams(Map params) {
+    private static void populateValidParams(Map params, Integer number = null) {
         assert params != null
 
-        params.phone = '+1 47 304503033'
-        params.status = PhoneCallStatus.COMPLETED
-        params.subject = 'My last phone call'
-        params.type = PhoneCallType.OUTGOING
+        params.content = 'This is my first note.'
+        params.number = number
+        params.title = 'My first note'
     }
 }

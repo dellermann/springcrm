@@ -21,7 +21,9 @@
 package org.amcworld.springcrm
 
 import grails.gorm.services.Service
+import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
 
 
 /**
@@ -42,6 +44,14 @@ interface IConfigService {
      * @param id    the given ID
      */
     void delete(String id)
+
+    /**
+     * Finds all configuration entries with an ID matching the given pattern.
+     *
+     * @param id    the given ID pattern
+     * @return      a list of matching configuration settings
+     */
+    List<Config> findAllByIdLike(String id)
 
     /**
      * Gets the configuration with the given ID.
@@ -163,6 +173,22 @@ abstract class ConfigService implements IConfigService {
     }
 
     /**
+     * Gets the configuration with the given ID as MongoDB ID.
+     *
+     * @param id        the given ID
+     * @param defValue  a default value which should be used if no such
+     *                  configuration exists or is unset
+     * @return          the MongoDB ID or {@code null} if no such configuration
+     *                  exists or is unset and no default value has been
+     *                  specified
+     */
+    ObjectId getObjectId(String id, ObjectId defValue = null) {
+        String value = getString(id)
+
+        value == null ? defValue : new ObjectId(value)
+    }
+
+    /**
      * Gets the configuration with the given ID as string value.
      *
      * @param id        the given ID
@@ -179,6 +205,31 @@ abstract class ConfigService implements IConfigService {
     }
 
     /**
+     * Loads data of the tenant from the configuration.
+     *
+     * @return  the tenant object with loaded data
+     * @since   3.0
+     */
+    Tenant loadTenant() {
+        loadTenantAsMap() as Tenant
+    }
+
+    /**
+     * Loads data of the tenant from the configuration as map.  The keys in the
+     * map represent the names of the properties in the {@code Tenant} class.
+     *
+     * @return  the tenant data as map
+     * @since   3.0
+     */
+    Map<String, String> loadTenantAsMap() {
+        List<Config> list = findAllByIdLike('tenant%')
+
+        list.collectEntries {
+            [GrailsNameUtils.getPropertyName(it.id.substring(6)), it.value]
+        }
+    }
+
+    /**
      * Stores the configuration with the given ID and value.
      *
      * @param id    the given ID
@@ -186,9 +237,33 @@ abstract class ConfigService implements IConfigService {
      * @return      the saved configuration instance
      */
     Config store(String id, Object value) {
-        Config config = new Config(value: value?.toString())
-        config.id = id
+        Config config = get(id)
+        if (config == null) {
+            config = new Config()
+            config.id = id
+        }
+        config.value = value?.toString()
 
         save config
+    }
+
+    /**
+     * Saves data of the given tenant to the configuration table.
+     *
+     * @param tenant    the given tenant
+     * @since 3.0
+     */
+    void storeTenant(Tenant tenant) {
+        store 'tenantName', tenant.name
+        store 'tenantStreet', tenant.street
+        store 'tenantPostalCode', tenant.postalCode
+        store 'tenantLocation', tenant.location
+        store 'tenantPhone', tenant.phone
+        store 'tenantFax', tenant.fax
+        store 'tenantEmail', tenant.email
+        store 'tenantWebsite', tenant.website
+        store 'tenantBankName', tenant.bankName
+        store 'tenantBankCode', tenant.bankCode
+        store 'tenantAccountNumber', tenant.accountNumber
     }
 }

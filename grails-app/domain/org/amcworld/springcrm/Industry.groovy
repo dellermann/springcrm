@@ -1,7 +1,7 @@
 /*
  * Industry.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ package org.amcworld.springcrm
  * declared in organizations.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 3.0
  */
 class Industry extends SelValue {
 
-    //-- Class variables ------------------------
+    //-- Class fields -------------------------------
 
 	static mapping = {
 		sort 'name'

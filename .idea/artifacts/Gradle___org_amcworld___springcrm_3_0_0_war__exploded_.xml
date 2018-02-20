@@ -49,10 +49,8 @@
           <element id="library" level="project" name="Gradle: com.google.gdata:core:1.47.1" />
           <element id="library" level="project" name="Gradle: commons-fileupload:commons-fileupload:1.3.1" />
           <element id="library" level="project" name="Gradle: commons-io:commons-io:2.4" />
-          <element id="library" level="project" name="Gradle: jmimemagic:jmimemagic:0.1.2" />
           <element id="library" level="project" name="Gradle: org.apache.commons:commons-vfs2:2.0" />
           <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.3.2" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:fop:1.0" />
           <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.5.8.RELEASE" />
           <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.5.8.RELEASE" />
           <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-actuator:1.5.8.RELEASE" />
@@ -63,7 +61,6 @@
           <element id="library" level="project" name="Gradle: org.slf4j:jul-to-slf4j:1.7.25" />
           <element id="library" level="project" name="Gradle: org.slf4j:log4j-over-slf4j:1.7.25" />
           <element id="library" level="project" name="Gradle: net.sf.barcode4j:barcode4j-fop-ext-complete:2.0" />
-          <element id="library" level="project" name="Gradle: net.sf.offo:fop-hyph:1.2" />
           <element id="library" level="project" name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:8.5.23" />
           <element id="library" level="project" name="Gradle: org.apache.tomcat.embed:tomcat-embed-el:8.5.23" />
           <element id="library" level="project" name="Gradle: org.apache.tomcat.embed:tomcat-embed-websocket:8.5.23" />
@@ -92,11 +89,9 @@
           <element id="library" level="project" name="Gradle: org.grails:grails-events-compat:3.3.2" />
           <element id="library" level="project" name="Gradle: org.grails:grails-web-jsp:3.3.0" />
           <element id="library" level="project" name="Gradle: org.grails:grails-web-gsp-taglib:3.3.0" />
-          <element id="library" level="project" name="Gradle: commons-lang:commons-lang:2.6" />
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-codecs:3.3.2" />
           <element id="library" level="project" name="Gradle: org.grails:views-core:1.1.2" />
           <element id="library" level="project" name="Gradle: com.bertramlabs.plugins:asset-pipeline-core:2.14.6" />
-          <element id="library" level="project" name="Gradle: org.mozilla:rhino:1.7R4" />
           <element id="library" level="project" name="Gradle: log4j:log4j:1.2.17" />
           <element id="library" level="project" name="Gradle: io.bit3:jsass:5.1.0" />
           <element id="library" level="project" name="Gradle: org.jsoup:jsoup:1.8.3" />
@@ -114,25 +109,11 @@
           <element id="library" level="project" name="Gradle: com.google.api-client:google-api-client:1.21.0" />
           <element id="library" level="project" name="Gradle: com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta" />
           <element id="library" level="project" name="Gradle: javax.mail:mail:1.4" />
-          <element id="library" level="project" name="Gradle: oro:oro:2.0.8" />
-          <element id="library" level="project" name="Gradle: xerces:xerces:2.4.0" />
-          <element id="library" level="project" name="Gradle: xerces:xercesImpl:2.7.1" />
           <element id="library" level="project" name="Gradle: xml-apis:xml-apis:1.4.01" />
-          <element id="library" level="project" name="Gradle: xml-apis:xmlParserAPIs:2.0.2" />
           <element id="library" level="project" name="Gradle: org.apache.maven.scm:maven-scm-api:1.4" />
           <element id="library" level="project" name="Gradle: org.apache.maven.scm:maven-scm-provider-svnexe:1.4" />
           <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.8" />
           <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.10" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:xmlgraphics-commons:1.4" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svg-dom:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-bridge:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-awt-util:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-gvt:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-transcoder:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-extension:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-ext:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.avalon.framework:avalon-framework-api:4.3.1" />
-          <element id="library" level="project" name="Gradle: org.apache.avalon.framework:avalon-framework-impl:4.3.1" />
           <element id="library" level="project" name="Gradle: org.yaml:snakeyaml:1.17" />
           <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.8.10" />
           <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.11" />
@@ -168,7 +149,6 @@
           <element id="library" level="project" name="Gradle: org.mongodb:mongodb-driver:3.4.2" />
           <element id="library" level="project" name="Gradle: org.grails:grails-datastore-gorm-bson:6.1.3.RELEASE" />
           <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
-          <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
           <element id="library" level="project" name="Gradle: com.google.oauth-client:google-oauth-client:1.21.0" />
           <element id="library" level="project" name="Gradle: com.google.http-client:google-http-client-jackson2:1.21.0" />
           <element id="library" level="project" name="Gradle: com.google.guava:guava-jdk5:17.0" />
@@ -177,16 +157,7 @@
           <element id="library" level="project" name="Gradle: org.codehaus.plexus:plexus-utils:1.5.6" />
           <element id="library" level="project" name="Gradle: org.apache.maven.scm:maven-scm-provider-svn-commons:1.4" />
           <element id="library" level="project" name="Gradle: regexp:regexp:1.3" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-anim:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-css:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-dom:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-parser:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-util:1.7" />
-          <element id="library" level="project" name="Gradle: xml-apis:xml-apis-ext:1.3.04" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-script:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-xml:1.7" />
           <element id="library" level="project" name="Gradle: xalan:xalan:2.6.0" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svggen:1.7" />
           <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.8.0" />
           <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.8.10" />
           <element id="library" level="project" name="Gradle: org.grails:grails-web-taglib:3.3.0" />
@@ -208,12 +179,41 @@
           <element id="library" level="project" name="Gradle: com.google.http-client:google-http-client:1.21.0" />
           <element id="library" level="project" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" />
           <element id="library" level="project" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" />
           <element id="library" level="project" name="Gradle: commons-collections:commons-collections:3.2.2" />
           <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
           <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.4" />
-          <element id="library" level="project" name="Gradle: com.google.guava:guava:19.0" />
           <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/jmimemagic/jmimemagic/0.1.2/fde20371ad58ca83621e5c0c153fd2f48634346a/jmimemagic-0.1.2.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/fop/1.0/763be6b7d2556cd4486bd306408cc2490e57668d/fop-1.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.offo/fop-hyph/1.2/122fc948e18b7f2337bbe074710a24f82f6aec84/fop-hyph-1.2.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mozilla/rhino/1.7R4/e982f2136574b9a423186fbaeaaa98dc3e5a5288/rhino-1.7R4.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/oro/oro/2.0.8/5592374f834645c4ae250f4c9fbb314c9369d698/oro-2.0.8.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/xerces/xerces/2.4.0/9e2205a4b10554ffddc50bbc4ca8abeb1d537e14/xerces-2.4.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/xerces/xercesImpl/2.7.1/815d652b79b71b7c82a71126d3d7ce8fc8bccdef/xercesImpl-2.7.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/xml-apis/xmlParserAPIs/2.0.2/d745687ae17671f6709c050e491b16530767d997/xmlParserAPIs-2.0.2.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/xmlgraphics-commons/1.4/52a051c7202449347ab3d717987b5fc2e2a52143/xmlgraphics-commons-1.4.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-svg-dom/1.7/5b3b1fea480fabbd3e0c44540af25b9fda0587ae/batik-svg-dom-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-bridge/1.7/8e0cde3830e0f17704cd392b0a09b13944987a51/batik-bridge-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-awt-util/1.7/67605a29d49bf33f3c1d7832f490b0a007e7a6e2/batik-awt-util-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-gvt/1.7/3d315e60d72c761c52946b4acaa4b86239ef938/batik-gvt-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-transcoder/1.7/aa2eb6300cb50bbb9dbf52daf7d625aa0df1d930/batik-transcoder-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-extension/1.7/8e810d9ce0499beca541e3b1a144557cf06f8b19/batik-extension-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-ext/1.7/4784302b44a0336166fef6153a5e3d73e861aecc/batik-ext-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.avalon.framework/avalon-framework-api/4.3.1/2dacadeb49bc14420990b1f28897d46f96e2181d/avalon-framework-api-4.3.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.avalon.framework/avalon-framework-impl/4.3.1/2d5f5a07fd14513ce6d7a7bfaff69419c26dbd0b/avalon-framework-impl-4.3.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.activation/activation/1.1/e6cb541461c2834bdea3eb920f1884d1eb508b50/activation-1.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-anim/1.7/a45dd2ff8e4ecd56a4fc64dc668b53bee90bf601/batik-anim-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-css/1.7/e6bb5c85753331534593f33fb9236acb41a0ab79/batik-css-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-dom/1.7/710d559bd1df52581b57b75a99ed5fd2e2918bb7/batik-dom-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-parser/1.7/5d756cc4f6bf891793e6c7590773859c33a8609f/batik-parser-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-util/1.7/5c4dd0dd9a86a2fba2c6ea26fb62b32b21b2a61e/batik-util-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis-ext/1.3.04/41a8b86b358e87f3f13cf46069721719105aff66/xml-apis-ext-1.3.04.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-script/1.7/4ea7906724bfefc1fca3e5b28229a458523e1fbf/batik-script-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-xml/1.7/17e3da8bd9d4a131350a7835f5cc0d93ba199c89/batik-xml-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-svggen/1.7/baa58d0f5bfd2a28142e222cee126eb71bd0a938/batik-svggen-1.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-js/1.7/688eb1bf13b7a54491fcb3405068fc5092589884/batik-js-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/google/guava/guava/19.0/guava-19.0.jar" />
         </element>
       </element>
     </root>

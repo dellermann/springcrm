@@ -2,1077 +2,1077 @@
   "selValue": [
     {
       "_id": { "$numberLong": "1" },
-      "class": "org.amcworld.springcrm.Salutation",
+      "_class": "Salutation",
       "name": "Herr",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2" },
-      "class": "org.amcworld.springcrm.Salutation",
+      "_class": "Salutation",
       "name": "Frau",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "100" },
-      "class": "org.amcworld.springcrm.OrgType",
+      "_class": "OrgType",
       "name": "Kunde",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "101" },
-      "class": "org.amcworld.springcrm.OrgType",
+      "_class": "OrgType",
       "name": "Wettbewerber",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "102" },
-      "class": "org.amcworld.springcrm.OrgType",
+      "_class": "OrgType",
       "name": "Partner",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "103" },
-      "class": "org.amcworld.springcrm.OrgType",
+      "_class": "OrgType",
       "name": "Interessent",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "104" },
-      "class": "org.amcworld.springcrm.OrgType",
+      "_class": "OrgType",
       "name": "Verkäufer",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "105" },
-      "class": "org.amcworld.springcrm.OrgType",
+      "_class": "OrgType",
       "name": "Investor",
-      "orderId": { "$numberLong": "60" },
+      "orderId": { "$numberInt": "60" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "106" },
-      "class": "org.amcworld.springcrm.OrgType",
+      "_class": "OrgType",
       "name": "sonstiges",
-      "orderId": { "$numberLong": "9000" },
+      "orderId": { "$numberInt": "9000" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "200" },
-      "class": "org.amcworld.springcrm.Rating",
+      "_class": "Rating",
       "name": "akquiriert",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "201" },
-      "class": "org.amcworld.springcrm.Rating",
+      "_class": "Rating",
       "name": "aktiv",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "202" },
-      "class": "org.amcworld.springcrm.Rating",
+      "_class": "Rating",
       "name": "Markt verfehlt",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "203" },
-      "class": "org.amcworld.springcrm.Rating",
+      "_class": "Rating",
       "name": "kein Interesse",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "204" },
-      "class": "org.amcworld.springcrm.Rating",
+      "_class": "Rating",
       "name": "stillgelegt",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "300" },
-      "class": "org.amcworld.springcrm.Unit",
+      "_class": "Unit",
       "name": "Stück",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "301" },
-      "class": "org.amcworld.springcrm.Unit",
+      "_class": "Unit",
       "name": "Einheiten",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "302" },
-      "class": "org.amcworld.springcrm.Unit",
+      "_class": "Unit",
       "name": "Kartons",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "303" },
-      "class": "org.amcworld.springcrm.Unit",
+      "_class": "Unit",
       "name": "Stunden",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "304" },
-      "class": "org.amcworld.springcrm.Unit",
+      "_class": "Unit",
       "name": "Minuten",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "305" },
-      "class": "org.amcworld.springcrm.Unit",
+      "_class": "Unit",
       "name": "m",
-      "orderId": { "$numberLong": "60" },
+      "orderId": { "$numberInt": "60" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "306" },
-      "class": "org.amcworld.springcrm.Unit",
+      "_class": "Unit",
       "name": "kg",
-      "orderId": { "$numberLong": "70" },
+      "orderId": { "$numberInt": "70" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "400" },
-      "class": "org.amcworld.springcrm.TaxRate",
+      "_class": "TaxRate",
       "name": "19 %",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "taxValue": { "$numberDecimal": "0.19" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "401" },
-      "class": "org.amcworld.springcrm.TaxRate",
+      "_class": "TaxRate",
       "name": "7 %",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "taxValue": { "$numberDecimal": "0.07" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "500" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "Abholung",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "501" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "elektronisch",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "502" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "DHL",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "503" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "DPD",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "504" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "UPS",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "505" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "Deutsche Post",
-      "orderId": { "$numberLong": "60" },
+      "orderId": { "$numberInt": "60" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "506" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "Hermes",
-      "orderId": { "$numberLong": "70" },
+      "orderId": { "$numberInt": "70" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "507" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "FedEx",
-      "orderId": { "$numberLong": "80" },
+      "orderId": { "$numberInt": "80" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "508" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "GLS",
-      "orderId": { "$numberLong": "90" },
+      "orderId": { "$numberInt": "90" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "509" },
-      "class": "org.amcworld.springcrm.Carrier",
+      "_class": "Carrier",
       "name": "TNT",
-      "orderId": { "$numberLong": "100" },
+      "orderId": { "$numberInt": "100" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "600" },
-      "class": "org.amcworld.springcrm.QuoteStage",
+      "_class": "QuoteStage",
       "name": "erstellt",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "601" },
-      "class": "org.amcworld.springcrm.QuoteStage",
+      "_class": "QuoteStage",
       "name": "durchgesehen",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "602" },
-      "class": "org.amcworld.springcrm.QuoteStage",
+      "_class": "QuoteStage",
       "name": "versendet",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "603" },
-      "class": "org.amcworld.springcrm.QuoteStage",
+      "_class": "QuoteStage",
       "name": "akzeptiert",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "604" },
-      "class": "org.amcworld.springcrm.QuoteStage",
+      "_class": "QuoteStage",
       "name": "abgelehnt",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "700" },
-      "class": "org.amcworld.springcrm.TermsAndConditions",
+      "_class": "TermsAndConditions",
       "name": "Dienstleistungen",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "701" },
-      "class": "org.amcworld.springcrm.TermsAndConditions",
+      "_class": "TermsAndConditions",
       "name": "Waren",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "800" },
-      "class": "org.amcworld.springcrm.SalesOrderStage",
+      "_class": "SalesOrderStage",
       "name": "erstellt",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "801" },
-      "class": "org.amcworld.springcrm.SalesOrderStage",
+      "_class": "SalesOrderStage",
       "name": "durchgesehen",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "802" },
-      "class": "org.amcworld.springcrm.SalesOrderStage",
+      "_class": "SalesOrderStage",
       "name": "versendet",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "803" },
-      "class": "org.amcworld.springcrm.SalesOrderStage",
+      "_class": "SalesOrderStage",
       "name": "abgeschlossen",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "804" },
-      "class": "org.amcworld.springcrm.SalesOrderStage",
+      "_class": "SalesOrderStage",
       "name": "storniert",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "900" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "erstellt",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "901" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "durchgesehen",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "902" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "versendet",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "903" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "bezahlt",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "904" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "gemahnt",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "905" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "inkasso",
-      "orderId": { "$numberLong": "60" },
+      "orderId": { "$numberInt": "60" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "906" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "ausgebucht",
-      "orderId": { "$numberLong": "70" },
+      "orderId": { "$numberInt": "70" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "907" },
-      "class": "org.amcworld.springcrm.InvoiceStage",
+      "_class": "InvoiceStage",
       "name": "storniert",
-      "orderId": { "$numberLong": "80" },
+      "orderId": { "$numberInt": "80" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1000" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Bekleidungsindustrie",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1001" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Banken",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1002" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Biotechnologie",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1003" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Chemie",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1004" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Kommunikation",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1005" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Anlagenbau",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1006" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Beratung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1007" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Bildungswesen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1008" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Elektronik",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1009" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Energie",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1010" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Ingenieurwesen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1011" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Unterhaltung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1012" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Umwelt",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1013" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Finanzwesen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1014" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Essen und Trinken",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1015" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Regierung und Behörden",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1016" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Gesundheitswesen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1017" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Übernachtung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1018" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Versicherungen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1019" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Maschinenbau",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1020" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Fertigung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1021" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Medien",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1022" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Wohlfahrt",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1023" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Freizeit und Erholung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1024" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Einzelhandel",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1025" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Speditionen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1026" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Technologie",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1027" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Telekommunikation",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1028" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Transport und Verkehr",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1029" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Versorgungseinrichtungen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1030" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "IT",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1031" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Bauwesen",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1032" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Öffentlicher Dienst",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1033" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "Handwerk",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1034" },
-      "class": "org.amcworld.springcrm.Industry",
+      "_class": "Industry",
       "name": "sonstiges",
-      "orderId": { "$numberLong": "9000" },
+      "orderId": { "$numberInt": "9000" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1100" },
-      "class": "org.amcworld.springcrm.TicketPriority",
+      "_class": "TicketPriority",
       "name": "niedrig",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1101" },
-      "class": "org.amcworld.springcrm.TicketPriority",
+      "_class": "TicketPriority",
       "name": "normal",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1102" },
-      "class": "org.amcworld.springcrm.TicketPriority",
+      "_class": "TicketPriority",
       "name": "hoch",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "1103" },
-      "class": "org.amcworld.springcrm.TicketPriority",
+      "_class": "TicketPriority",
       "name": "Notfall",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2000" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Unterstützung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2001" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Installation/Konfiguration",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2002" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Umstellung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2003" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Anpassung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2004" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Schulung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2005" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Programmierung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2006" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Beratung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2007" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Grafik und Design",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2008" },
-      "class": "org.amcworld.springcrm.ServiceCategory",
+      "_class": "WorkCategory",
       "name": "Datenverarbeitung",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2100" },
-      "class": "org.amcworld.springcrm.PurchaseInvoiceStage",
+      "_class": "PurchaseInvoiceStage",
       "name": "eingegangen",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2101" },
-      "class": "org.amcworld.springcrm.PurchaseInvoiceStage",
+      "_class": "PurchaseInvoiceStage",
       "name": "geprüft",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2102" },
-      "class": "org.amcworld.springcrm.PurchaseInvoiceStage",
+      "_class": "PurchaseInvoiceStage",
       "name": "bezahlt",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2103" },
-      "class": "org.amcworld.springcrm.PurchaseInvoiceStage",
+      "_class": "PurchaseInvoiceStage",
       "name": "zurückgewiesen",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2200" },
-      "class": "org.amcworld.springcrm.DunningStage",
+      "_class": "DunningStage",
       "name": "erstellt",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2201" },
-      "class": "org.amcworld.springcrm.DunningStage",
+      "_class": "DunningStage",
       "name": "durchgesehen",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2202" },
-      "class": "org.amcworld.springcrm.DunningStage",
+      "_class": "DunningStage",
       "name": "versendet",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2203" },
-      "class": "org.amcworld.springcrm.DunningStage",
+      "_class": "DunningStage",
       "name": "bezahlt",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2204" },
-      "class": "org.amcworld.springcrm.DunningStage",
+      "_class": "DunningStage",
       "name": "inkasso",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2205" },
-      "class": "org.amcworld.springcrm.DunningStage",
+      "_class": "DunningStage",
       "name": "ausgebucht",
-      "orderId": { "$numberLong": "60" },
+      "orderId": { "$numberInt": "60" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2206" },
-      "class": "org.amcworld.springcrm.DunningStage",
+      "_class": "DunningStage",
       "name": "storniert",
-      "orderId": { "$numberLong": "70" },
+      "orderId": { "$numberInt": "70" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2300" },
-      "class": "org.amcworld.springcrm.DunningLevel",
+      "_class": "DunningLevel",
       "name": "1. Mahnung",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2301" },
-      "class": "org.amcworld.springcrm.DunningLevel",
+      "_class": "DunningLevel",
       "name": "2. Mahnung",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2302" },
-      "class": "org.amcworld.springcrm.DunningLevel",
+      "_class": "DunningLevel",
       "name": "3. Mahnung",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2400" },
-      "class": "org.amcworld.springcrm.PaymentMethod",
+      "_class": "PaymentMethod",
       "name": "bar",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2401" },
-      "class": "org.amcworld.springcrm.PaymentMethod",
+      "_class": "PaymentMethod",
       "name": "Überweisung",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2402" },
-      "class": "org.amcworld.springcrm.PaymentMethod",
+      "_class": "PaymentMethod",
       "name": "Abbuchung",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2403" },
-      "class": "org.amcworld.springcrm.PaymentMethod",
+      "_class": "PaymentMethod",
       "name": "Scheck",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2404" },
-      "class": "org.amcworld.springcrm.PaymentMethod",
+      "_class": "PaymentMethod",
       "name": "Verrechnung",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2500" },
-      "class": "org.amcworld.springcrm.CreditMemoStage",
+      "_class": "CreditMemoStage",
       "name": "erstellt",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2501" },
-      "class": "org.amcworld.springcrm.CreditMemoStage",
+      "_class": "CreditMemoStage",
       "name": "durchgesehen",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2502" },
-      "class": "org.amcworld.springcrm.CreditMemoStage",
+      "_class": "CreditMemoStage",
       "name": "versendet",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2503" },
-      "class": "org.amcworld.springcrm.CreditMemoStage",
+      "_class": "CreditMemoStage",
       "name": "bezahlt",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2504" },
-      "class": "org.amcworld.springcrm.CreditMemoStage",
+      "_class": "CreditMemoStage",
       "name": "storniert",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2600" },
-      "class": "org.amcworld.springcrm.ProjectStatus",
+      "_class": "ProjectStatus",
       "name": "in Bearbeitung",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2601" },
-      "class": "org.amcworld.springcrm.ProjectStatus",
+      "_class": "ProjectStatus",
       "name": "pausiert",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2602" },
-      "class": "org.amcworld.springcrm.ProjectStatus",
+      "_class": "ProjectStatus",
       "name": "wartet auf Kunden",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2603" },
-      "class": "org.amcworld.springcrm.ProjectStatus",
+      "_class": "ProjectStatus",
       "name": "wartet auf Lieferanten",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2604" },
-      "class": "org.amcworld.springcrm.ProjectStatus",
+      "_class": "ProjectStatus",
       "name": "abgeschlossen",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "2605" },
-      "class": "org.amcworld.springcrm.ProjectStatus",
+      "_class": "ProjectStatus",
       "name": "abgebrochen",
-      "orderId": { "$numberLong": "60" },
+      "orderId": { "$numberInt": "60" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "3000" },
-      "class": "org.amcworld.springcrm.ProductCategory",
+      "_class": "ProductCategory",
       "name": "Hardware",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "3001" },
-      "class": "org.amcworld.springcrm.ProductCategory",
+      "_class": "ProductCategory",
       "name": "Software",
-      "orderId": { "$numberLong": "0" },
+      "orderId": { "$numberInt": "0" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "4000" },
-      "class": "org.amcworld.springcrm.OrderMethod",
+      "_class": "OrderMethod",
       "name": "E-Mail",
-      "orderId": { "$numberLong": "10" },
+      "orderId": { "$numberInt": "10" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "4001" },
-      "class": "org.amcworld.springcrm.OrderMethod",
+      "_class": "OrderMethod",
       "name": "Post",
-      "orderId": { "$numberLong": "20" },
+      "orderId": { "$numberInt": "20" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "4002" },
-      "class": "org.amcworld.springcrm.OrderMethod",
+      "_class": "OrderMethod",
       "name": "Telefax",
-      "orderId": { "$numberLong": "30" },
+      "orderId": { "$numberInt": "30" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "4003" },
-      "class": "org.amcworld.springcrm.OrderMethod",
+      "_class": "OrderMethod",
       "name": "Telefon",
-      "orderId": { "$numberLong": "40" },
+      "orderId": { "$numberInt": "40" },
       "version": { "$numberLong": "0" }
     },
     {
       "_id": { "$numberLong": "4004" },
-      "class": "org.amcworld.springcrm.OrderMethod",
+      "_class": "OrderMethod",
       "name": "Kunde direkt",
-      "orderId": { "$numberLong": "50" },
+      "orderId": { "$numberInt": "50" },
       "version": { "$numberLong": "0" }
     }
   ],
   "seqNumber": [
     {
-      "controllerName": "quote",
+      "_id": "quote",
       "endValue": 99999,
-      "orderId": 100,
+      "orderId": { "$numberInt": "100" },
       "prefix": "A",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "salesOrder",
+      "_id": "salesOrder",
       "endValue": 99999,
-      "orderId": 110,
+      "orderId": { "$numberInt": "110" },
       "prefix": "B",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "invoice",
+      "_id": "invoice",
       "endValue": 99999,
-      "orderId": 120,
+      "orderId": { "$numberInt": "120" },
       "prefix": "R",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "dunning",
+      "_id": "dunning",
       "endValue": 99999,
-      "orderId": 130,
+      "orderId": { "$numberInt": "130" },
       "prefix": "M",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "work",
+      "_id": "work",
       "endValue": 99999,
-      "orderId": 210,
+      "orderId": { "$numberInt": "210" },
       "prefix": "S",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "product",
+      "_id": "product",
       "endValue": 99999,
-      "orderId": 200,
+      "orderId": { "$numberInt": "200" },
       "prefix": "P",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "organization",
+      "_id": "organization",
       "endValue": 99999,
-      "orderId": 10,
+      "orderId": { "$numberInt": "10" },
       "prefix": "O",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "person",
+      "_id": "person",
       "endValue": 99999,
-      "orderId": 20,
+      "orderId": { "$numberInt": "20" },
       "prefix": "E",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "note",
+      "_id": "note",
       "endValue": 99999,
-      "orderId": 300,
+      "orderId": { "$numberInt": "300" },
       "prefix": "N",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "creditMemo",
+      "_id": "creditMemo",
       "endValue": 99999,
-      "orderId": 140,
+      "orderId": { "$numberInt": "140" },
       "prefix": "G",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "project",
+      "_id": "project",
       "endValue": 99999,
-      "orderId": 310,
+      "orderId": { "$numberInt": "310" },
       "prefix": "J",
       "startValue": 10000,
       "suffix": "",
       "version": { "$numberLong": "0" }
     },
     {
-      "controllerName": "ticket",
+      "_id": "ticket",
       "endValue": 99999,
-      "orderId": 400,
+      "orderId": { "$numberInt": "400" },
       "prefix": "T",
       "startValue": 10000,
       "suffix": "",

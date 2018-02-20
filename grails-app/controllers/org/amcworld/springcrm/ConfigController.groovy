@@ -23,7 +23,11 @@ package org.amcworld.springcrm
 import grails.artefact.Controller
 import grails.converters.JSON
 import grails.core.GrailsClass
+import grails.plugin.springsecurity.annotation.Secured
 import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 
 
 /**
@@ -33,6 +37,7 @@ import groovy.transform.CompileStatic
  * @author  Daniel Ellermann
  * @version 3.0
  */
+@Secured(['ROLE_ADMIN'])
 class ConfigController implements Controller {
 
     //-- Constants ------------------------------
@@ -49,80 +54,81 @@ class ConfigController implements Controller {
     //-- Fields ---------------------------------
 
     ConfigService configService
+    SelValueService selValueService
     SeqNumberService seqNumberService
     UserService userService
+    WorkService workService
 
 
     //-- Public methods -------------------------
 
     def currency() {
-        Locale locale = userService.currentLocale
+        Locale locale = userService.getCurrentLocale()
         Map<String, String> currencies =
-            userService.availableCurrencies.collectEntries {
+            userService.getAvailableCurrencies().collectEntries {
                 String cc = it.currencyCode
                 String sym = it.getSymbol(locale)
 
                 [cc, cc + ((cc == sym) ? '' : " (${sym})")]
             }
         String currentCurrency = configService.getString('currency')
-        int termOfPayment = configService.getInteger('termOfPayment')
+        Integer termOfPayment = configService.getInteger('termOfPayment')
 
-        [
+        respond(
             currencies: currencies.sort { a, b -> a.key <=> b.key },
             currentCurrency: currentCurrency,
-            numFractionDigits: userService.numFractionDigits,
-            numFractionDigitsExt: userService.numFractionDigitsExt,
+            numFractionDigits: userService.getNumFractionDigits(),
+            numFractionDigitsExt: userService.getNumFractionDigitsExt(),
             termOfPayment: termOfPayment
-        ]
+        )
     }
 
     def fixSeqNumbers() {
         List<SeqNumber> list = seqNumberService.getFixedSeqNumbers()
         flash.message = message(code: 'config.seqNumbers.fixed') as Object
 
-        render view: 'seqNumbers', model: prepareLoadSeqNumberModel(list)
+        respond list, [model: prepareLoadSeqNumberModel(), view: 'seqNumbers']
     }
 
     def index() {}
 
-    def loadClient() {
-        [client: Client.load()]
-    }
-
     def loadSelValues() {
-        List<SelValue> list =
-            getTypeClass(params.type.toString()).list(sort: 'orderId')
+        List<? extends SelValue> list = selValueService.findAllByClass(
+            getTypeClass(params.type.toString())
+        )
 
-        [selValueList: list]
+        respond selValueList: list
     }
 
     def loadSeqNumbers() {
-        render(
-            view: 'seqNumbers',
-            model: prepareLoadSeqNumberModel(SeqNumber.list())
+        respond(
+            seqNumberService.list(),
+            [model: prepareLoadSeqNumberModel(), view: 'seqNumbers']
         )
     }
 
     def loadTaxRates() {
-        [taxRateList: TaxRate.list(sort: 'orderId')]
+        respond selValueService.findAllByClass(TaxRate)
+    }
+
+    def loadTenant() {
+        respond configService.loadTenant()
     }
 
     def save() {
-        params.config.each {
-            String key = it.key
-            String value = it.value
+        for (Map.Entry<String, Object> entry : params.config?.entrySet()) {
+            String key = entry.key
+            Object value = entry.value
             if (key.startsWith('_')) {
                 configService.store key.substring(1), false
-            } else if ((key != 'ldapBindPasswd' && key != 'mailPassword')
-                       || value)    // issue #35
+            } else if (key != 'ldapBindPasswd' && key != 'mailPassword'
+                || value)    // issue #35
             {
                 if (key == 'ldapPort') {
-                    value = value ?: '389'                      // issue #35
-                } else if (key == 'mailUseConfig') {
-                    if (value == 'null') {
-                        configService.delete key
-                        return
-                    }
+                    value = value ?: 389    // issue #35
+                } else if (key == 'mailUseConfig' && value == 'null') {
+                    configService.delete key
+                    continue
                 }
                 configService.store key, value
             }
@@ -130,57 +136,50 @@ class ConfigController implements Controller {
 
         flash.message = message(
             code: 'default.updated.message',
-            args: [message(code: 'config.label', default: 'System setting'), '']
+            args: [message(code: 'config.label'), '']
         ) as Object
 
         redirect action: 'index'
     }
 
-    def saveClient(Client client) {
-        if (client.hasErrors()) {
-            render view: 'loadClient', model: [client: client]
-            return
-        }
-
-        client.save()
-        redirect action: 'index'
-    }
-
     def saveSelValues() {
-        for (Map.Entry entry in params.selValues?.entrySet()) {
+        for (Map.Entry<String, Object> entry : params.selValues?.entrySet()) {
             if (!entry.value) {
                 continue
             }
 
-            int orderId = 10
-            Class<?> cls = getTypeClass(entry.key.toString())
-            def list = JSON.parse(entry.value.toString())
-            for (item in list) {
-                Long id = item.id as Long
-                def selValue = (id < 0L) ? cls.newInstance() : cls.get(id)
-                if (item.remove) {
+            int orderId = 10i
+            Class<?> cls = getTypeClass(entry.key)
+            JSONArray list = (JSONArray) JSON.parse(entry.value.toString())
+            for (Object item : list) {
+                JSONObject obj = (JSONObject) item
+                long id = obj.getLong('id')
+                if (obj.has('remove') && obj.getBoolean('remove')) {
                     if (!(id in READONLY_IDS)) {
-                        selValue.delete flush: true
+                        selValueService.delete id
                     }
                 } else {
+                    SelValue selValue = id < 0L ? cls.newInstance()
+                        : selValueService.findByClassAndId(cls, id)
                     if (!(id in READONLY_IDS)) {
-                        selValue.name = item.name
+                        selValue.name = obj.getString('name')
                     }
                     selValue.orderId = orderId
-                    selValue.save flush: true
-                    orderId += 10
+                    selValueService.save selValue
+                    orderId += 10i
                 }
             }
         }
+
+        redirect action: 'index'
     }
 
     def saveSeqNumbers() {
-        def l = []
+        List<SeqNumber> seqNumbers = []
         boolean hasErrors = false
-        for (entry in params.seqNumbers) {
+        for (Map.Entry<String, Object> entry : params.seqNumbers) {
             try {
-                Long id = Long.valueOf(entry.key.toString())
-                SeqNumber seqNumber = SeqNumber.get(id)
+                SeqNumber seqNumber = seqNumberService.get(entry.key)
 
                 /*
                  * Implementation notes: Using
@@ -189,66 +188,71 @@ class ConfigController implements Controller {
                  * which infringes the suffix nullable: false constraint.  The
                  * same is valid for prefix.
                  */
-                Map props = entry.value
+                Map props = (Map) entry.value
                 seqNumber.prefix = props.prefix
                 seqNumber.suffix = props.suffix
                 seqNumber.startValue = props.startValue as int
                 seqNumber.endValue = props.endValue as int
 
-                l << seqNumber
-                hasErrors |= !seqNumber.save(flush: true)
+                seqNumbers << seqNumber
+                hasErrors |= !seqNumberService.save(seqNumber)
             } catch (NumberFormatException ignored) { /* ignored */ }
         }
 
-        if (params.workIdDunningCharge) {
-            configService.store(
-                'workIdDunningCharge', params.workIdDunningCharge
-            )
-        } else {
-            configService.delete 'workIdDunningCharge'
-        }
-        if (params.workIdDefaultInterest) {
-            configService.store(
-                'workIdDefaultInterest', params.workIdDefaultInterest
-            )
-        } else {
-            configService.delete 'workIdDefaultInterest'
-        }
+        saveOrDeleteConfig 'workIdDunningCharge', params.workIdDunningCharge
+        saveOrDeleteConfig 'workIdDefaultInterest', params.workIdDefaultInterest
 
         if (hasErrors) {
-            l.sort { it.ident() }
-            render view: 'seqNumbers', model: [seqNumberList: l]
+            seqNumbers.sort { it.orderId }
+            respond seqNumbers, view: 'seqNumbers'
+            return
         }
+
+        redirect action: 'index'
     }
 
     def saveTaxRates() {
         String taxRates = params.taxRates
-        if (!taxRates) {
+        if (taxRates) {
+            int orderId = 10i
+            JSONArray list = (JSONArray) JSON.parse(taxRates)
+            for (Object item : list) {
+                JSONObject obj = (JSONObject) item
+                long id = obj.getLong('id')
+                if (obj.isNull('name')) {
+                    selValueService.delete id
+                } else {
+                    TaxRate taxRate = id < 0 ? new TaxRate()
+                        : selValueService.findByClassAndId(TaxRate, id)
+                    String name = obj.getString('name')
+                    taxRate.name = "${name} %"
+                    taxRate.orderId = orderId
+                    taxRate.taxValue = (name as BigDecimal) / 100.0
+                    selValueService.save taxRate
+                    orderId += 10i
+                }
+            }
+        }
+
+        redirect action: 'index'
+    }
+
+    def saveTenant(Tenant tenant) {
+        if (!tenant.validate()) {
+            respond tenant, [view: 'loadTenant']
             return
         }
 
-        int orderId = 10
-        def list = JSON.parse(taxRates)
-        for (item in list) {
-            def entry = (item.id < 0) ? new TaxRate() : TaxRate.get(item.id)
-            if (item.isNull('name')) {
-                entry.delete flush: true
-            } else {
-                entry.name = "${item.name} %"
-                entry.orderId = orderId
-                entry.taxValue = (item.name as BigDecimal) / 100.0
-                entry.save flush: true
-                orderId += 10
-            }
-        }
+        configService.storeTenant tenant
+        redirect action: 'index'
     }
 
     def show() {
-        List<Config> configData = configService.list()
-        Map<String, String> config = [: ]
-        configData.each { config[it.id] = it.value }
+        Map<String, String> config = configService.list().collectEntries {
+            Config config -> [config.id, config.value]
+        }
 
-        render view: params.page, model: [configData: config]
+        render model: [configData: config], view: params.page
     }
 
 
@@ -266,7 +270,7 @@ class ConfigController implements Controller {
     private Class<SelValue> getTypeClass(String type) {
         GrailsClass gc =
             grailsApplication.getArtefactByLogicalPropertyName('Domain', type)
-        if (!gc) {
+        if (gc == null) {
             throw new IllegalArgumentException(
                 "Type ${type} is no valid type for a domain class."
             )
@@ -281,17 +285,40 @@ class ConfigController implements Controller {
         (Class<SelValue>) cls
     }
 
-    private Map<String, Object> prepareLoadSeqNumberModel(List<SeqNumber> list)
-    {
-        Long id = configService.getLong('workIdDunningCharge')
-        Work workDunningCharge = Work.read(id)
-        id = configService.getLong('workIdDefaultInterest')
-        Work workDefaultInterest = Work.read(id)
+    /**
+     * Prepares a model containing the services instances for reminder charge
+     * and reminder default interest.
+     *
+     * @return  the model
+     */
+    @CompileStatic
+    private Map<String, ?> prepareLoadSeqNumberModel() {
+        ObjectId id = configService.getObjectId('workIdDunningCharge')
+        Work workDunningCharge = workService.get(id)
+        id = configService.getObjectId('workIdDefaultInterest')
+        Work workDefaultInterest = workService.get(id)
 
         [
-            seqNumberList: list,
             workDunningCharge: workDunningCharge,
             workDefaultInterest: workDefaultInterest
         ]
+    }
+
+    /**
+     * Saves or deletes a configuration with the given name depending on the
+     * given value.  If the value is {@code null} or an empty string the
+     * configuration is deleted, otherwise it is stored.
+     *
+     * @param name  the name of the configuation
+     * @param value the value of the configuration
+     * @since 3.0
+     */
+    @CompileStatic
+    private void saveOrDeleteConfig(String name, Object value) {
+        if (value) {
+            configService.store name, value
+        } else {
+            configService.delete name
+        }
     }
 }

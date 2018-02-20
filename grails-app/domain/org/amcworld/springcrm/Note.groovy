@@ -53,16 +53,45 @@ class Note implements NumberedDomain {
     static mapping = {
         sort 'title'
         content type: 'text'
-        title index: 'title'
+        title index: true
     }
 
 
     //-- Fields ---------------------------------
 
+    /**
+     * The content of the note.
+     */
     String content
+
+    /**
+     * The timestamp of the creation of the record.
+     */
     Date dateCreated
+
+    /**
+     * The ID of the note.
+     */
     ObjectId id
+
+    /**
+     * The timestamp of the last update of the record.
+     */
     Date lastUpdated
+
+    /**
+     * The organization associated to the note.
+     */
+    Organization organization
+
+    /**
+     * The person associated to the note.
+     */
+    Person person
+
+    /**
+     * The title of the note.
+     */
     String title
 
 

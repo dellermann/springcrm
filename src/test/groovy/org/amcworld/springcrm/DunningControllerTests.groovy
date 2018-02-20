@@ -27,7 +27,7 @@ class DunningControllerTests {
 
     void setUp() {
         SeqNumberService.metaClass.formatWithPrefix = { -> '10000' }
-        Client.metaClass.static.loadAsMap = { -> [: ] }
+        Tenant.metaClass.static.loadAsMap = { -> [: ] }
         grails.converters.XML.metaClass.static.toString = { -> '' }
         ConfigHolder.metaClass.getConfig = { String name -> null }
 

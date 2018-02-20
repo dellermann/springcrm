@@ -13,15 +13,15 @@
       <div class="col-xs-12 col-sm-6">
         <ul>
           <li>
-            <g:link action="loadClient" class="configuration-icon"
+            <g:link action="loadTenant" class="configuration-icon"
               role="presentation">
               <i class="fa fa-institution"></i>
             </g:link>
-            <g:link action="loadClient" class="configuration-title">
-              <g:message code="config.client.title" />
+            <g:link action="loadTenant" class="configuration-title">
+              <g:message code="config.tenant.title" />
             </g:link>
             <p class="configuration-description">
-              <g:message code="config.client.description" />
+              <g:message code="config.tenant.description" />
             </p>
           </li>
           <li>

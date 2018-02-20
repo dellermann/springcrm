@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
@@ -62,7 +63,7 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
 	def 'Copy a note using constructor'() {
 		given: 'a note with various properties'
 		def n1 = new Note(
-			number: 10032,
+			number: 10032i,
 			title: 'note title',
 			content: 'note content',
 			dateCreated: new Date(),
@@ -80,29 +81,6 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
 		0i == n2.number
 		null == n2.dateCreated
 		null == n2.lastUpdated
-	}
-
-	def 'Get the full number'() {
-		given: 'a note with mocked sequence number service'
-		def n = new Note(number: 11332i)
-		n.seqNumberService = Mock(SeqNumberService)
-		n.seqNumberService.format(Note, 11332i) >> 'N-11332'
-
-		expect:
-		'N-11332' == n.fullNumber
-	}
-
-	def 'Number is computed before insert'() {
-        given: 'a mocked sequence number service'
-		def n = new Note()
-		n.seqNumberService = Mock(SeqNumberService)
-		n.seqNumberService.nextNumber(_) >> 92283
-
-		when: 'I simulate calling save() in insert mode'
-		n.beforeInsert()
-
-		then: 'the sequence number must be set'
-		92283 == n.number
 	}
 
     def 'Equals is null-safe'() {
@@ -150,12 +128,13 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
 
     def 'Persisted instances are equal if they have the same ID'() {
         given: 'three instances with different properties but same IDs'
+        def id = new ObjectId()
         def n1 = new Note(title: 'Network configuration')
-        n1.id = 7403L
+        n1.id = id
         def n2 = new Note(title: 'Customer assessment')
-        n2.id = 7403L
+        n2.id = id
         def n3 = new Note(title: 'Staff')
-        n3.id = 7403L
+        n3.id = id
 
         expect: 'equals() is reflexive'
         n1 == n1
@@ -176,11 +155,11 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
     def 'Persisted instances are unequal if they have the different ID'() {
         given: 'three instances with same properties but different IDs'
 		def n1 = new Note(title: 'Network configuration')
-        n1.id = 7403L
+        n1.id = new ObjectId()
         def n2 = new Note(title: 'Network configuration')
-        n2.id = 7404L
+        n2.id = new ObjectId()
         def n3 = new Note(title: 'Network configuration')
-        n3.id = 8473L
+        n3.id = new ObjectId()
 
         expect: 'equals() is reflexive'
         n1 == n1
@@ -200,44 +179,45 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
 
     def 'Can compute hash code of an empty instance'() {
         given: 'an empty instance'
-        def n = new Note()
+        def note = new Note()
 
         expect:
-        0i == n.hashCode()
+        3937i == note.hashCode()
     }
 
     def 'Can compute hash code of a not persisted instance'() {
         given: 'an instance without ID'
-        def n = new Note(title: 'Network configuration')
+        def note = new Note(title: 'Network configuration')
 
         expect:
-        0i == n.hashCode()
+        3937i == note.hashCode()
     }
 
     def 'Hash codes are consistent'() {
         given: 'an instance with ID'
-        def n = new Note(title: 'Network configuration')
-        n.id = 7403L
+        def note = new Note(title: 'Network configuration')
+        note.id = new ObjectId()
 
         when: 'I compute the hash code'
-        int h = n.hashCode()
+        int h = note.hashCode()
 
         then: 'the hash code remains consistent'
         for (int j = 0; j < 500; j++) {
-            n = new Note(title: 'Customer assessment')
-            n.id = 7403L
-            h == n.hashCode()
+            note = new Note(title: 'Customer assessment')
+            note.id = new ObjectId()
+            h == note.hashCode()
         }
     }
 
     def 'Equal instances produce the same hash code'() {
         given: 'three instances with different properties but same IDs'
+        def id = new ObjectId()
 		def n1 = new Note(title: 'Network configuration')
-        n1.id = 7403L
+        n1.id = id
         def n2 = new Note(title: 'Customer assessment')
-        n2.id = 7403L
+        n2.id = id
         def n3 = new Note(title: 'Staff')
-        n3.id = 7403L
+        n3.id = id
 
         expect:
         n1.hashCode() == n2.hashCode()
@@ -247,11 +227,11 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
     def 'Different instances produce different hash codes'() {
         given: 'three instances with same properties but different IDs'
 		def n1 = new Note(title: 'Network configuration')
-        n1.id = 7403L
+        n1.id = new ObjectId()
         def n2 = new Note(title: 'Network configuration')
-        n2.id = 7404L
+        n2.id = new ObjectId()
         def n3 = new Note(title: 'Network configuration')
-        n3.id = 8473L
+        n3.id = new ObjectId()
 
         expect:
         n1.hashCode() != n2.hashCode()
@@ -260,13 +240,13 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
 
     def 'Can convert to string'(String title) {
         given: 'an empty item'
-        def n = new Note()
+        def note = new Note()
 
         when: 'I set the title'
-        n.title = title
+        note.title = title
 
         then: 'I get a valid string representation'
-        (title ?: '') == n.toString()
+        (title ?: '') == note.toString()
 
         where:
         title << [null, '', '   ', 'a', 'abc', '  foo  ', 'Network config']
@@ -274,7 +254,7 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
 
     def 'Title must not be blank and max 200 char long'(String t, boolean v) {
         given: 'a quite valid note'
-        def n = new Note(content: '')
+        def n = new Note(content: 'My note')
 
         when: 'I set the title'
         n.title = t
@@ -286,7 +266,6 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
         t       	|| v
         null    	|| false
         ''      	|| false
-        '  \t ' 	|| false
         'a'     	|| true
         'S'     	|| true
         'abc'   	|| true
@@ -310,7 +289,6 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
 		c			|| v
 		null		|| false
 		''			|| true
-		'  \t ' 	|| true
 		'a'     	|| true
         'S'     	|| true
         'abc'   	|| true
