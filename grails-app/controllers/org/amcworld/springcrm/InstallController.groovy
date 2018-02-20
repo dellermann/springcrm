@@ -98,8 +98,7 @@ class InstallController {
 
     def finishSave() {
         installService.disableInstaller()
-        Config config = new Config(name: 'installStatus', value: 1)
-        config.save flush: true
+        configService.store 'installStatus', 1
 
         redirect controller: 'overview', action: 'index'
     }
@@ -108,7 +107,7 @@ class InstallController {
 
     def installBaseData() {
         respond(
-            existingData: Config.findByName('installStatus')?.value,
+            existingData: configService.getInteger('installStatus'),
             packages: installService.getBaseDataPackages(),
             step: 1
         )

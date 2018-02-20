@@ -77,6 +77,16 @@ interface IConfigService {
      *                  occurred
      */
     Config save(Config config)
+
+    /**
+     * Updates an existing configuration with the given ID.
+     *
+     * @param id        the given ID of the configuration
+     * @param config    the new value
+     * @return          the updated configuration or {@code null} if an error
+     *                  occurred
+     */
+    Config update(String id, String value)
 }
 
 
@@ -239,12 +249,13 @@ abstract class ConfigService implements IConfigService {
     Config store(String id, Object value) {
         Config config = get(id)
         if (config == null) {
-            config = new Config()
+            config = new Config(value: value?.toString())
             config.id = id
-        }
-        config.value = value?.toString()
 
-        save config
+            config.insert()
+        } else {
+            update id, value?.toString()
+        }
     }
 
     /**
@@ -254,16 +265,18 @@ abstract class ConfigService implements IConfigService {
      * @since 3.0
      */
     void storeTenant(Tenant tenant) {
-        store 'tenantName', tenant.name
-        store 'tenantStreet', tenant.street
-        store 'tenantPostalCode', tenant.postalCode
-        store 'tenantLocation', tenant.location
-        store 'tenantPhone', tenant.phone
-        store 'tenantFax', tenant.fax
-        store 'tenantEmail', tenant.email
-        store 'tenantWebsite', tenant.website
-        store 'tenantBankName', tenant.bankName
-        store 'tenantBankCode', tenant.bankCode
-        store 'tenantAccountNumber', tenant.accountNumber
+        Config.withTransaction {
+            store 'tenantName', tenant.name
+            store 'tenantStreet', tenant.street
+            store 'tenantPostalCode', tenant.postalCode
+            store 'tenantLocation', tenant.location
+            store 'tenantPhone', tenant.phone
+            store 'tenantFax', tenant.fax
+            store 'tenantEmail', tenant.email
+            store 'tenantWebsite', tenant.website
+            store 'tenantBankName', tenant.bankName
+            store 'tenantBankCode', tenant.bankCode
+            store 'tenantAccountNumber', tenant.accountNumber
+        }
     }
 }
