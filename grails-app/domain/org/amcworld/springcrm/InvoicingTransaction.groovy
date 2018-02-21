@@ -59,12 +59,11 @@ class InvoicingTransaction implements NumberedDomain {
         shippingCosts min: ZERO, scale: 6, widget: 'currency'
         shippingTax min: ZERO, scale: 2, widget: 'percent'
         adjustment scale: 6, widget: 'currency'
-        total scale: 6, widget: 'currency'
         notes nullable: true, widget: 'textarea'
         createUser nullable: true
     }
     static belongsTo = [organization: Organization, person: Person]
-    static embedded = ['billingAddr', 'shippingAddr']
+    static embedded = ['billingAddr', 'shippingAddr', 'items']
     static hasMany = [
         items: InvoicingItem,
         termsAndConditions: TermsAndConditions
@@ -75,13 +74,13 @@ class InvoicingTransaction implements NumberedDomain {
         footerText type: 'text'
         notes type: 'text'
         sort 'number'
-        subject index: 'subject'
+        subject index: true
         termsAndConditions lazy: false
         order 'desc'
     }
     static transients = [
         'discountPercentAmount', 'fullName', 'shippingCostsGross',
-        'subtotalGross', 'subtotalNet', 'taxRateSums'
+        'subtotalGross', 'subtotalNet', 'taxRateSums', 'total'
     ]
 
 
@@ -104,42 +103,42 @@ class InvoicingTransaction implements NumberedDomain {
     Carrier carrier
 
     /**
-     * The user has created the customer account.
+     * The user has created the invoicing transaction.
      */
     User createUser
 
     /**
-     * The timestamp when the customer account has been created.
+     * The timestamp when the invoicing transaction has been created.
      */
     Date dateCreated
 
     /**
-     * A fixed discount amount of the customer account.  The value is
+     * A fixed discount amount of the invoicing transaction.  The value is
      * subtracted from the gross subtotal.
      */
     BigDecimal discountAmount = ZERO
 
     /**
-     * A percentage discount amount of the customer account.  The value is
+     * A percentage discount amount of the invoicing transaction.  The value is
      * relative to the gross subtotal subtracted from it.
      */
     BigDecimal discountPercent = ZERO
 
     /**
-     * The date of the document, that is, when the customer account has been
-     * created.
+     * The date of the document, that is, when the invoicing transaction has
+     * been created.
      */
     Date docDate = new Date()
 
     /**
      * A text which appears in the footer of the document generated from the
-     * customer account.
+     * invoicing transaction.
      */
     String footerText
 
     /**
      * A text which appears in the header of the document generated from the
-     * customer account.
+     * invoicing transaction.
      */
     String headerText
 
@@ -149,18 +148,18 @@ class InvoicingTransaction implements NumberedDomain {
     ObjectId id
 
     /**
-     * The items of the customer account.
+     * The items of the invoicing transaction.
      */
     List<InvoicingItem> items
 
     /**
-     * The timestamp when the customer account has been modified.
+     * The timestamp when the invoicing transaction has been modified.
      */
     Date lastUpdated
 
     /**
      * Any notes which are not printed in the document generated from the
-     * customer account.
+     * invoicing transaction.
      */
     String notes
 
@@ -185,7 +184,7 @@ class InvoicingTransaction implements NumberedDomain {
     BigDecimal shippingCosts = ZERO
 
     /**
-     * The date when the document generated from the customer account has been
+     * The date when the document generated from the invoicing transaction has been
      * shipped.
      */
     Date shippingDate
@@ -196,20 +195,12 @@ class InvoicingTransaction implements NumberedDomain {
     BigDecimal shippingTax = ZERO
 
     /**
-     * The subject of the customer account.
+     * The subject of the invoicing transaction.
      */
     String subject
 
     /**
-     * The total of the customer account.  Normally, the method is called
-     * by Hibernate only to set the total value from a database record.  You
-     * should not call the method to set the total.  Use method
-     * {@code computeTotal} instead.
-     */
-    BigDecimal total = ZERO
-
-    /**
-     * The type of customer account.  This value is intended to be set by
+     * The type of invoicing transaction.  This value is intended to be set by
      * derived classes or by Hibernate during loading.  You should not set the
      * property by yourself.
      */
@@ -219,46 +210,49 @@ class InvoicingTransaction implements NumberedDomain {
     //-- Constructors ---------------------------
 
     /**
-     * Creates an empty customer account.
+     * Creates an empty invoicing transaction.
      */
     InvoicingTransaction() {}
 
     /**
-     * Creates a new customer account using the data of the given customer
+     * Creates a new invoicing transaction using the data of the given customer
      * account.
      *
-     * @param i the given customer account
+     * @param transaction   the given invoicing transaction
      */
-    InvoicingTransaction(InvoicingTransaction i) {
-        subject = i.subject
-        organization = i.organization
-        person = i.person
-        billingAddr = i.billingAddr ? new Address(i.billingAddr) : null
-        shippingAddr = i.shippingAddr ? new Address(i.shippingAddr) : null
-        headerText = i.headerText
-        if (i.items != null) {
-            items = new ArrayList(i.items.size())
-            for (InvoicingItem item : i.items) {
+    InvoicingTransaction(InvoicingTransaction transaction) {
+        subject = transaction.subject
+        organization = transaction.organization
+        person = transaction.person
+        billingAddr = transaction.billingAddr \
+            ? new Address(transaction.billingAddr)
+            : null
+        shippingAddr = transaction.shippingAddr \
+            ? new Address(transaction.shippingAddr)
+            : null
+        headerText = transaction.headerText
+        if (transaction.items != null) {
+            items = new ArrayList(transaction.items.size())
+            for (InvoicingItem item : transaction.items) {
                 items << new InvoicingItem(item)
             }
         }
-        footerText = i.footerText
-        discountPercent = i.discountPercent
-        discountAmount = i.discountAmount
-        shippingCosts = i.shippingCosts
-        shippingTax = i.shippingTax
-        adjustment = i.adjustment
-        total = i.total
-        notes = i.notes
-        termsAndConditions = i.termsAndConditions == null ? null
-            : new HashSet(i.termsAndConditions)
+        footerText = transaction.footerText
+        discountPercent = transaction.discountPercent
+        discountAmount = transaction.discountAmount
+        shippingCosts = transaction.shippingCosts
+        shippingTax = transaction.shippingTax
+        adjustment = transaction.adjustment
+        notes = transaction.notes
+        termsAndConditions = transaction.termsAndConditions == null ? null
+            : new HashSet(transaction.termsAndConditions)
     }
 
 
     //-- Properties -----------------------------
 
     /**
-     * Sets the price adjustment of the customer account.
+     * Sets the price adjustment of the invoicing transaction.
      *
      * @param adjustment    the adjustment that should be set; if {@code null}
      *                      it is converted to zero
@@ -269,7 +263,7 @@ class InvoicingTransaction implements NumberedDomain {
     }
 
     /**
-     * Sets a fixed discount amount of the customer account.
+     * Sets a fixed discount amount of the invoicing transaction.
      *
      * @param discountAmount    the discount amount that should be set; if
      *                          {@code null} it is converted to zero
@@ -280,7 +274,7 @@ class InvoicingTransaction implements NumberedDomain {
     }
 
     /**
-     * Sets a percentage discount amount of the customer account.
+     * Sets a percentage discount amount of the invoicing transaction.
      *
      * @param discountPercent   the percentage discount amount that should be
      *                          set; if {@code null} it is converted to zero
@@ -307,14 +301,13 @@ class InvoicingTransaction implements NumberedDomain {
      * number from property {@code fullNumber} and the subject.
      *
      * @return  the full name
-     * @see     #getFullNumber()
      */
     String getFullName() {
-        "${fullNumber} ${subject}"
+        "${computeFullNumber()} ${subject}"
     }
 
     /**
-     * Sets the shipping costs of the customer account.
+     * Sets the shipping costs of the invoicing transaction.
      *
      * @param shippingCosts the shipping costs that should be set; if
      *                      {@code null} it is converted to zero
@@ -335,7 +328,7 @@ class InvoicingTransaction implements NumberedDomain {
     }
 
     /**
-     * Sets the shipping tax of the customer account.
+     * Sets the shipping tax of the invoicing transaction.
      *
      * @param shippingTax the shipping tax that should be set; if {@code null} it
      *                    is converted to zero
@@ -364,7 +357,7 @@ class InvoicingTransaction implements NumberedDomain {
      * @see     #getSubtotalGross()
      */
     BigDecimal getSubtotalNet() {
-        (items*.total?.sum() ?: ZERO) + shippingCosts
+        (items*.totalNet?.sum() ?: ZERO) + shippingCosts
     }
 
     /**
@@ -388,7 +381,7 @@ class InvoicingTransaction implements NumberedDomain {
         Map<Double, BigDecimal> res = new HashMap<Double, BigDecimal>(5)
         if (items) {
             for (InvoicingItem item in items) {
-                addTaxRateSum res, item.tax, item.total
+                addTaxRateSum res, item.tax, item.totalNet
             }
         }
         if (shippingTax && shippingCosts) {
@@ -403,46 +396,29 @@ class InvoicingTransaction implements NumberedDomain {
     }
 
     /**
-     * Sets the total of the customer account.  Normally, the method is
-     * called by Hibernate only to set the total value from a database record.
-     * You should not call the method to set the total.  Use method
-     * {@code computeTotal} instead.
-     *
-     * @param total the total that should be set; if {@code null} it is
-     *              converted to zero
-     * @see         #computeTotal()
-     * @since 2.0
+     * The total of the invoicing transaction.
      */
-    void setTotal(BigDecimal total) {
-        this.total = total == null ? ZERO : total
+    BigDecimal getTotal() {
+        subtotalGross - discountPercentAmount - discountAmount + adjustment
     }
 
 
     //-- Public methods -------------------------
 
     /**
-     * Called before the customer account is created in the underlying data
-     * store.  The method obtains the next available sequence number and
-     * computes the total value.
+     * Called before the invoicing transaction is created in the underlying data
+     * store.  The method computes the total value.
      */
     def beforeInsert() {
-        total = computeTotal()
+        computeDynamicValues()
     }
 
     /**
-     * Called before the customer account is updated in the underlying data
+     * Called before the invoicing transaction is updated in the underlying data
      * store.  The method computes the total value.
      */
     def beforeUpdate() {
-        total = computeTotal()
-    }
-
-    /**
-     * Called before the customer account is validated.  The method computes the
-     * total value.
-     */
-    def beforeValidate() {
-        total = computeTotal()
+        computeDynamicValues()
     }
 
     /**
@@ -471,16 +447,6 @@ class InvoicingTransaction implements NumberedDomain {
     }
 
     /**
-     * Computes the total (gross) value. It is computed from the subtotal gross
-     * value minus all discounts plus the adjustment.
-     *
-     * @return  the total (gross) value
-     */
-    BigDecimal computeTotal() {
-        subtotalGross - discountPercentAmount - discountAmount + adjustment
-    }
-
-    /**
      * Copies the billing and shipping address from the given organization to
      * the corresponding addresses of the invoicing transaction.
      *
@@ -502,6 +468,13 @@ class InvoicingTransaction implements NumberedDomain {
 
     //-- Non-public methods ---------------------
 
+    /**
+     * Adds the given tax rate to the given map.
+     *
+     * @param map       the given map
+     * @param taxRate   the given tax rate
+     * @param value     the price value for the given tax rate
+     */
     private static void addTaxRateSum(Map<Double, BigDecimal> map,
                                       BigDecimal taxRate, BigDecimal value)
     {
@@ -510,13 +483,29 @@ class InvoicingTransaction implements NumberedDomain {
     }
 
     /**
-     * Gets all items of the customer account which is associated to a sales
-     * item of the given type.
+     * Computes dynamic values such as the net and gross subtotal, gross
+     * shipping costs and total.
+     *
+     * @since 3.0
+     */
+    private void computeDynamicValues() {
+        this['discountPercentAmount'] = discountPercentAmount
+        this['shippingCostsGross'] = shippingCostsGross
+        this['subtotalGross'] = subtotalGross
+        this['subtotalNet'] = subtotalNet
+        this['total'] = total
+
+        items*.computeDynamicValues()
+    }
+
+    /**
+     * Gets all items of the invoicing transaction which is associated to a
+     * sales item of the given type.
      *
      * @param type  the given sales item type; {@code null} to select all items
      *              not associated to any sales item
-     * @return      the items of the customer account associated to the given
-     *              sales item type
+     * @return      the items of the invoicing transaction associated to the
+     *              given sales item type
      * @since       2.0
      */
     @CompileStatic

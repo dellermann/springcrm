@@ -448,7 +448,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         assert 426.20905 == getEntry(entry, 'subtotalGross').toBigDecimal()
         assert 8.524181 == getEntry(entry, 'discountPercentAmount')
             .toBigDecimal()
-        assert 413.224869 == getEntry(entry, 'total').toBigDecimal()
+        assert 413.224869 == getEntry(entry, 'totalNet').toBigDecimal()
     }
 
     private void registerDefaultConverters() {

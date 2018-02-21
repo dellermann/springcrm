@@ -50,9 +50,6 @@ class Quote extends InvoicingTransaction {
         validUntil nullable: true
     }
     static hasMany = [salesOrders: SalesOrder, invoices: Invoice]
-    static mapping = {
-        stage column: 'quote_stage_id'
-    }
     static nextNumberFilters = [Filters.eq('type', TYPE)]
 
 

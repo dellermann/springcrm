@@ -264,7 +264,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @since   2.0
      */
     BigDecimal getTurnoverOtherSalesItems() {
-        itemsOfType(null)*.total.sum ZERO
+        itemsOfType(null)*.totalNet.sum ZERO
     }
 
     /**
@@ -274,7 +274,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @since   2.0
      */
     BigDecimal getTurnoverProducts() {
-        itemsOfType('P')*.total.sum ZERO
+        itemsOfType('P')*.totalNet.sum ZERO
     }
 
     /**
@@ -284,6 +284,6 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @since   2.0
      */
     BigDecimal getTurnoverWorks() {
-        itemsOfType('S')*.total.sum ZERO
+        itemsOfType('S')*.totalNet.sum ZERO
     }
 }

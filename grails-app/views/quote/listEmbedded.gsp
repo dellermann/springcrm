@@ -18,40 +18,40 @@
       </tr>
     </thead>
     <tbody>
-    <g:each var="quote" in="${quoteList}" status="i">
-      <tr>
-        <td class="col-type-id quote-number">
-          <g:link controller="quote" action="show" id="${quote.id}">
-            <g:fullNumber bean="${quote}"/>
-          </g:link>
-        </td>
-        <td class="col-type-string quote-subject">
-          <g:link controller="quote" action="show" id="${quote.id}">
-            <g:nl2br value="${quote.subject}"/>
-          </g:link>
-        </td>
-        <td class="col-type-status quote-stage">
-          <g:fieldValue bean="${quote}" field="stage"/>
-        </td>
-        <td class="col-type-date quote-doc-date">
-          <g:formatDate date="${quote?.docDate}"
-            formatName="default.format.date"/>
-        </td>
-        <td class="col-type-date quote-shipping-date">
-          <g:formatDate date="${quote?.shippingDate}"
-            formatName="default.format.date"/>
-        </td>
-        <td class="col-type-currency quote-total">
-          <g:formatCurrency number="${quote?.total}" displayZero="true"
-            external="true"/>
-        </td>
-        <td class="col-actions">
-          <g:button controller="quote" action="edit" id="${quote.id}"
-            color="success" size="xs" icon="pencil-square-o"
-            message="default.button.edit.label"/>
-        </td>
-      </tr>
-    </g:each>
+      <g:each var="quote" in="${quoteList}" status="i">
+        <tr>
+          <td class="col-type-id quote-number">
+            <g:link controller="quote" action="show" id="${quote.id}">
+              <g:fullNumber bean="${quote}"/>
+            </g:link>
+          </td>
+          <td class="col-type-string quote-subject">
+            <g:link controller="quote" action="show" id="${quote.id}">
+              <g:nl2br value="${quote.subject}"/>
+            </g:link>
+          </td>
+          <td class="col-type-status quote-stage">
+            <g:fieldValue bean="${quote}" field="stage"/>
+          </td>
+          <td class="col-type-date quote-doc-date">
+            <g:formatDate date="${quote?.docDate}"
+              formatName="default.format.date"/>
+          </td>
+          <td class="col-type-date quote-shipping-date">
+            <g:formatDate date="${quote?.shippingDate}"
+              formatName="default.format.date"/>
+          </td>
+          <td class="col-type-currency quote-total">
+            <g:formatCurrency number="${quote?.total}" displayZero="true"
+              external="true"/>
+          </td>
+          <td class="col-actions">
+            <g:button controller="quote" action="edit" id="${quote.id}"
+              color="success" size="xs" icon="pencil-square-o"
+              message="default.button.edit.label"/>
+          </td>
+        </tr>
+      </g:each>
     </tbody>
   </table>
 </g:applyLayout>

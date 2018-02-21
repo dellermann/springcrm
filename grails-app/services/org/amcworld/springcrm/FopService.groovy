@@ -23,7 +23,6 @@ package org.amcworld.springcrm
 import grails.core.GrailsApplication
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.*
 import javax.xml.transform.sax.SAXResult
 import javax.xml.transform.sax.SAXSource
@@ -204,9 +203,8 @@ class FopService {
     }
 
     /**
-     * Generates a PDF document from the given template and document type and
-     * writes the data to the response with the given file name.  The template
-     * must be a XSL-FO template which is processed by FOP.
+     * Generates a PDF document from the given template and document type.  The
+     * template must be a XSL-FO template which is processed by FOP.
      *
      * @param data      a reader containing the XML data to process by the
      *                  template
@@ -214,21 +212,13 @@ class FopService {
      *                  the name of the template file
      * @param template  the key of the template as obtained by
      *                  {@code getTemplatePaths} or {@code getTemplateNames}
-     * @param response  the response object to write the PDF data to
-     * @param fileName  the file name to use when writing to the output
+     * @return          the generated PDF document
      */
-    void outputPdf(String xml, String type, String template,
-                   HttpServletResponse response, String fileName) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        generatePdf new StringReader(xml), type, template ?: 'default', baos
-        byte [] buf = baos.toByteArray()
+    byte [] outputPdf(String xml, String type, String template) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream()
+        generatePdf new StringReader(xml), type, template ?: 'default', stream
 
-        response.contentType = 'application/pdf'
-        response.addHeader 'Content-Disposition',
-            "attachment; filename=\"${fileName}\""
-        response.contentLength = buf.length
-        response.outputStream.write buf
-        response.outputStream.flush()
+        stream.toByteArray()
     }
 
 

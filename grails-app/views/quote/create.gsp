@@ -1,15 +1,13 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <meta name="stylesheet" content="invoicing-transaction" />
+    <meta name="stylesheet" content="invoicing-transaction"/>
   </head>
 
   <body>
-    <g:applyLayout name="create"
-      model="[type: 'quote', instance: quoteInstance]"/>
+    <g:applyLayout name="create" model="[type: 'quote', instance: quote]"/>
 
     <content tag="scripts">
-      <asset:javascript src="invoicing-transaction-form" />
+      <asset:javascript src="invoicing-transaction-form"/>
       <asset:script>//<![CDATA[
         new SPRINGCRM.InvoicingTransaction(
           $("#quote-form"), {

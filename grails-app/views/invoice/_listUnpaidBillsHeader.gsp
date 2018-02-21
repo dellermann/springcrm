@@ -43,7 +43,7 @@
             /></label>
             <g:select name="sort" from="[
               'dueDatePayment', 'docDate', 'stillUnpaid', 'paymentAmount',
-              'total', 'number'
+              'totalNet', 'number'
             ]"
               id="unpaid-bills-settings-sort" class="form-control"
               value="${user.settings.unpaidBillsSort ?: 'dueDatePayment'}"

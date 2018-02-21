@@ -23,6 +23,8 @@ package org.amcworld.springcrm
 import static java.util.Calendar.YEAR
 
 import grails.core.GrailsApplication
+import grails.gorm.services.Service
+import grails.util.GrailsNameUtils
 import org.amcworld.springcrm.xml.InvoicingTransactionXML
 import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
 
@@ -40,8 +42,10 @@ class InvoicingTransactionService {
     //-- Fields ---------------------------------
 
     ConfigService configService
+    FopService fopService
     GrailsApplication grailsApplication
     InvoicingTransactionXMLFactory invoicingTransactionXMLFactory
+    SeqNumberService seqNumberService
     UserService userService
     UserSettingService userSettingService
 
@@ -125,11 +129,11 @@ class InvoicingTransactionService {
             """
             select
                 i, 
-                -(round(i.paymentAmount, :prec) - round(i.total, :prec)) 
+                -(round(i.paymentAmount, :prec) - round(i.totalNet, :prec)) 
                     as stillUnpaid
             from Invoice as i
             where i.stage.id between :stageStart and :stageEnd
-                and round(i.paymentAmount, :prec) - round(i.total, :prec) 
+                and round(i.paymentAmount, :prec) - round(i.totalNet, :prec) 
                     <= -:minimum
                 and i.dueDatePayment <= current_timestamp()
             order by ${sort} ${ord}
@@ -256,6 +260,52 @@ class InvoicingTransactionService {
         }
 
         xml.toString()
+    }
+
+    /**
+     * Gets the full name of the given invoicing transaction.  It consists of
+     * the full number and the subject of the given invoicing transaction.
+     *
+     * @param transaction   the given invoicing transaction
+     * @return              the computed full name
+     * @since 3.0
+     */
+    String getFullName(InvoicingTransaction transaction) {
+        StringBuffer buf = new StringBuffer(
+            seqNumberService.getFullNumber(transaction)
+        )
+        buf << ' ' << transaction.subject
+
+        buf.toString()
+    }
+
+    /**
+     * Generates a PDF document for the given invoicing transaction using the
+     * stated template.
+     *
+     * @param transaction       the given invoicing transaction
+     * @param template          the name of the template used for rendering
+     * @param duplicate         whether or not the generated document should be
+     *                          marked as duplicate
+     * @param additionalData    any additional data which are added to the
+     *                          generated data structure; all entries in this
+     *                          table overwrite possible existing entries in
+     *                          the generated data structure
+     * @since 3.0
+     */
+    byte [] print(InvoicingTransaction transaction, String template,
+                  boolean duplicate = false,
+                  Map<String, Object> additionalData = null)
+    {
+        String type = GrailsNameUtils.getScriptName(transaction.getClass())
+
+        String xml = generateXML(
+            transaction,
+            transaction.createUser ?: userService.getCurrentUser(),
+            duplicate, additionalData
+        )
+
+        fopService.outputPdf xml, type, template
     }
 
     /**

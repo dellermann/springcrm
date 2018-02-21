@@ -296,7 +296,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @since   2.0
      */
     BigDecimal getTurnoverOtherSalesItems() {
-        BigDecimal value = itemsOfType(null)*.total.sum ZERO
+        BigDecimal value = itemsOfType(null)*.totalNet.sum ZERO
         if (creditMemos) {
             value -= creditMemos*.turnoverOtherSalesItems.sum ZERO
         }
@@ -311,7 +311,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @since   2.0
      */
     BigDecimal getTurnoverProducts() {
-        BigDecimal value = itemsOfType('P')*.total.sum ZERO
+        BigDecimal value = itemsOfType('P')*.totalNet.sum ZERO
         if (creditMemos) {
             value -= creditMemos*.turnoverProducts.sum ZERO
         }
@@ -326,7 +326,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @since   2.0
      */
     BigDecimal getTurnoverWorks() {
-        BigDecimal value = itemsOfType('S')*.total.sum ZERO
+        BigDecimal value = itemsOfType('S')*.totalNet.sum ZERO
         if (creditMemos) {
             value -= creditMemos*.turnoverWorks.sum ZERO
         }

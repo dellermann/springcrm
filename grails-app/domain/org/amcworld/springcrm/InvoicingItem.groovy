@@ -1,7 +1,7 @@
 /*
  * InvoicingItem.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,8 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
-import org.grails.datastore.gorm.GormEntity
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.PackageScope
 
 
 /**
@@ -30,18 +31,18 @@ import org.grails.datastore.gorm.GormEntity
  * such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
-class InvoicingItem implements GormEntity<InvoicingItem> {
+@EqualsAndHashCode
+class InvoicingItem {
 
     //-- Constants ------------------------------
 
-    private static final BigInteger HUNDRED = new BigDecimal(100i)
+    private static final BigDecimal HUNDRED = new BigDecimal(100i)
 
 
     //-- Class fields ---------------------------
 
-    static belongsTo = [invoicingTransaction: InvoicingTransaction]
     static constraints = {
         quantity min: ZERO, scale: 6
         unit blank: false
@@ -54,46 +55,46 @@ class InvoicingItem implements GormEntity<InvoicingItem> {
     static mapping = {
         description type: 'text'
     }
-    static transients = ['total', 'totalGross']
+    static transients = ['totalNet', 'totalGross']
 
 
     //-- Fields ---------------------------------
 
     /**
-     * The quantity of this item.
-     */
-    BigDecimal quantity = ZERO
-
-    /**
-     * The unit associated with the quantity of this item.
-     */
-    String unit
-
-    /**
-     * The name of this item.
-     */
-    String name
-
-    /**
-     * The description of this item.
+     * The description of the item.
      */
     String description
 
     /**
-     * The net unit price of this item.
+     * The name of the item.
      */
-    BigDecimal unitPrice = ZERO
+    String name
 
     /**
-     * The tax rate of this item in percent.
+     * The quantity of the item.
+     */
+    BigDecimal quantity = ZERO
+
+    /**
+     * An optional associated sales item pointing to the product or works that
+     * represents the item.
+     */
+    SalesItem salesItem
+
+    /**
+     * The tax rate of the item in percent.
      */
     BigDecimal tax = ZERO
 
     /**
-     * An optional associated sales item pointing to the product or works that
-     * represents this item.
+     * The unit associated with the quantity of the item.
      */
-    SalesItem salesItem
+    String unit
+
+    /**
+     * The net unit price of the item.
+     */
+    BigDecimal unitPrice = ZERO
 
 
     //-- Constructors ---------------------------
@@ -106,16 +107,16 @@ class InvoicingItem implements GormEntity<InvoicingItem> {
     /**
      * Creates a new invoicing item using the values of the given item.
      *
-     * @param i the given invoicing item
+     * @param item  the given invoicing item
      */
-    InvoicingItem(InvoicingItem i) {
-        quantity = i.quantity
-        unit = i.unit
-        name = i.name
-        description = i.description
-        unitPrice = i.unitPrice
-        tax = i.tax
-        salesItem = i.salesItem
+    InvoicingItem(InvoicingItem item) {
+        quantity = item.quantity
+        unit = item.unit
+        name = item.name
+        description = item.description
+        unitPrice = item.unitPrice
+        tax = item.tax
+        salesItem = item.salesItem
     }
 
 
@@ -148,8 +149,10 @@ class InvoicingItem implements GormEntity<InvoicingItem> {
      *
      * @return  the net total
      */
-    BigDecimal getTotal() {
-        quantity * unitPrice
+    BigDecimal getTotalNet() {
+        BigDecimal res = quantity * unitPrice
+
+        res
     }
 
     /**
@@ -159,7 +162,9 @@ class InvoicingItem implements GormEntity<InvoicingItem> {
      * @since   2.0
      */
     BigDecimal getTotalGross() {
-        total * (HUNDRED + tax) / HUNDRED
+        BigDecimal res = totalNet * (HUNDRED + tax) / HUNDRED
+
+        res
     }
 
     /**
@@ -176,18 +181,42 @@ class InvoicingItem implements GormEntity<InvoicingItem> {
 
     //-- Public methods -------------------------
 
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof InvoicingItem && obj.id == id
+    /**
+     * Called before the customer account is created in the underlying data
+     * store.  The method computes the total values.
+     *
+     * @since 3.0
+     */
+    def beforeInsert() {
+        computeDynamicValues()
     }
 
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
+    /**
+     * Called before the customer account is updated in the underlying data
+     * store.  The method computes the total values.
+     *
+     * @since 3.0
+     */
+    def beforeUpdate() {
+        computeDynamicValues()
     }
 
     @Override
     String toString() {
         name ?: ''
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Computes dynamic values such as the net and gross total.
+     *
+     * @since 3.0
+     */
+    @PackageScope
+    void computeDynamicValues() {
+        this['totalGross'] = totalGross
+        this['totalNet'] = totalNet
     }
 }

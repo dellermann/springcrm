@@ -170,12 +170,10 @@ class CreditMemoController extends InvoicingController<CreditMemo> {
 
     //-- Non-public methods ---------------------
 
-    @Override
     protected boolean checkAccess(CreditMemo creditMemoInstance) {
         admin || creditMemoInstance.stage.id < 2502
     }
 
-    @Override
     protected void updateAssociated(CreditMemo creditMemoInstance) {
         Invoice invoiceInstance = creditMemoInstance.invoice
         if (invoiceInstance) {

@@ -168,7 +168,7 @@ class QuoteControllerTests {
 //		assertEquals 3, quote.items[0].amount
 //		assertEquals 'Test entry', quote.items[0].name
 //		assertEquals 60, quote.items[0].unitPrice
-//		assertEquals 180, quote.items[0].total
+//		assertEquals 180, quote.items[0].totalNet
 //	}
 
 	void testDelete() {

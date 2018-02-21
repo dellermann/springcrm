@@ -184,12 +184,10 @@ class DunningController extends InvoicingController<Dunning> {
         }
     }
 
-    @Override
     protected boolean checkAccess(Dunning dunningInstance) {
         admin || dunningInstance.stage.id < 2202
     }
 
-    @Override
     protected void updateAssociated(Dunning dunningInstance) {
         Invoice invoiceInstance = dunningInstance.invoice
         invoiceInstance.stage = InvoiceStage.get(904)

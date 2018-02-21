@@ -1,7 +1,7 @@
 /*
  * Payable.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * payable, such as invoices, reminders or credit notes.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 3.0
  * @since   1.0
  */
 interface Payable {
@@ -83,16 +83,6 @@ interface Payable {
      * @return  the total
      */
     BigDecimal getTotal()
-
-    /**
-     * Sets the total amount.  Normally, this method is called by Hibernate only
-     * to set the total value from a database record.  You should not call this
-     * method to set the total.  Instead rely on an internal computation of the
-     * total.
-     *
-     * @param total the total which should be set
-     */
-    void setTotal(BigDecimal total)
 
 
     //-- Public methods -------------------------

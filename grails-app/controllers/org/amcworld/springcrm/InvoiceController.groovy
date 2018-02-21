@@ -178,12 +178,10 @@ class InvoiceController extends InvoicingController<Invoice> {
 
     //-- Non-public methods ---------------------
 
-    @Override
     protected boolean checkAccess(Invoice invoiceInstance) {
         admin || invoiceInstance.stage.id < 902
     }
 
-    @Override
     protected void updateAssociated(Invoice invoiceInstance) {
         Quote quoteInstance =
             invoiceInstance.quote ?: invoiceInstance.salesOrder?.quote

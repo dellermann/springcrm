@@ -32,9 +32,7 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * @version 3.0
  * @since   2.2
  */
-class InvoicingController<T extends InvoicingTransaction>
-    extends GeneralController<T>
-{
+class InvoicingController<T extends InvoicingTransaction> {
 
     //-- Fields ---------------------------------
 
@@ -45,15 +43,15 @@ class InvoicingController<T extends InvoicingTransaction>
 
     //-- Constructors ---------------------------
 
+    InvoicingController() {}
+
     /**
      * Creates a new controller the handle invoicing transaction instances of
      * the given domain model type.
      *
      * @param domainType the given domain model type
      */
-    InvoicingController(Class<? extends T> domainType) {
-        super(domainType)
-    }
+    InvoicingController(Class<? extends T> domainType) {}
 
 
     //-- Public methods -------------------------
@@ -111,7 +109,6 @@ class InvoicingController<T extends InvoicingTransaction>
         [(domainInstanceName): domainType.get(id)]
     }
 
-    @Override
     def save() {
         T instance = saveInstance()
         if (instance) {
@@ -119,7 +116,6 @@ class InvoicingController<T extends InvoicingTransaction>
         }
     }
 
-    @Override
     def update(Long id) {
         T instance = updateInstance(id)
         if (instance) {
@@ -143,21 +139,18 @@ class InvoicingController<T extends InvoicingTransaction>
 
     //-- Non-public methods ---------------------
 
-    @Override
     protected Map<String, Object> getCreateModel(T instance) {
         instance.copyAddressesFromOrganization()
 
         super.getCreateModel instance
     }
 
-    @Override
     protected <D extends T> D lowLevelSave() {
         D instance = newInstance(params)
 
         invoicingTransactionService.save(instance, params) ? instance : null
     }
 
-    @Override
     protected <D extends T> D lowLevelUpdate(T instance) {
         invoicingTransactionService.save instance, params
     }

@@ -70,7 +70,7 @@ class PersonController {
             return
         }
 
-        Person person = personService.delete new ObjectId(id)
+        Person person = personService.delete(new ObjectId(id))
         if (ldapService != null) {
             ldapService.delete person
         }

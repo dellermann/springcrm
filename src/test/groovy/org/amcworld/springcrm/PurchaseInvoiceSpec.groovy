@@ -751,7 +751,7 @@ class PurchaseInvoiceSpec extends Specification
         when: 'I call beforeInsert'
         pi.beforeInsert()
 
-        then: 'I get the correct total value'
+        then: 'I get the correct totalNet value'
         407.00637375 == pi.total
     }
 

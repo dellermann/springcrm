@@ -1,7 +1,7 @@
 /*
  * QuoteController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,42 +20,82 @@
 
 package org.amcworld.springcrm
 
+import static org.springframework.http.HttpStatus.*
+
+import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationException
+import grails.web.RequestParameter
+import org.bson.types.ObjectId
+
 
 /**
  * The class {@code QuoteController} contains actions which manage quotes.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
-class QuoteController extends InvoicingController<Quote> {
+@Secured(['ROLE_ADMIN', 'ROLE_QUOTE'])
+class QuoteController {
 
-    //-- Constructors ---------------------------
+    //-- Fields ---------------------------------
 
-    QuoteController() {
-        super(Quote)
-    }
+    InvoicingTransactionService invoicingTransactionService
+    OrganizationService organizationService
+    PersonService personService
+    QuoteService quoteService
+    SeqNumberService seqNumberService
 
 
     //-- Public methods -------------------------
 
-    def copy(Long id) {
-        super.copy id
+    def copy(Quote quote) {
+        respond new Quote(quote), view: 'create'
     }
 
     def create() {
-        getCreateModel new Quote(params)
+        respond new Quote(params)
     }
 
-    def delete(Long id) {
-        super.delete id
+    def delete(String id) {
+        if (id == null) {
+            notFound()
+            return
+        }
+
+        Quote quote = quoteService.delete(new ObjectId(id))
+
+        request.withFormat {
+            //noinspection GroovyAssignabilityCheck
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.deleted.message',
+                    args: [message(code: 'quote.label'), quote]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NO_CONTENT }
+        }
     }
 
-    def edit(Long id) {
-        super.edit id
+    def edit(String id) {
+        respond id == null ? null : quoteService.get(new ObjectId(id))
     }
 
     def find() {
-        super.find()
+        String name = params.name
+        Integer number
+        try {
+            number = name as Integer
+        } catch (NumberFormatException ignored) {
+            number = null
+        }
+
+        String organizationId = params.organization
+        Organization organization = organizationId == null ? null
+            : organizationService.get(new ObjectId(organizationId))
+
+        //noinspection GroovyVariableNotAssigned
+        respond quoteService.find(number, name, organization)
     }
 
     def index() {
@@ -63,51 +103,146 @@ class QuoteController extends InvoicingController<Quote> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Quote.findAllBySubjectLike(searchFilter, params)
-            count = Quote.countBySubjectLike(searchFilter)
+            list = quoteService.findAllBySubjectLike(searchFilter, params)
+            count = quoteService.countBySubjectLike(searchFilter)
         } else {
-            list = Quote.list(params)
-            count = Quote.count()
+            list = quoteService.list(params)
+            count = quoteService.count()
         }
 
-        getIndexModel list, count
+        respond list, model: [quoteCount: count]
     }
 
-    def listEmbedded(Long organization, Long person) {
+    def listEmbedded(@RequestParameter('organization') String organizationId,
+                     @RequestParameter('person') String personId)
+    {
         List<Quote> list = null
-        int count = 0
-        Map<String, Object> linkParams = null
-        if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            list = Quote.findAllByOrganization(organizationInstance, params)
-            count = Quote.countByOrganization(organizationInstance)
-            linkParams = [organization: organizationInstance.id]
-        } else if (person) {
-            Person personInstance = Person.get(person)
-            list = Quote.findAllByPerson(personInstance, params)
-            count = Quote.countByPerson(personInstance)
-            linkParams = [person: personInstance.id]
+        Map model = null
+
+        if (organizationId != null) {
+            Organization organization =
+                organizationService.get(new ObjectId(organizationId))
+            if (organization != null) {
+                list = quoteService.findAllByOrganization(organization, params)
+                model = [
+                    quoteCount: quoteService.countByOrganization(organization),
+                    linkParams: [organization: organization.id.toString()]
+                ]
+            }
+        } else if (personId != null) {
+            Person person = personService.get(new ObjectId(personId))
+            if (person != null) {
+                list = quoteService.findAllByPerson(person, params)
+                model = [
+                    phoneCallCount: quoteService.countByPerson(person),
+                    linkParams: [person: person.id.toString()]
+                ]
+            }
         }
 
-        getListEmbeddedModel list, count, linkParams
+        respond list, model: model
     }
 
-    def print(Long id, String template) {
-        Quote quoteInstance = getDomainInstanceWithStatus(id)
-        if (quoteInstance != null) {
-            printDocument quoteInstance, template
+    def print(String id, String template) {
+        Quote quote = id == null ? null : quoteService.get(new ObjectId(id))
+        if (quote == null) {
+            notFound()
+            return
+        }
+
+        boolean duplicate = !params.duplicate?.isBlank()
+        byte [] pdf =
+            invoicingTransactionService.print(quote, template, duplicate)
+
+        StringBuilder buf = new StringBuilder()
+        buf << (message(code: 'quote.label') as String)
+        buf << ' ' << seqNumberService.getFullNumber(quote)
+        if (duplicate) {
+            buf << ' '
+            buf << (message(code: 'invoicingTransaction.duplicate') as String)
+        }
+        buf << '.pdf'
+
+        response.contentLength = pdf.length
+        render(
+            contentType: 'application/pdf',
+            file: pdf,
+            fileName: buf.toString()
+        )
+    }
+
+    def save(Quote quote) {
+        if (quote == null) {
+            notFound()
+            return
+        }
+
+        try {
+            quote.beforeInsert()
+            quoteService.save quote
+        } catch (ValidationException ignored) {
+            respond quote.errors, view: 'create'
+            return
+        }
+
+        request.withFormat {
+            //noinspection GroovyAssignabilityCheck
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.created.message',
+                    args: [message(code: 'quote.label'), quote]
+                ) as Object
+                redirect quote
+            }
+            '*' { respond quote, [status: CREATED] }
         }
     }
 
-    def save() {
-        super.save()
+    def show(String id) {
+        respond id == null ? null : quoteService.get(new ObjectId(id))
     }
 
-    def show(Long id) {
-        super.show id
+    def update(Quote quote) {
+        if (quote == null) {
+            notFound()
+            return
+        }
+
+        try {
+            quote.beforeUpdate()
+            quoteService.save quote
+        } catch (ValidationException ignored) {
+            respond quote.errors, view: 'edit'
+            return
+        }
+
+        request.withFormat {
+            //noinspection GroovyAssignabilityCheck
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.updated.message',
+                    args: [message(code: 'quote.label'), quote]
+                ) as Object
+                redirect quote
+            }
+            '*' { respond quote, [status: OK] }
+        }
     }
 
-    def update(Long id) {
-        super.update id
+
+    //-- Non-public methods ---------------------
+
+    private void notFound() {
+        request.withFormat {
+            //noinspection GroovyAssignabilityCheck
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.not.found.message',
+                    args: [message(code: 'quote.label'), params.id]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NOT_FOUND }
+        }
     }
 }
