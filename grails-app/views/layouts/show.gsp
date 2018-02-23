@@ -12,6 +12,7 @@
     message="default.button.copy.label"/>
   <g:unless test="${disableDelete}">
     <g:form resource="${instance}" method="delete">
+      <input type="hidden" name="confirmed"/>
       <button type="button"
         class="btn btn-danger btn-action-delete hidden-xs"
         aria-haspopup="true" aria-owns="confirm-modal">

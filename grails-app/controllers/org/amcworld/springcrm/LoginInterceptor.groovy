@@ -39,7 +39,7 @@ class LoginInterceptor implements Interceptor {
 
     ConfigService configService
     InstallService installService
-    int order = 30
+    int order = 30i
 
 
     //-- Constructors ---------------------------

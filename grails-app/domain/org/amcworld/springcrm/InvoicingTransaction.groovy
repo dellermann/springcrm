@@ -184,8 +184,8 @@ class InvoicingTransaction implements NumberedDomain {
     BigDecimal shippingCosts = ZERO
 
     /**
-     * The date when the document generated from the invoicing transaction has been
-     * shipped.
+     * The date when the document generated from the invoicing transaction has
+     * been shipped.
      */
     Date shippingDate
 

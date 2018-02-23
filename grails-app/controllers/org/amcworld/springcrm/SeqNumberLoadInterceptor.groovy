@@ -72,7 +72,7 @@ class SeqNumberLoadInterceptor implements Interceptor {
         Map<String, Object> model = getModel()
         if (model) {
             SeqNumber seqNumber = seqNumberService.get(controllerName)
-            if (seqNumber) {
+            if (seqNumber != null) {
                 def inst = model[controllerName]
                 NumberedDomain nd = inst instanceof NumberedDomain \
                     ? (NumberedDomain) inst

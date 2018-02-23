@@ -1,7 +1,7 @@
 #
 # _document-file-input.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,10 +35,10 @@ class DocumentFileInput
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
 
   # @nodoc
-  $LANG = $L
+  __$L = $L
 
 
   #-- Constructor -------------------------------
@@ -49,8 +49,8 @@ class DocumentFileInput
   # @param [Object] [options] any options used to configure the widget
   #
   constructor: ($element, options = {}) ->
-    $ = jq
-    $L = $LANG
+    $ = __jq
+    $L = __$L
     tmpl = Handlebars.templates['widgets/file-upload-document']
 
     removeLabelKey = options.removeLabelKey ? 'default.document.delete'

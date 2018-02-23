@@ -1,7 +1,7 @@
 #
 # _ui.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,14 +58,14 @@ class Page
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
 
   # @nodoc
-  $I18N = $I
+  __$I = $I
 
   # @nodoc
   #noinspection JSUnresolvedVariable
-  $LANG = $L
+  __$L = $L
 
 
   #-- Constructor -------------------------------
@@ -73,7 +73,7 @@ class Page
   # Initializes a page in this application.
   #
   constructor: ->
-    $ = jq
+    $ = __jq
     win = window
     $spinner = $('#spinner')
 
@@ -149,7 +149,7 @@ class Page
   # @param [jQuery] $select the given select control
   #
   initSelect: ($select) ->
-    $ = jq
+    $ = __jq
 
     plugins =
       disable_options:
@@ -202,7 +202,7 @@ class Page
   # @since 2.1
   #
   _initTextAreas: ->
-    $ = jq
+    $ = __jq
     $html = $('html')
     loadUrl = $html.data 'load-boilerplates-url'
     getUrl = $html.data 'get-boilerplate-url'
@@ -264,9 +264,9 @@ class Page
   # @since 2.0
   #
   _initTools: ->
-    $ = jq
-    $I = $I18N
-    $L = $LANG
+    $ = __jq
+    $I = __$I
+    $L = __$L
 
     $('#calculator')
       .draggable()
@@ -394,7 +394,7 @@ class Page
   # @private
   #
   _onClickAddBoilerplate: (event) ->
-    $ = jq
+    $ = __jq
     $container = $(event.currentTarget).closest '.textarea-container'
     $textarea = $container.find 'textarea'
 
@@ -460,23 +460,25 @@ class Page
   # @private
   #
   _onClickDeleteBtn: (event) ->
-    $ = jq
+    $ = __jq
     #noinspection JSUnresolvedVariable
-    $LANG = $L
+    $L = __$L
 
     $target = $(event.currentTarget)
     $.confirm(
-        $LANG('default.delete.confirm.msg'),
-        $LANG('default.delete.confirm.title'),
+        $L('default.delete.confirm.msg'),
+        $L('default.delete.confirm.title'),
         okBtn:
           color: 'danger'
           icon: 'trash'
-          label: $LANG('default.button.delete.label')
+          label: $L('default.button.delete.label')
       )
       .done( ->
-        url = $target.attr 'href'
-        url += (if url.indexOf('?') < 0 then '?' else '&') + 'confirmed=1'
-        window.location.assign url
+        $target
+          .closest('form')
+            .each ->
+              @elements['confirmed'].value = '1'
+              @submit()
       )
 
     false
@@ -502,7 +504,7 @@ class Page
   # @private
   #
   _onClickMarkdownHelpBtn: ->
-    $ = jq
+    $ = __jq
 
     $markdownHelp = $('#markdown-help')
     if $markdownHelp.length
@@ -528,7 +530,7 @@ class Page
   # @since 2.2
   #
   _onClickSaveLink: (event, close) ->
-    $ = jq
+    $ = __jq
 
     $('#close-form').attr 'value', if close then '1' else ''
     $(event.currentTarget)
@@ -598,7 +600,7 @@ class Page
   # @since 2.1
   #
   _onFocusOutTextareaContainer: (event) ->
-    $ = jq
+    $ = __jq
 
     $container = $(event.currentTarget).closest '.textarea-container'
     $focusInput = $(event.relatedTarget)
@@ -617,7 +619,7 @@ class Page
   # @private
   #
   _onLoadWindow: (event) ->
-    $ = jq
+    $ = __jq
 
     @_initToolbar()
     $(event.target).on('scroll', (event) => @_onScrollWindow event)

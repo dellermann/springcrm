@@ -1,7 +1,7 @@
 #
 # invoicing-transaction-form.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,14 +28,14 @@
 # transaction forms.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class InvoicingTransaction
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
 
   # @nodoc
   $LANG = $L
@@ -60,7 +60,7 @@ class InvoicingTransaction
   # @param [Object] [options] any options
   #
   constructor: ($element, options = {}) ->
-    $ = jq
+    $ = __jq
 
     @$element = $element
     @$paymentAmount = $('#paymentAmount')
@@ -175,7 +175,7 @@ class InvoicingTransaction
   # @private
   #
   _initInvoicingTransactionSelector: (selector) ->
-    $ = jq
+    $ = __jq
 
     selectize = selector.selectize
     $.extend true, selectize.settings,
@@ -239,7 +239,7 @@ class InvoicingTransaction
   # @since                2.0
   #
   _onChangeInvoiceDunning: (event) ->
-    $ = jq
+    $ = __jq
     $target = $(event.currentTarget)
 
     $.ajax(
@@ -250,7 +250,7 @@ class InvoicingTransaction
         url: $target.data 'get-closing-balance-url'
       )
       .done (data) ->
-        $ = jq
+        $ = __jq
 
         @$element
           .find('#still-unpaid')
@@ -316,7 +316,7 @@ class InvoicingTransaction
   # @private
   #
   _onChangeStage: (event) ->
-    $ = jq
+    $ = __jq
 
     stageValues = @options.stageValues
     $input = switch parseInt $(event.currentTarget).val(), 10
@@ -393,7 +393,7 @@ class InvoicingTransaction
   # @since 2.0
   #
   _updateDueDate: (organizationId) ->
-    $ = jq
+    $ = __jq
 
     $dueDate = $('#dueDatePayment-date')
     return unless $dueDate.length
@@ -412,5 +412,3 @@ class InvoicingTransaction
     return
 
 SPRINGCRM.InvoicingTransaction = InvoicingTransaction
-
-# vim:set ts=2 sw=2 sts=2:

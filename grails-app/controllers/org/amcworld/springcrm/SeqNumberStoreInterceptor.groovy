@@ -1,7 +1,7 @@
 /*
  * SeqNumberStoreInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,21 +47,19 @@ class SeqNumberStoreInterceptor implements Interceptor {
     //-- Public methods -------------------------
 
     /**
-     * Called before the action is executed.  The method sets the number
-     * parameter to zero if the {@code autoNumber} flag is submitted.
+     * Called before the action is executed.  The method obtains the next
+     * sequence number if the {@code autoNumber} flag has been submitted or the
+     * submitted number is zero.
      *
      * @return  always {@code true}
      */
     boolean before() {
-        if (params.number != null && params.autoNumber) {
-            params.number = 0i
-        }
-
-        if (params.number == 0) {
+        if (!params.int('number') || params.autoNumber) {
             GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName(
                 DomainClassArtefactHandler.TYPE, controllerName
             )
-            if (NumberedDomain.isAssignableFrom(gc?.clazz)) {
+            Class<?> clazz = gc?.clazz
+            if (clazz != null && NumberedDomain.isAssignableFrom(clazz)) {
                 params.number = seqNumberService.nextNumber(controllerName)
             }
         }

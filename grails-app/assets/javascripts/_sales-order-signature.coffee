@@ -1,7 +1,7 @@
 #
 # sales-order-signature.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class SalesOrderSignature
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
 
 
   #-- Constructor -------------------------------
@@ -45,7 +45,7 @@ class SalesOrderSignature
   # @param [Object] [options] any options
   #
   constructor: ($element, options = {}) ->
-    $ = jq
+    $ = __jq
 
     defOptions =
       onChangeSignature: ->
@@ -89,7 +89,7 @@ class SalesOrderSignature
   # @private
   #
   _initSignature: ->
-    $ = jq
+    $ = __jq
 
     @$signature = $('#signature')
     @$signatureDlg = $dlg = $('#signature-dialog')

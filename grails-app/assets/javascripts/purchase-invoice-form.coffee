@@ -1,7 +1,7 @@
 #
 # purchase-invoice-form.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,14 +27,14 @@
 # Class `PurchaseInvoice` represents a purchase invoice form.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 #
 class PurchaseInvoice
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
 
 
   #-- Constructor -------------------------------
@@ -46,7 +46,7 @@ class PurchaseInvoice
   # @param [Object] [options] any options
   #
   constructor: ($element, options = {}) ->
-    $ = jq
+    $ = __jq
 
     @$element = $element
 

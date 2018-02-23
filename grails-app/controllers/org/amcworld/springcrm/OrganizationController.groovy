@@ -70,6 +70,7 @@ class OrganizationController {
         Organization organization = organizationService.delete new ObjectId(id)
 
         request.withFormat {
+            //noinspection GroovyAssignabilityCheck
             form multipartForm {
                 flash.message = message(
                     code: 'default.deleted.message',
@@ -179,6 +180,7 @@ class OrganizationController {
         }
 
         request.withFormat {
+            //noinspection GroovyAssignabilityCheck
             form multipartForm {
                 flash.message = message(
                     code: 'default.created.message',
@@ -208,6 +210,7 @@ class OrganizationController {
         }
 
         request.withFormat {
+            //noinspection GroovyAssignabilityCheck
             form multipartForm {
                 flash.message = message(
                     code: 'default.updated.message',
@@ -224,6 +227,7 @@ class OrganizationController {
 
     private void notFound() {
         request.withFormat {
+            //noinspection GroovyAssignabilityCheck
             form multipartForm {
                 flash.message = message(
                     code: 'default.not.found.message',
