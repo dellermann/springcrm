@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.core.GrailsApplication
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
@@ -28,31 +29,30 @@ import spock.lang.Specification
 
 
 class OverviewServiceSpec extends Specification
-    implements ServiceUnitTest<OverviewService>
+    implements ServiceUnitTest<OverviewService>, DomainUnitTest<User>
 {
 
     //-- Feature methods ------------------------
 
-    def 'Don\'t show again changelog for a version'() {
+    void 'Do not show again changelog for a version'() {
         given: 'a mocked application version'
-        grailsApplication.metadata['info.app.version'] = '2.0.19'
+        grailsApplication.metadata.applicationVersion = '2.0.19'
+
+        and: 'a user settings service instance'
+        UserSettingService userSettingService = Mock()
+        service.userSettingService = userSettingService
 
         and: 'a user with mocked settings'
         User user = makeUser()
-//        UserSettings settings = Mock()
-//        user.settings = settings
-
-//        and: 'a credential of that user'
-//        Credential cred = new Credential(user)
 
         when: 'I set the dont show again version'
-        service.dontShowAgain(cred)
+        service.dontShowAgain(user)
 
         then: 'the user settings are manipulated accordingly'
-        1 * settings.put('changelogVersion', '2.0.19')
+        1 * userSettingService.store(user, 'changelogVersion', '2.0.19')
     }
 
-    def 'An empty changelog returns an empty string'() {
+    void 'An empty changelog returns an empty string'() {
         given: 'a mocked Grails application'
         mockApplication '', ''
 
@@ -61,7 +61,7 @@ class OverviewServiceSpec extends Specification
         '' == service.getChangelog(Locale.GERMAN)
     }
 
-    def 'A changelog without STOP marker returns all'() {
+    void 'A changelog without STOP marker returns all'() {
         given: 'some changelog content'
         String contentDefault = '''## 2.0.19
 
@@ -192,21 +192,22 @@ class OverviewServiceSpec extends Specification
 ''' == service.getChangelog(Locale.GERMANY)
     }
 
-    def 'Changelog is displayed depending on versions'(String v, boolean b) {
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Changelog is displayed depending on versions'(String v, boolean b) {
         given: 'a mocked application version'
-        grailsApplication.metadata['info.app.version'] = '2.0.19'
+        grailsApplication.metadata.applicationVersion = '2.0.19'
 
         and: 'a user with mocked settings'
         User user = makeUser()
-        new UserSetting(name: 'changelogVersion', value: v, user: user)
-            .save failOnError: true
-        user.afterLoad()
 
-//        and: 'a credential of that user'
-//        Credential cred = new Credential(user)
+        and: 'a user setting service instance'
+        UserSettingService userSettingService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * userSettingService.getString(user, 'changelogVersion') >> v
+        service.userSettingService = userSettingService
 
         expect:
-        b == service.showChangelog(cred)
+        b == service.showChangelog(user)
 
         where:
         v               || b
@@ -227,8 +228,8 @@ class OverviewServiceSpec extends Specification
 
     //-- Non-public methods ---------------------
 
-    private User makeUser() {
-        def u = new User(
+    private static User makeUser() {
+        new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -237,12 +238,8 @@ class OverviewServiceSpec extends Specification
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
-
-        u.id = 1704L
-        u.save failOnError: true
     }
 
     private void mockApplication(String contentDefault, String contentDe) {

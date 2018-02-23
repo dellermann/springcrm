@@ -59,7 +59,7 @@ class InstallerDisabledInterceptor {
      */
     boolean before() {
         Integer installStatus = configService.getInteger('installStatus')
-        if (installStatus && installService.installerDisabled) {
+        if (installStatus && installService.isInstallerDisabled()) {
             redirect controller: 'overview', action: 'index'
             return false
         }

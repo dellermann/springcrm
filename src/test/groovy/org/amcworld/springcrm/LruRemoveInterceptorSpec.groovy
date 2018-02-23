@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.testing.web.interceptor.InterceptorUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
@@ -30,10 +31,11 @@ class LruRemoveInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -52,38 +54,42 @@ class LruRemoveInterceptorSpec extends Specification
         'document'          | 'delete'              || false
     }
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         expect:
         interceptor.after()
         interceptor.before()
     }
 
-    def 'No removal without confirmation'() {
+    void 'No removal without confirmation'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.before()
 
         then: 'the remove method has not been called'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.lruService.removeItem(String, long)
     }
 
-    def 'Removal with confirmation'() {
+    void 'Removal with confirmation'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
         and: 'a controller name'
         webRequest.controllerName = 'phoneCall'
 
+        and: 'an ID'
+        ObjectId id = new ObjectId()
+
         and: 'some parameters'
         interceptor.params.confirmed = '1'
-        interceptor.params.id = '25'
+        interceptor.params.id = id.toString()
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.before()
 
         then: 'the remove method has not been called'
-        1 * interceptor.lruService.removeItem('phoneCall', 25L)
+        1 * interceptor.lruService.removeItem('phoneCall', id)
     }
 }

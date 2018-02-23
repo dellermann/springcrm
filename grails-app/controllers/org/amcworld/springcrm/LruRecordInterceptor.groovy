@@ -1,7 +1,7 @@
 /*
  * LruRecordInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import org.grails.datastore.gorm.GormEntity
  * items.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
@@ -61,9 +61,9 @@ class LruRecordInterceptor implements Interceptor {
      */
     boolean after() {
         if (!params.boolean('noLruRecord')) {
-            def instance = model?.get("${controllerName}Instance".toString())
-            if (!instance) {
-                instance = request["${controllerName}Instance"]
+            def instance = model?.get(controllerName)
+            if (instance == null) {
+                instance = request?.getAttribute(controllerName)
             }
             if (instance instanceof GormEntity) {
                 GormEntity entity = (GormEntity) instance

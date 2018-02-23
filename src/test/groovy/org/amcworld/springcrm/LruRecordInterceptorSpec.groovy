@@ -20,20 +20,23 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
 class LruRecordInterceptorSpec extends Specification
-    implements InterceptorUnitTest<LruRecordInterceptor>
+    implements InterceptorUnitTest<LruRecordInterceptor>,
+        DomainUnitTest<PhoneCall>
 {
 
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -64,60 +67,64 @@ class LruRecordInterceptorSpec extends Specification
         'user'              | 'updatePayment'       || true
     }
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         expect:
         interceptor.after()
         interceptor.before()
     }
 
-    def 'No model causes no LRU item'() {
+    void 'No model causes no LRU item'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'no LRU item is recorded'
+        then: 'no LRU item has been recorded'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.lruService.recordItem(_, _)
     }
 
-    def 'An empty model causes no LRU item'() {
+    void 'An empty model causes no LRU item'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
         and: 'an empty model'
         interceptor.model = [: ]
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'no LRU item is recorded'
+        then: 'no LRU item has been recorded'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.lruService.recordItem(_, _)
     }
 
-    def 'A model with an invalid instance name causes no LRU item'() {
+    void 'A model with an invalid instance name causes no LRU item'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
         and: 'a model with an invalid instance name'
         interceptor.model = [foo: 'bar']
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
         then: 'no LRU item is recorded'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.lruService.recordItem(_, _)
 
-        when: 'I use a wrong instance name and call the interceptor'
+        when: 'the interceptor is called with a wrong instance name'
         webRequest.controllerName = 'phoneCall'
-        interceptor.model = [noteInstance: new Note()]
+        interceptor.model = [note: new Note()]
         interceptor.after()
 
-        then: 'no LRU item is recorded'
+        then: 'no LRU item has been recorded'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.lruService.recordItem(_, _)
     }
 
-    def 'An instance without ID causes no LRU item'() {
+    void 'An instance without ID causes no LRU item'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
@@ -125,16 +132,17 @@ class LruRecordInterceptorSpec extends Specification
         webRequest.controllerName = 'phoneCall'
 
         and: 'a model with an instance without ID'
-        interceptor.model = [callInstance: new PhoneCall()]
+        interceptor.model = [phoneCall: new PhoneCall()]
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'no LRU item is recorded'
+        then: 'no LRU item has been recorded'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.lruService.recordItem(_, _)
     }
 
-    def 'An instance with errors causes no LRU item'() {
+    void 'An instance with errors causes no LRU item'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
@@ -146,16 +154,17 @@ class LruRecordInterceptorSpec extends Specification
         call.validate()
 
         and: 'a model with an invalid instance name'
-        interceptor.model = [callInstance: call]
+        interceptor.model = [phoneCall: call]
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'no LRU item is recorded'
+        then: 'no LRU item has been recorded'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.lruService.recordItem(_, _)
     }
 
-    def 'A valid instance causes an LRU item'() {
+    void 'A valid instance causes an LRU item'() {
         given: 'a mocked LRU service'
         interceptor.lruService = Mock(LruService)
 
@@ -171,12 +180,12 @@ class LruRecordInterceptorSpec extends Specification
         call.save failOnError: true
 
         and: 'a model with an invalid instance name'
-        interceptor.model = [callInstance: call]
+        interceptor.model = [phoneCall: call]
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'no LRU item is recorded'
+        then: 'no LRU item has been recorded'
         1 * interceptor.lruService.recordItem('phoneCall', call)
     }
 }

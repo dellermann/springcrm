@@ -1,7 +1,7 @@
 /*
  * LruService.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import com.mongodb.client.FindIterable
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import grails.core.GrailsApplication
-import grails.plugin.springsecurity.SpringSecurityService
 import groovy.transform.CompileStatic
 import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
@@ -43,7 +42,7 @@ class LruService {
     //-- Fields ---------------------------------
 
     GrailsApplication grailsApplication
-    SpringSecurityService springSecurityService
+    UserService userService
 
 
     //-- Public methods -------------------------
@@ -68,7 +67,7 @@ class LruService {
      *                      list
      */
     void recordItem(String controller, ObjectId id, String name) {
-        User user = springSecurityService.loadCurrentUser() as User
+        User user = userService.getCurrentUser()
 
         /* check whether or not this entry already exists */
         LruEntry lruEntry = LruEntry.find(
@@ -137,9 +136,7 @@ class LruService {
      * @return  the list of LRU entries
      */
     List<LruEntry> retrieveLruEntries() {
-        LruEntry.find(
-                Filters.eq('user', springSecurityService.loadCurrentUser())
-            )
+        LruEntry.find(Filters.eq('user', userService.getCurrentUser()))
             .limit(numOfLruEntries)
             .sort(Sorts.orderBy(Sorts.descending('pos')))
             .toList()
@@ -156,7 +153,7 @@ class LruService {
     void removeItem(String controller, ObjectId id) {
         LruEntry.collection.deleteMany(
             Filters.and(
-                Filters.eq('user', springSecurityService.loadCurrentUser()),
+                Filters.eq('user', userService.getCurrentUser()),
                 Filters.eq('controller', controller),
                 Filters.eq('itemId', id)
             )

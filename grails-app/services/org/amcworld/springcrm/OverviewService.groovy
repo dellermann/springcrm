@@ -60,6 +60,7 @@ class OverviewService {
      *
      * @param user  the currently logged in user
      */
+    @SuppressWarnings("SpellCheckingInspection")
     @Transactional
     void dontShowAgain(User user) {
         userSettingService.store(

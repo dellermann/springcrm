@@ -32,10 +32,11 @@ class InstallerDisabledInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -54,52 +55,81 @@ class InstallerDisabledInterceptorSpec extends Specification
         'install'           | 'save'                || true
     }
 
-    def 'Other interceptor methods return true'() {
+    void 'Other interceptor methods return true'() {
         expect:
         interceptor.after()
     }
 
-    def 'No redirect if application is uninitialized'() {
-        given: 'a mocked install service'
-        interceptor.installService = Mock(InstallService)
+    void 'No redirect if application is uninitialized'() {
+        given: 'a configuration service instance'
+        ConfigService configService = Mock()
+        interceptor.configService = configService
 
-        when: 'I call the interceptor'
+        and: 'a install service instance'
+        InstallService installService = Mock()
+        interceptor.installService = installService
+
+        when: 'the interceptor is called'
         boolean res = interceptor.before()
 
         then: 'the action is called'
         res
 
         and: 'it is not checked whether the installer is disabled'
-        0 * interceptor.installService.installerDisabled
+        1 * configService.getInteger('installStatus') >> null
+        0 * installService.isInstallerDisabled()
+
+        when: 'the interceptor is called'
+        res = interceptor.before()
+
+        then: 'the action is called'
+        res
+
+        and: 'it is not checked whether the installer is disabled'
+        1 * configService.getInteger('installStatus') >> 0
+        0 * installService.isInstallerDisabled()
     }
 
-    def 'No redirect if application is initialized but installer enabled'() {
-        given: 'a configuration that the application has been initialized'
-        new Config(name: 'installStatus', value: '1').save()
+    void 'No redirect if application is initialized but installer enabled'() {
+        given: 'a configuration service instance'
+        ConfigService configService = Mock()
+        interceptor.configService = configService
 
-        and: 'a mocked install service'
-        interceptor.installService = Mock(InstallService)
-        1 * interceptor.installService.installerDisabled >> false
+        and: 'a install service instance'
+        InstallService installService = Mock()
+        interceptor.installService = installService
 
-        expect:
-        interceptor.before()
+        when: 'the interceptor is called'
+        boolean res = interceptor.before()
+
+        then: 'the action is called'
+        res
+
+        and: 'it is checked whether the installer is disabled'
+        1 * configService.getInteger('installStatus') >> 1
+        //noinspection GroovyAssignabilityCheck
+        1 * installService.isInstallerDisabled() >> false
     }
 
-    def 'Redirect if application is initialized and installer disabled'() {
-        given: 'a configuration that the application has been initialized'
-        new Config(name: 'installStatus', value: '1').save()
+    void 'Redirect if application is initialized and installer disabled'() {
+        given: 'a configuration service instance'
+        ConfigService configService = Mock()
+        interceptor.configService = configService
 
-        and: 'a mocked install service'
-        interceptor.installService = Mock(InstallService)
-        1 * interceptor.installService.installerDisabled >> true
+        and: 'a install service instance'
+        InstallService installService = Mock()
+        interceptor.installService = installService
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         boolean res = interceptor.before()
 
         then: 'the action is not called'
         !res
 
-        and: 'I am redirected to overview page'
-        response.redirectedUrl == '/'   // see UrlMappings.groovy
+        and: 'a redirect to overview page is issued'
+        1 * configService.getInteger('installStatus') >> 1
+        //noinspection GroovyAssignabilityCheck
+        1 * installService.isInstallerDisabled() >> true
+        '/' == response.redirectedUrl   // see UrlMappings.groovy
     }
 }
