@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.springframework.http.HttpStatus.*
-
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import org.bson.types.ObjectId
@@ -36,11 +34,18 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_WORK'])
-class WorkController {
+class WorkController extends GeneralController<Work> {
 
     //-- Class fields -------------------------------
 
     WorkService workService
+
+
+    //-- Constructors ---------------------------
+
+    WorkController() {
+        super(Work)
+    }
 
 
     //-- Public methods -------------------------
@@ -59,18 +64,7 @@ class WorkController {
             return
         }
 
-        Work work = workService.delete new ObjectId(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'work.label'), work]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete workService.delete(new ObjectId(id))
     }
 
     def edit(String id) {
@@ -78,6 +72,7 @@ class WorkController {
     }
 
     def find(String name) {
+        // TODO revise this method!
         Integer number = null
         try {
             number = name as Integer
@@ -118,19 +113,11 @@ class WorkController {
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'work.label'), work]
-                ) as Object
-                redirect work
-            }
-            '*' { respond work, [status: CREATED] }
-        }
+        redirectAfterStorage work
     }
 
     def selectorList() {
+        // TODO implement this method!
 //        super.selectorList()
     }
 
@@ -151,31 +138,6 @@ class WorkController {
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'work.label'), work]
-                ) as Object
-                redirect work
-            }
-            '*' { respond work, [status: OK] }
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'work.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
-        }
+        redirectAfterStorage work
     }
 }

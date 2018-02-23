@@ -20,19 +20,18 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.amcworld.springcrm.google.GoogleContactSync
 import org.bson.types.ObjectId
-import org.grails.web.util.GrailsApplicationAttributes
-import spock.lang.Ignore
 import spock.lang.Specification
 
 
 class PhoneCallControllerSpec extends Specification
-    implements ControllerUnitTest<PhoneCallController>
+    implements ControllerUnitTest<PhoneCallController>,
+        DomainUnitTest<PhoneCall>
 {
 
     //-- Feature methods ------------------------
@@ -87,9 +86,11 @@ class PhoneCallControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'DELETE'
+        webRequest.actionName = 'delete'
         controller.delete null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.delete(_)
         '/phoneCall/index' == response.redirectedUrl
         null != flash.message
@@ -108,6 +109,7 @@ class PhoneCallControllerSpec extends Specification
         controller.delete phoneCall.id.toString()
 
         then: 'the instance is deleted'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(phoneCall.id) >> phoneCall
         '/phoneCall/index' == response.redirectedUrl
         null != flash.message
@@ -117,6 +119,7 @@ class PhoneCallControllerSpec extends Specification
         controller.delete phoneCall.id.toString()
 
         then: 'the instance is deleted in LDAP, too'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(phoneCall.id) >> phoneCall
         '/phoneCall/index' == response.redirectedUrl
         null != flash.message
@@ -135,6 +138,7 @@ class PhoneCallControllerSpec extends Specification
         controller.edit null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -151,6 +155,7 @@ class PhoneCallControllerSpec extends Specification
         controller.edit phoneCall.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(phoneCall.id) >> phoneCall
         phoneCall == model.phoneCall
     }
@@ -166,6 +171,7 @@ class PhoneCallControllerSpec extends Specification
         and: 'a service instance'
         PhoneCallService service = Mock()
         1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.phoneCallService = service
 
@@ -190,8 +196,10 @@ class PhoneCallControllerSpec extends Specification
 
         and: 'a service instance'
         PhoneCallService service = Mock()
+        //noinspection GroovyAssignabilityCheck
         2 * service.countBySubjectLessThan('E') >>> [45, 40]
         2 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         2 * service.list(getParameterMap(
             letter: 'E', max: 10, offset: 40, sort: 'subject'
         )) >> list
@@ -233,6 +241,7 @@ class PhoneCallControllerSpec extends Specification
         and: 'a service instance'
         PhoneCallService service = Mock()
         1 * service.countBySubjectLike('%all%') >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllBySubjectLike(
             '%all%', getParameterMap(max: 10, offset: 20, search: 'all')
         ) >> list
@@ -282,10 +291,13 @@ class PhoneCallControllerSpec extends Specification
         controller.listEmbedded null, null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * organizationService.get(_)
         0 * personService.get(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.findAllByOrganization(_, _)
         0 * service.countByOrganization(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.findAllByPerson(_, _)
         0 * service.countByPerson(_)
         404 == response.status
@@ -310,8 +322,10 @@ class PhoneCallControllerSpec extends Specification
         controller.listEmbedded org.id.toString(), null
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * organizationService.get(org.id) >> org
         0 * personService.get(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByOrganization(
             org, getParameterMap(max: 20, offset: 40)
         ) >> list
@@ -343,9 +357,12 @@ class PhoneCallControllerSpec extends Specification
 
         then: 'the model is correct'
         0 * organizationService.get(_)
+        //noinspection GroovyAssignabilityCheck
         1 * personService.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         0 * service.findAllByOrganization(_)
         0 * service.countByOrganization(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByPerson(
             person, getParameterMap(max: 20, offset: 40)
         ) >> list
@@ -374,8 +391,10 @@ class PhoneCallControllerSpec extends Specification
         controller.listEmbedded org.id.toString(), person.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * organizationService.get(org.id) >> org
         0 * personService.get(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByOrganization(
             org, getParameterMap(max: 20, offset: 40)
         ) >> list
@@ -399,9 +418,11 @@ class PhoneCallControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'POST'
+        webRequest.actionName = 'save'
         controller.save null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/phoneCall/index' == response.redirectedUrl
         null != flash.message
@@ -411,6 +432,7 @@ class PhoneCallControllerSpec extends Specification
         controller.save phoneCall
 
         then: 'the create view is rendered again with the correct model'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(phoneCall) >> {
             throw new ValidationException('', new ValidationErrors(phoneCall))
         }
@@ -421,9 +443,47 @@ class PhoneCallControllerSpec extends Specification
         response.reset()
         controller.save phoneCall
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(phoneCall) >> phoneCall
+        '/phoneCall/edit/' + phoneCall.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save phoneCall
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(phoneCall) >> phoneCall
+        //noinspection SpellCheckingInspection
+        '/phoneCall/edit/' + phoneCall.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save phoneCall
+
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(phoneCall) >> phoneCall
         '/phoneCall/show/' + phoneCall.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save phoneCall
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(phoneCall) >> phoneCall
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 
@@ -440,6 +500,7 @@ class PhoneCallControllerSpec extends Specification
         controller.show null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -456,6 +517,7 @@ class PhoneCallControllerSpec extends Specification
         controller.show phoneCall.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(phoneCall.id) >> phoneCall
         phoneCall == model.phoneCall
     }
@@ -472,9 +534,11 @@ class PhoneCallControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'PUT'
+        webRequest.actionName = 'update'
         controller.update null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/phoneCall/index' == response.redirectedUrl
         null != flash.message
@@ -484,6 +548,7 @@ class PhoneCallControllerSpec extends Specification
         controller.update phoneCall
 
         then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(phoneCall) >> {
             throw new ValidationException('', new ValidationErrors(phoneCall))
         }
@@ -494,9 +559,47 @@ class PhoneCallControllerSpec extends Specification
         response.reset()
         controller.update phoneCall
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(phoneCall) >> phoneCall
+        '/phoneCall/edit/' + phoneCall.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.update phoneCall
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(phoneCall) >> phoneCall
+        //noinspection SpellCheckingInspection
+        '/phoneCall/edit/' + phoneCall.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.update phoneCall
+
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(phoneCall) >> phoneCall
         '/phoneCall/show/' + phoneCall.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.update phoneCall
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(phoneCall) >> phoneCall
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 

@@ -22,9 +22,11 @@ package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
+import grails.validation.ValidationErrors
 import grails.validation.ValidationException
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.bson.types.ObjectId
-import spock.lang.*
+import spock.lang.Specification
 
 
 class RoleGroupControllerSpec extends Specification
@@ -34,241 +36,362 @@ class RoleGroupControllerSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'The index action returns the correct model'() {
-        given:
-        def rg = new RoleGroup(name: 'Administrators')
+    void 'The copy action returns the correct model and create view'() {
+        given: 'an instance'
+        RoleGroup group = instance
 
-        and:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * list(_) >> [rg]
-            1 * count() >> 1
-        }
+        when: 'the action is executed'
+        controller.copy group
 
-        when: 'the index action is executed'
-        controller.index()
+        then: 'the model is correctly created'
+        null != model.roleGroup
+        group.name == model.roleGroup.name
+        //noinspection GroovyAssignabilityCheck
+        group.authorities == model.roleGroup.authorities
 
-        then: 'the model is correct'
-        null != model.roleGroupList
-        1 == model.roleGroupList.size()
-        rg == model.roleGroupList.first()
-        1 == model.roleGroupCount
+        and: 'the view is correctly set'
+        'create' == view
     }
 
-    def 'The create action returns the correct model'() {
-        when: 'the create action is executed'
+    void 'The create action returns the correct model'() {
+        when: 'the action is executed'
         controller.create()
 
         then: 'the model is correctly created'
         null != model.roleGroup
+
+        when: 'the action is executed with parameters'
+        populateValidParams params
+        controller.create()
+
+        then: 'the model is correctly created'
+        null != model.roleGroup
+        params.name == model.roleGroup.name
+        //noinspection GroovyAssignabilityCheck
+        params.authorities == model.roleGroup.authorities
     }
 
-    def 'The save action can handle a null instance'() {
-        when: 'save is called for a domain instance that does not exist'
+    void 'The delete action deletes an instance if it exists'() {
+        given: 'an instance'
+        RoleGroup roleGroup = instance
+        roleGroup.id = new ObjectId()
+
+        and: 'a service instance'
+        RoleGroupService service = Mock()
+        service.delete(roleGroup.id) >> roleGroup
+        controller.roleGroupService = service
+
+        when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
-        request.method = 'POST'
-        controller.save null
+        request.method = 'DELETE'
+        webRequest.actionName = 'delete'
+        controller.delete null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
+        0 * service.delete(_)
+        '/roleGroup/index' == response.redirectedUrl
+        null != flash.message
+
+        when: 'the action is called for a non-existing instance'
+        response.reset()
+        controller.delete new ObjectId().toString()
+
+        then: 'a 404 error is returned'
+        0 * service.delete(roleGroup.id)
+        '/roleGroup/index' == response.redirectedUrl
+        null != flash.message
+
+        when: 'the action is called for an existing instance'
+        response.reset()
+        controller.delete roleGroup.id.toString()
+
+        then: 'the instance is deleted'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.delete(roleGroup.id) >> roleGroup
         '/roleGroup/index' == response.redirectedUrl
         null != flash.message
     }
 
-    def 'The save action can persist correctly'() {
-        given:
-        def id = new ObjectId()
+    void 'The edit action returns the correct model'() {
+        given: 'an instance'
+        RoleGroup roleGroup = instance
+        roleGroup.id = new ObjectId()
 
-        and:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * save(_ as RoleGroup)
-        }
+        and: 'a service instance'
+        RoleGroupService service = Mock()
+        controller.roleGroupService = service
 
-        when: 'the save action is executed with a valid instance'
-        response.reset()
-        request.contentType = FORM_CONTENT_TYPE
-        request.method = 'POST'
-        populateValidParams(params)
-        def roleGroup = new RoleGroup(params)
-        roleGroup.id = id
-
-        controller.save roleGroup
-
-        then: 'a redirect is issued to the show action'
-        '/roleGroup/show/' + id == response.redirectedUrl
-        null != controller.flash.message
-    }
-
-    def 'The save action can handle an invalid instance'() {
-        given:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * save(_ as RoleGroup) >> { RoleGroup roleGroup ->
-                throw new ValidationException(
-                    'Invalid instance', roleGroup.errors
-                )
-            }
-        }
-
-        when: 'the save action is executed with an invalid instance'
-        request.contentType = FORM_CONTENT_TYPE
-        request.method = 'POST'
-        def roleGroup = new RoleGroup()
-        controller.save(roleGroup)
-
-        then: 'the create view is rendered again with the correct model'
-        null != model.roleGroup
-        'create' == view
-    }
-
-    def 'The show action can handle a null id'() {
-        given:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            0 * get(null)
-        }
-
-        when: 'the show action is executed with a null domain'
-        controller.show null
-
-        then: 'a 404 error is returned'
-        response.status == 404
-    }
-
-    def 'The show action can handle a valid id'() {
-        given:
-        def id = new ObjectId()
-
-        and:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * get(id) >> new RoleGroup()
-        }
-
-        when: 'a domain instance is passed to the show action'
-        controller.show id.toString()
-
-        then: 'a model is populated containing the domain instance'
-        model.roleGroup instanceof RoleGroup
-    }
-
-    def 'The edit action can handle a null id'() {
-        given:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            0 * get(null)
-        }
-
-        when: 'the show action is executed with a null domain'
+        when: 'the action is executed with a null domain'
         controller.edit null
 
         then: 'a 404 error is returned'
-        response.status == 404
-    }
+        //noinspection GroovyAssignabilityCheck
+        0 * service.get(_)
+        404 == response.status
 
-    def 'The edit action can handle a valid id'() {
-        given:
-        def id = new ObjectId()
-
-        and:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * get(id) >> new RoleGroup()
-        }
-
-        when: 'a domain instance is passed to the show action'
-        controller.edit id.toString()
-
-        then: 'a model is populated containing the domain instance'
-        model.roleGroup instanceof RoleGroup
-    }
-
-    def 'The update action can handle a null instance'() {
-        when: 'save is called for a domain instance that doesn\'t exist'
-        request.contentType = FORM_CONTENT_TYPE
-        request.method = 'PUT'
-        controller.update null
+        when: 'the action is executed with a non-existing domain'
+        response.reset()
+        controller.edit new ObjectId().toString()
 
         then: 'a 404 error is returned'
-        '/roleGroup/index' == response.redirectedUrl
-        null != flash.message
+        0 * service.get(roleGroup.id)
+        404 == response.status
+
+        when: 'the action is executed with an existing domain'
+        response.reset()
+        controller.edit roleGroup.id.toString()
+
+        then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(roleGroup.id) >> roleGroup
+        roleGroup == model.roleGroup
     }
 
-    def 'The update action can persist correctly'() {
-        given:
-        def id = new ObjectId()
+    void 'The index action returns the correct model'() {
+        given: 'a list of groups'
+        def list = [
+            new RoleGroup(name: 'Group 1'),
+            new RoleGroup(name: 'Group 2'),
+            new RoleGroup(name: 'Group 3'),
+        ]
 
-        and:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * save(_ as RoleGroup)
-        }
+        and: 'a service instance'
+        RoleGroupService service = Mock()
+        1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
+        1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
+        controller.roleGroupService = service
 
-        when: 'the save action is executed with a valid instance'
-        response.reset()
+        when: 'the action is executed without list type'
+        params.max = 10
+        params.offset = 20
+        controller.index()
+
+        then: 'the model is correct'
+        list.size() == model.roleGroupList.size()
+        list == (List) model.roleGroupList
+        list.size() == model.roleGroupCount
+    }
+
+    void 'The save action correctly persists an instance'() {
+        given: 'an instance'
+        RoleGroup roleGroup = instance
+        roleGroup.id = new ObjectId()
+
+        and: 'a service instance'
+        RoleGroupService service = Mock()
+        controller.roleGroupService = service
+
+        when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
-        request.method = 'PUT'
-        populateValidParams(params)
-        def roleGroup = new RoleGroup(params)
-        roleGroup.id = id
+        request.method = 'POST'
+        webRequest.actionName = 'save'
+        controller.save null
 
-        controller.update roleGroup
+        then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
+        0 * service.save(_)
+        '/roleGroup/index' == response.redirectedUrl
+        null != flash.message
+
+        when: 'the action is executed with an invalid instance'
+        response.reset()
+        controller.save roleGroup
+
+        then: 'the create view is rendered again with the correct model'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> {
+            throw new ValidationException('', new ValidationErrors(roleGroup))
+        }
+        roleGroup == model.roleGroup
+        'create' == view
+
+        when: 'the action is executed with a valid instance'
+        response.reset()
+        controller.save roleGroup
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        '/roleGroup/edit/' + roleGroup.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save roleGroup
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        //noinspection SpellCheckingInspection
+        '/roleGroup/edit/' + roleGroup.id +
+            '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+                response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save roleGroup
 
         then: 'a redirect is issued to the show action'
-        '/roleGroup/show/' + id == response.redirectedUrl
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        '/roleGroup/show/' + roleGroup.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save roleGroup
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 
-    def 'The update action can handle an invalid instance'() {
-        given:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * save(_ as RoleGroup) >> { RoleGroup roleGroup ->
-                throw new ValidationException(
-                    'Invalid instance', roleGroup.errors
-                )
-            }
-        }
+    void 'The show action returns the correct model'() {
+        given: 'an instance'
+        RoleGroup roleGroup = instance
+        roleGroup.id = new ObjectId()
 
-        when: 'the save action is executed with an invalid instance'
+        and: 'a service instance'
+        RoleGroupService service = Mock()
+        controller.roleGroupService = service
+
+        when: 'the action is executed with a null domain'
+        controller.show null
+
+        then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
+        0 * service.get(_)
+        404 == response.status
+
+        when: 'the action is executed with a non-existing domain'
+        response.reset()
+        controller.show new ObjectId().toString()
+
+        then: 'a 404 error is returned'
+        0 * service.get(roleGroup.id)
+        404 == response.status
+
+        when: 'the action is executed with an existing domain'
+        response.reset()
+        controller.show roleGroup.id.toString()
+
+        then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(roleGroup.id) >> roleGroup
+        roleGroup == model.roleGroup
+    }
+
+    void 'The update action performs an update on a valid domain instance'() {
+        given: 'an instance'
+        RoleGroup roleGroup = instance
+        roleGroup.id = new ObjectId()
+
+        and: 'a service instance'
+        RoleGroupService service = Mock()
+        controller.roleGroupService = service
+
+        when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'PUT'
-        controller.update new RoleGroup()
+        webRequest.actionName = 'update'
+        controller.update null
 
-        then: 'the edit view is rendered again with the correct model'
-        null != model.roleGroup
-        'edit' == view
-    }
-
-    def 'The delete action can handle a null instance'() {
-        when: 'the delete action is called for a null instance'
-        request.contentType = FORM_CONTENT_TYPE
-        request.method = 'DELETE'
-        controller.delete null
-
-        then: 'a 404 is returned'
+        then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
+        0 * service.save(_)
         '/roleGroup/index' == response.redirectedUrl
         null != flash.message
-    }
 
-    def 'The delete action can handle an instance'() {
-        given:
-        def id = new ObjectId()
+        when: 'an invalid domain instance is passed to the action'
+        response.reset()
+        controller.update roleGroup
 
-        and:
-        controller.roleGroupService = Mock(RoleGroupService) {
-            1 * delete(id)
+        then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> {
+            throw new ValidationException('', new ValidationErrors(roleGroup))
         }
+        roleGroup == model.roleGroup
+        'edit' == view
 
-        when: 'the domain instance is passed to the delete action'
-        request.contentType = FORM_CONTENT_TYPE
-        request.method = 'DELETE'
-        controller.delete id.toString()
+        when: 'a valid domain instance is passed to the action'
+        response.reset()
+        controller.update roleGroup
 
-        then: 'the user is redirected to index'
-        '/roleGroup/index' == response.redirectedUrl
-        null != flash.message
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        '/roleGroup/edit/' + roleGroup.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.update roleGroup
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        //noinspection SpellCheckingInspection
+        '/roleGroup/edit/' + roleGroup.id +
+            '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+                response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.update roleGroup
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        '/roleGroup/show/' + roleGroup.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.update roleGroup
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(roleGroup) >> roleGroup
+        '/invoice/show/12345' == response.redirectedUrl
+        null != controller.flash.message
     }
 
 
-    //-- Non-public methods ---------------------
+    //-- Non-public methods -------------------------
 
-    private static void populateValidParams(params) {
+    private static RoleGroup getInstance() {
+        Map properties = [: ]
+        populateValidParams properties
+
+        new RoleGroup(properties)
+    }
+
+    private GrailsParameterMap getParameterMap(Map map) {
+        new GrailsParameterMap(map, request)
+    }
+
+    private static void populateValidParams(Map params) {
         assert params != null
 
+        params.authorities = [new Role(authority: 'ROLE_ADMIN')] as Set
         params.name = 'Administrators'
-        params.authorities = [new Role(authority: 'ROLE_ADMIN')]
     }
 }
 

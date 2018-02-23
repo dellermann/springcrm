@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.springframework.http.HttpStatus.*
-
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import grails.web.RequestParameter
@@ -36,13 +34,20 @@ import org.bson.types.ObjectId
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_CALL'])
-class PhoneCallController {
+class PhoneCallController extends GeneralController<PhoneCall> {
 
     //-- Fields ---------------------------------
 
     OrganizationService organizationService
     PersonService personService
     PhoneCallService phoneCallService
+
+
+    //-- Constructors ---------------------------
+
+    PhoneCallController() {
+        super(PhoneCall)
+    }
 
 
     //-- Public methods -------------------------
@@ -61,18 +66,7 @@ class PhoneCallController {
             return
         }
 
-        PhoneCall call = phoneCallService.delete new ObjectId(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'phoneCall.label'), call]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete phoneCallService.delete(new ObjectId(id))
     }
 
     def edit(String id) {
@@ -142,21 +136,9 @@ class PhoneCallController {
         }
 
         try {
-            phoneCallService.save call
+            redirectAfterStorage phoneCallService.save(call)
         } catch (ValidationException ignored) {
             respond call.errors, view: 'create'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'phoneCall.label'), call]
-                ) as Object
-                redirect call
-            }
-            '*' { respond call, [status: CREATED] }
         }
     }
 
@@ -171,37 +153,9 @@ class PhoneCallController {
         }
 
         try {
-            phoneCallService.save call
+            redirectAfterStorage phoneCallService.save(call)
         } catch (ValidationException ignored) {
             respond call.errors, view: 'edit'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'phoneCall.label'), call]
-                ) as Object
-                redirect call
-            }
-            '*' { respond call, [status: OK] }
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'phoneCall.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
         }
     }
 }

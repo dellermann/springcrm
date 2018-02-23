@@ -90,9 +90,11 @@ class OrganizationControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'DELETE'
+        webRequest.actionName = 'delete'
         controller.delete null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.delete(_)
         '/organization/index' == response.redirectedUrl
         null != flash.message
@@ -111,6 +113,7 @@ class OrganizationControllerSpec extends Specification
         controller.delete org.id.toString()
 
         then: 'the instance is deleted'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(org.id) >> org
         '/organization/index' == response.redirectedUrl
         null != flash.message
@@ -129,6 +132,7 @@ class OrganizationControllerSpec extends Specification
         controller.edit null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -145,6 +149,7 @@ class OrganizationControllerSpec extends Specification
         controller.edit org.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
         org == model.organization
     }
@@ -166,6 +171,7 @@ class OrganizationControllerSpec extends Specification
         controller.find((Byte) null)
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByNameLike(
             '%xxx%', getParameterMap(sort: 'name')
         ) >> []
@@ -178,6 +184,7 @@ class OrganizationControllerSpec extends Specification
         controller.find((Byte) 0)
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByNameLike(
             '%xxx%', getParameterMap(sort: 'name')
         ) >> []
@@ -186,10 +193,12 @@ class OrganizationControllerSpec extends Specification
 
         when: 'the action is executed with a null value'
         response.reset()
+        //noinspection SpellCheckingInspection
         params.name = 'niza'
         controller.find((Byte) null)
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
         1 * service.findAllByNameLike(
             '%niza%', getParameterMap(sort: 'name')
         ) >> list
@@ -198,10 +207,12 @@ class OrganizationControllerSpec extends Specification
 
         when: 'the action is executed with a value of 0'
         response.reset()
+        //noinspection SpellCheckingInspection
         params.name = 'niza'
         controller.find((Byte) 0)
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
         1 * service.findAllByNameLike(
             '%niza%', getParameterMap(sort: 'name')
         ) >> list
@@ -222,6 +233,7 @@ class OrganizationControllerSpec extends Specification
         controller.get null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -238,6 +250,7 @@ class OrganizationControllerSpec extends Specification
         controller.get org.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
         org == model.organization
     }
@@ -257,6 +270,7 @@ class OrganizationControllerSpec extends Specification
         controller.getPhoneNumbers null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -273,7 +287,9 @@ class OrganizationControllerSpec extends Specification
         controller.getPhoneNumbers org.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 304503034', '+1 47 304503039'] == model.phoneNumbers
 
         when: 'some phone numbers are unset'
@@ -282,7 +298,9 @@ class OrganizationControllerSpec extends Specification
         controller.getPhoneNumbers org.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 304503039'] == model.phoneNumbers
 
         when: 'some phone numbers are set to an empty string'
@@ -291,7 +309,9 @@ class OrganizationControllerSpec extends Specification
         controller.getPhoneNumbers org.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 304503039'] == model.phoneNumbers
 
         when: 'some phone numbers are set to a duplicate'
@@ -300,7 +320,9 @@ class OrganizationControllerSpec extends Specification
         controller.getPhoneNumbers org.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 304503039'] == model.phoneNumbers
     }
 
@@ -322,6 +344,7 @@ class OrganizationControllerSpec extends Specification
 
         then: 'the model is correct'
         1 * configService.getInteger('termOfPayment', 14i) >> 14i
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         14i == model.termOfPayment
 
@@ -348,6 +371,7 @@ class OrganizationControllerSpec extends Specification
 
         then: 'the model is correct'
         1 * configService.getInteger('termOfPayment', 14i) >> 28i
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
         28i == model.termOfPayment
 
@@ -358,6 +382,7 @@ class OrganizationControllerSpec extends Specification
 
         then: 'the model is correct'
         1 * configService.getInteger('termOfPayment', 14i) >> 28i
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
         21i == model.termOfPayment
     }
@@ -373,6 +398,7 @@ class OrganizationControllerSpec extends Specification
         and: 'a service instance'
         OrganizationService service = Mock()
         2 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         2 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.organizationService = service
 
@@ -409,6 +435,7 @@ class OrganizationControllerSpec extends Specification
         def types = [(byte) 1, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
         1 * service.countByRecTypeInList(types) >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByRecTypeInList(
             types, getParameterMap(max: 15, offset: 40)
         ) >> list
@@ -437,6 +464,7 @@ class OrganizationControllerSpec extends Specification
         def types = [(byte) 2, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
         1 * service.countByRecTypeInList(types) >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByRecTypeInList(
             types, getParameterMap(max: 15, offset: 40)
         ) >> list
@@ -463,8 +491,10 @@ class OrganizationControllerSpec extends Specification
 
         and: 'a service instance'
         OrganizationService service = Mock()
+        //noinspection GroovyAssignabilityCheck
         2 * service.countByNameLessThan('E') >>> [45, 40]
         2 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         2 * service.list(
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'name')
         ) >> list
@@ -503,8 +533,10 @@ class OrganizationControllerSpec extends Specification
         and: 'a service instance'
         def types = [(byte) 1, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
+        //noinspection GroovyAssignabilityCheck
         2 * service.countByNameLessThanAndRecTypeInList('E', types) >>> [45, 40]
         2 * service.countByRecTypeInList(types) >> list.size()
+        //noinspection GroovyAssignabilityCheck
         2 * service.findAllByRecTypeInList(
             types,
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'name')
@@ -544,8 +576,10 @@ class OrganizationControllerSpec extends Specification
         and: 'a service instance'
         def types = [(byte) 2, (byte) 3] as Set<Byte>
         OrganizationService service = Mock()
+        //noinspection GroovyAssignabilityCheck
         2 * service.countByNameLessThanAndRecTypeInList('E', types) >>> [45, 40]
         2 * service.countByRecTypeInList(types) >> list.size()
+        //noinspection GroovyAssignabilityCheck
         2 * service.findAllByRecTypeInList(
             types,
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'name')
@@ -586,9 +620,11 @@ class OrganizationControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'POST'
+        webRequest.actionName = 'save'
         controller.save null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/organization/index' == response.redirectedUrl
         null != flash.message
@@ -598,6 +634,7 @@ class OrganizationControllerSpec extends Specification
         controller.save org
 
         then: 'the create view is rendered again with the correct model'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(org) >> {
             throw new ValidationException('', new ValidationErrors(org))
         }
@@ -608,9 +645,47 @@ class OrganizationControllerSpec extends Specification
         response.reset()
         controller.save org
 
-        then: 'a redirect is issued to the show action'
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(org) >> org
-        '/organization/show/' + org.id == response.redirectedUrl
+        '/organization/edit/' + org.id + '?listType=' == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save org
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(org) >> org
+        //noinspection SpellCheckingInspection
+        '/organization/edit/' + org.id + '?listType=&returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save org
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(org) >> org
+        '/organization/show/' + org.id + '?listType=' == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save org
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(org) >> org
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 
@@ -627,6 +702,7 @@ class OrganizationControllerSpec extends Specification
         controller.show null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -643,6 +719,7 @@ class OrganizationControllerSpec extends Specification
         controller.show org.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(org.id) >> org
         org == model.organization
     }
@@ -659,9 +736,11 @@ class OrganizationControllerSpec extends Specification
         when: 'the action is called for a null instance'
 		request.contentType = FORM_CONTENT_TYPE
 		request.method = 'PUT'
+        webRequest.actionName = 'update'
 		controller.update null
 
 		then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/organization/index' == response.redirectedUrl
         null != flash.message
@@ -671,6 +750,7 @@ class OrganizationControllerSpec extends Specification
 		controller.update org
 
 		then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(org) >> {
             throw new ValidationException('', new ValidationErrors(org))
         }
@@ -681,9 +761,47 @@ class OrganizationControllerSpec extends Specification
 		response.reset()
 		controller.update org
 
-		then: 'a redirect is issued to the show action'
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(org) >> org
-        '/organization/show/' + org.id == response.redirectedUrl
+        '/organization/edit/' + org.id + '?listType=' == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.update org
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(org) >> org
+        //noinspection SpellCheckingInspection
+        '/organization/edit/' + org.id + '?listType=&returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.update org
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(org) >> org
+        '/organization/show/' + org.id + '?listType=' == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.update org
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(org) >> org
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
 	}
 

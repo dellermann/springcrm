@@ -29,7 +29,7 @@ package org.amcworld.springcrm
  * @version 2.2
  * @since   2.1
  */
-class BoilerplateController extends GeneralController<Boilerplate> {
+class BoilerplateController extends OldGeneralController<Boilerplate> {
 
     //-- Constructors ---------------------------
 

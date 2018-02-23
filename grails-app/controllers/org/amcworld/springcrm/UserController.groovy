@@ -37,17 +37,23 @@ import org.bson.types.ObjectId
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_USER'])
-class UserController {
+class UserController extends GeneralController<User> {
 
     //-- Class fields -------------------------------
 
     static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
 
 
+    //-- Constructors ---------------------------
+
+    UserController() {
+        super(User)
+    }
+
+
     //-- Fields ---------------------------------
 
     GoogleOAuthService googleOAuthService
-    UserService userService
     UserSettingService userSettingService
 
 
@@ -67,24 +73,14 @@ class UserController {
             return
         }
 
-        User user = userService.get(new ObjectId(id))
+        ObjectId userId = new ObjectId(id)
+        User user = userService.get(userId)
         if (userService.isOnlyAdmin(user)) {
             render status: FORBIDDEN
             return
         }
 
-        userService.delete new ObjectId(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'user.label'), user]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete userService.delete(userId)
     }
 
     def edit(String id) {
@@ -123,21 +119,9 @@ class UserController {
         }
 
         try {
-            userService.save user
+            redirectAfterStorage userService.save(user)
         } catch (ValidationException ignored) {
             respond user.errors, view: 'create'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'user.label'), user]
-                ) as Object
-                redirect user
-            }
-            '*' { respond user, [status: CREATED] }
         }
     }
 
@@ -298,54 +282,14 @@ class UserController {
         }
 
         try {
-            userService.save user
+            redirectAfterStorage userService.save(user)
         } catch (ValidationException ignored) {
             respond user.errors, view: 'edit'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'user.label'), user]
-                ) as Object
-                redirect user
-            }
-            '*' { respond user, [status: OK] }
         }
     }
 
 
     //-- Non-public methods ---------------------
-
-    /**
-     * Gets the currently logged in user.
-     *
-     * @return  the currently logged in user
-     * @since   3.0
-     */
-    private User getCurrentUser() {
-        userService.currentUser
-    }
-
-    /**
-     * Creates a response if the domain model instance has not been found.
-     *
-     * @since 3.0
-     */
-    private void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'user.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
-        }
-    }
 
     private void setUserLocale(String locale = null) {
         if (locale) {

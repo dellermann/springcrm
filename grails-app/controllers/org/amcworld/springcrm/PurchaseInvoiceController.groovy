@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
+class PurchaseInvoiceController extends OldGeneralController<PurchaseInvoice> {
 
     //-- Constants ------------------------------
 

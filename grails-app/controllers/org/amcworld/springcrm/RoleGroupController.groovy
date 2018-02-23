@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.springframework.http.HttpStatus.*
-
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import org.bson.types.ObjectId
@@ -36,7 +34,7 @@ import org.bson.types.ObjectId
  * @since   3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_USER'])
-class RoleGroupController {
+class RoleGroupController extends GeneralController<RoleGroup> {
 
     //-- Class fields ---------------------------
 
@@ -46,6 +44,13 @@ class RoleGroupController {
     //-- Fields ---------------------------------
 
     RoleGroupService roleGroupService
+
+
+    //-- Constructors ---------------------------
+
+    RoleGroupController() {
+        super(RoleGroup)
+    }
 
 
     //-- Public methods -------------------------
@@ -64,18 +69,7 @@ class RoleGroupController {
             return
         }
 
-        RoleGroup roleGroup = roleGroupService.delete new ObjectId(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'roleGroup.label'), roleGroup]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete roleGroupService.delete(new ObjectId(id))
     }
 
     def edit(String id) {
@@ -96,21 +90,9 @@ class RoleGroupController {
         }
 
         try {
-            roleGroupService.save roleGroup
+            redirectAfterStorage roleGroupService.save(roleGroup)
         } catch (ValidationException ignored) {
             respond roleGroup.errors, view: 'create'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'roleGroup.label'), roleGroup]
-                ) as Object
-                redirect roleGroup
-            }
-            '*' { respond roleGroup, [status: CREATED] }
         }
     }
 
@@ -126,37 +108,9 @@ class RoleGroupController {
 
         roleGroup.markDirty 'authorities'
         try {
-            roleGroupService.save roleGroup
+            redirectAfterStorage roleGroupService.save(roleGroup)
         } catch (ValidationException ignored) {
             respond roleGroup.errors, view: 'edit'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'roleGroup.label'), roleGroup]
-                ) as Object
-                redirect roleGroup
-            }
-            '*' { respond roleGroup, [status: OK] }
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'roleGroup.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
         }
     }
 }

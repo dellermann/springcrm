@@ -27,14 +27,14 @@ import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
- * The class {@code GeneralController} represents a generic base class for all
+ * The class {@code OldGeneralController} represents a generic base class for all
  * controllers of this application.
  *
  * @author  Daniel Ellermann
  * @version 2.2
  * @since   2.2
  */
-class GeneralController<T extends GormEntity<? super T>> implements Controller {
+class OldGeneralController<T extends GormEntity<? super T>> implements Controller {
 
     //-- Class fields ---------------------------
 
@@ -67,7 +67,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *
      * @param domainType    the given domain model type
      */
-    GeneralController(Class<? extends T> domainType) {
+    OldGeneralController(Class<? extends T> domainType) {
         this.domainType = domainType
 
         cachedDomainInstanceNames = new HashMap<>()

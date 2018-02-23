@@ -35,7 +35,7 @@ import org.bson.types.ObjectId
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_QUOTE'])
-class QuoteController {
+class QuoteController extends GeneralController<Quote> {
 
     //-- Fields ---------------------------------
 
@@ -44,6 +44,13 @@ class QuoteController {
     PersonService personService
     QuoteService quoteService
     SeqNumberService seqNumberService
+
+
+    //-- Constructors ---------------------------
+
+    QuoteController() {
+        super(Quote)
+    }
 
 
     //-- Public methods -------------------------
@@ -62,19 +69,7 @@ class QuoteController {
             return
         }
 
-        Quote quote = quoteService.delete(new ObjectId(id))
-
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'quote.label'), quote]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete quoteService.delete(new ObjectId(id))
     }
 
     def edit(String id) {
@@ -182,22 +177,9 @@ class QuoteController {
 
         try {
             quote.beforeInsert()
-            quoteService.save quote
+            redirectAfterStorage quoteService.save(quote)
         } catch (ValidationException ignored) {
             respond quote.errors, view: 'create'
-            return
-        }
-
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'quote.label'), quote]
-                ) as Object
-                redirect quote
-            }
-            '*' { respond quote, [status: CREATED] }
         }
     }
 
@@ -213,39 +195,9 @@ class QuoteController {
 
         try {
             quote.beforeUpdate()
-            quoteService.save quote
+            redirectAfterStorage quoteService.save(quote)
         } catch (ValidationException ignored) {
             respond quote.errors, view: 'edit'
-            return
-        }
-
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'quote.label'), quote]
-                ) as Object
-                redirect quote
-            }
-            '*' { respond quote, [status: OK] }
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void notFound() {
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'quote.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
         }
     }
 }

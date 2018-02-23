@@ -93,9 +93,11 @@ class PersonControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'DELETE'
+        webRequest.actionName = 'delete'
         controller.delete null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.delete(_)
         '/person/index' == response.redirectedUrl
         null != flash.message
@@ -114,6 +116,7 @@ class PersonControllerSpec extends Specification
         controller.delete person.id.toString()
 
         then: 'the instance is deleted'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(person.id) >> person
         '/person/index' == response.redirectedUrl
         null != flash.message
@@ -124,6 +127,7 @@ class PersonControllerSpec extends Specification
         controller.delete person.id.toString()
 
         then: 'the instance is deleted in LDAP, too'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(person.id) >> person
         1 * ldapService.delete(person)
         '/person/index' == response.redirectedUrl
@@ -143,6 +147,7 @@ class PersonControllerSpec extends Specification
         controller.edit null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -159,6 +164,7 @@ class PersonControllerSpec extends Specification
         controller.edit person.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
         person == model.person
     }
@@ -184,21 +190,26 @@ class PersonControllerSpec extends Specification
         controller.organizationService = organizationService
 
         when: 'the action is executed with a null value'
+        //noinspection SpellCheckingInspection
         params.name = 'erso'
         controller.find null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * organizationService.get(_)
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
         1 * service.search(null, 'erso') >> null
         404 == response.status
 
         when: 'the action is executed with a non-existing ID'
         response.reset()
+        //noinspection SpellCheckingInspection
         params.name = 'erso'
         controller.find new ObjectId().toString()
 
         then: 'a 404 error is returned'
         0 * organizationService.get(org.id)
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
         1 * service.search(null, 'erso') >> null
         404 == response.status
 
@@ -209,6 +220,7 @@ class PersonControllerSpec extends Specification
 
         then: 'a 404 error is returned'
         0 * organizationService.get(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.search(null, null) >> null
         404 == response.status
 
@@ -218,23 +230,29 @@ class PersonControllerSpec extends Specification
         controller.find org.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * organizationService.get(_) >> org
+        //noinspection GroovyAssignabilityCheck
         1 * service.search(org, 'xxx') >> []
         null == model.personList
         model.emptyCollection.empty
 
         when: 'the action is executed with an existing ID and a name'
         response.reset()
+        //noinspection SpellCheckingInspection
         params.name = 'erso'
         controller.find org.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * organizationService.get(_) >> org
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
         1 * service.search(org, 'erso') >> list
         list.size() == model.personList.size()
         list == (List) model.personList
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     void 'The gdatasync action correctly redirects'() {
         given: 'a Google data synchronization instance'
         GoogleContactSync googleContactSync = Mock()
@@ -254,6 +272,7 @@ class PersonControllerSpec extends Specification
 
         then: 'the redirect is correctly set'
         0 * userService.getCurrentUser()
+        //noinspection GroovyAssignabilityCheck
         0 * googleContactSync.sync(_)
         '/person/index' == response.redirectedUrl
         null == flash.message
@@ -276,6 +295,7 @@ class PersonControllerSpec extends Specification
         controller.gdatasync()
 
         then: 'the redirect is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * userService.getCurrentUser() >> user
         1 * googleContactSync.sync(user)
         '/person/index' == response.redirectedUrl
@@ -287,6 +307,7 @@ class PersonControllerSpec extends Specification
         controller.gdatasync()
 
         then: 'the redirect is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * userService.getCurrentUser() >> user
         1 * googleContactSync.sync(user)
         '/organization/show/abcdef012345' == response.redirectedUrl
@@ -317,6 +338,7 @@ class PersonControllerSpec extends Specification
         controller.getPhoneNumbers null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -333,7 +355,9 @@ class PersonControllerSpec extends Specification
         controller.getPhoneNumbers person.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 749393711', '+1 47 584030374',
          '+1 47 304503039', '+1 47 304503034', '+1 47 304503030'
         ] == model.phoneNumbers
@@ -344,7 +368,9 @@ class PersonControllerSpec extends Specification
         controller.getPhoneNumbers person.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 749393711', '+1 47 584030374',
          '+1 47 304503039', '+1 47 304503030'] == model.phoneNumbers
 
@@ -354,7 +380,9 @@ class PersonControllerSpec extends Specification
         controller.getPhoneNumbers person.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 749393711', '+1 47 584030374',
          '+1 47 304503039', '+1 47 304503030'] == model.phoneNumbers
 
@@ -364,7 +392,9 @@ class PersonControllerSpec extends Specification
         controller.getPhoneNumbers person.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         ['+1 47 304503033', '+1 47 749393711', '+1 47 584030374',
          '+1 47 304503039', '+1 47 304503030'] == model.phoneNumbers
     }
@@ -392,6 +422,7 @@ class PersonControllerSpec extends Specification
         controller.getPicture null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -408,6 +439,7 @@ class PersonControllerSpec extends Specification
         controller.getPicture person.id.toString()
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
         404 == response.status
 
@@ -417,6 +449,7 @@ class PersonControllerSpec extends Specification
         controller.getPicture person.id.toString()
 
         then: 'the picture is returned'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
         response.contentType.startsWith 'image/gif'
         42 == response.contentLength
@@ -509,6 +542,7 @@ class PersonControllerSpec extends Specification
         and: 'a service instance'
         PersonService service = Mock()
         1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.personService = service
 
@@ -533,8 +567,10 @@ class PersonControllerSpec extends Specification
 
         and: 'a service instance'
         PersonService service = Mock()
+        //noinspection GroovyAssignabilityCheck
         1 * service.countByLastNameLessThan('E') >>> [45, 40]
         1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'lastName')
         ) >> list
@@ -552,6 +588,7 @@ class PersonControllerSpec extends Specification
         list.size() == model.personCount
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     void 'The ldapdelete action correctly redirects'() {
         given: 'an instance'
         Person person = instance
@@ -568,6 +605,7 @@ class PersonControllerSpec extends Specification
         controller.ldapdelete null
 
         then: 'only a redirect is issued'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         '/person/index' == response.redirectedUrl
 
@@ -594,6 +632,7 @@ class PersonControllerSpec extends Specification
 
         then: 'only a redirect is issued'
         0 * service.get(_)
+        //noinspection GroovyAssignabilityCheck
         0 * ldapService.delete(_)
         '/person/index' == response.redirectedUrl
 
@@ -611,11 +650,13 @@ class PersonControllerSpec extends Specification
         controller.ldapdelete person.id.toString()
 
         then: 'a correct redirect is performed'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
         1 * ldapService.delete(person)
         '/person/index' == response.redirectedUrl
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     void 'The ldapexport action does nothing without LDAP service'() {
         when: 'the action is executed without return URL'
         controller.ldapexport null
@@ -634,6 +675,7 @@ class PersonControllerSpec extends Specification
         null == flash.message
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     void 'The ldapexport action correctly exports persons without excludes'() {
         given: 'an organization rating'
         Rating rating = new Rating()
@@ -683,7 +725,9 @@ class PersonControllerSpec extends Specification
         controller.ldapexport null
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(null) >> list
+        //noinspection GroovyAssignabilityCheck
         3 * ldapService.save({ it.lastName.startsWith 'Person ' })
         '/person/index' == response.redirectedUrl
         null != flash.message
@@ -694,7 +738,9 @@ class PersonControllerSpec extends Specification
         controller.ldapexport null
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(null) >> list
+        //noinspection GroovyAssignabilityCheck
         3 * ldapService.save({ it.lastName.startsWith 'Person ' })
         '/organization/show/abcdef012345' == response.redirectedUrl
         null != flash.message
@@ -705,6 +751,7 @@ class PersonControllerSpec extends Specification
 
         then: 'the person is saved in LDAP'
         0 * service.get(person.id)
+        //noinspection GroovyAssignabilityCheck
         0 * ldapService.save(_)
         '/person/show/' + anotherId == response.redirectedUrl
         null != flash.message
@@ -714,6 +761,7 @@ class PersonControllerSpec extends Specification
         controller.ldapexport person.id.toString()
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
         1 * ldapService.save(person)
         '/person/show/' + person.id == response.redirectedUrl
@@ -725,12 +773,14 @@ class PersonControllerSpec extends Specification
         controller.ldapexport person.id.toString()
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
         1 * ldapService.save(person)
         '/person/show/' + person.id == response.redirectedUrl
         null != flash.message
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     void 'The ldapexport action correctly exports persons with excludes'() {
         given: 'two organization ratings'
         Rating rating1 = new Rating()
@@ -786,6 +836,7 @@ class PersonControllerSpec extends Specification
         controller.ldapexport null
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(null) >> list
         1 * ldapService.save(person1)
         '/person/index' == response.redirectedUrl
@@ -797,6 +848,7 @@ class PersonControllerSpec extends Specification
         controller.ldapexport null
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(null) >> list
         1 * ldapService.save(person1)
         '/organization/show/abcdef012345' == response.redirectedUrl
@@ -808,6 +860,7 @@ class PersonControllerSpec extends Specification
 
         then: 'the person is saved in LDAP'
         0 * service.get(person1.id)
+        //noinspection GroovyAssignabilityCheck
         0 * ldapService.save(_)
         '/person/show/' + anotherId == response.redirectedUrl
         null != flash.message
@@ -817,6 +870,7 @@ class PersonControllerSpec extends Specification
         controller.ldapexport person1.id.toString()
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person1.id) >> person1
         1 * ldapService.save(person1)
         '/person/show/' + person1.id == response.redirectedUrl
@@ -827,6 +881,7 @@ class PersonControllerSpec extends Specification
         controller.ldapexport person2.id.toString()
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person2.id) >> person2
         0 * ldapService.save(_)
         '/person/show/' + person2.id == response.redirectedUrl
@@ -838,6 +893,7 @@ class PersonControllerSpec extends Specification
         controller.ldapexport person1.id.toString()
 
         then: 'the person is saved in LDAP'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person1.id) >> person1
         1 * ldapService.save(person1)
         '/person/show/' + person1.id == response.redirectedUrl
@@ -868,7 +924,9 @@ class PersonControllerSpec extends Specification
         controller.listEmbedded null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * organizationService.get(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.findAllByOrganization(_, _)
         0 * service.countByOrganization(_)
         404 == response.status
@@ -890,7 +948,9 @@ class PersonControllerSpec extends Specification
         controller.listEmbedded org.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * organizationService.get(org.id) >> org
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByOrganization(
             org, getParameterMap(max: 20, offset: 40)
         ) >> list
@@ -912,9 +972,11 @@ class PersonControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'POST'
+        webRequest.actionName = 'save'
         controller.save null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/person/index' == response.redirectedUrl
         null != flash.message
@@ -924,6 +986,7 @@ class PersonControllerSpec extends Specification
         controller.save person
 
         then: 'the create view is rendered again with the correct model'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(person) >> {
             throw new ValidationException('', new ValidationErrors(person))
         }
@@ -934,9 +997,47 @@ class PersonControllerSpec extends Specification
         response.reset()
         controller.save person
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(person) >> person
+        '/person/edit/' + person.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save person
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(person) >> person
+        //noinspection SpellCheckingInspection
+        '/person/edit/' + person.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save person
+
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(person) >> person
         '/person/show/' + person.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save person
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(person) >> person
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 
@@ -953,6 +1054,7 @@ class PersonControllerSpec extends Specification
         controller.show null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -969,6 +1071,7 @@ class PersonControllerSpec extends Specification
         controller.show person.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
         person == model.person
     }
@@ -985,10 +1088,13 @@ class PersonControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'PUT'
+        webRequest.actionName = 'update'
         controller.update null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/person/index' == response.redirectedUrl
         null != flash.message
@@ -1008,7 +1114,9 @@ class PersonControllerSpec extends Specification
         controller.update person.id.toString()
 
         then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(person) >> {
             throw new ValidationException('', new ValidationErrors(person))
         }
@@ -1019,10 +1127,55 @@ class PersonControllerSpec extends Specification
         response.reset()
         controller.update person.id.toString()
 
-        then: 'a redirect is issued to the show action'
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(person) >> person
+        '/person/edit/' + person.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.update person.id.toString()
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(person) >> person
+        //noinspection SpellCheckingInspection
+        '/person/edit/' + person.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.update person.id.toString()
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(person) >> person
         '/person/show/' + person.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.update person.id.toString()
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(person) >> person
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 

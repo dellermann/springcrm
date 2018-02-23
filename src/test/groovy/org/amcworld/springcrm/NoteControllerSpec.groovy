@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
@@ -29,7 +30,7 @@ import spock.lang.Specification
 
 
 class NoteControllerSpec extends Specification
-    implements ControllerUnitTest<NoteController>
+    implements ControllerUnitTest<NoteController>, DomainUnitTest<Note>
 {
 
     //-- Feature methods ------------------------
@@ -81,9 +82,11 @@ class NoteControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'DELETE'
+        webRequest.actionName = 'delete'
         controller.delete null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.delete(_)
         '/note/index' == response.redirectedUrl
         null != flash.message
@@ -102,6 +105,7 @@ class NoteControllerSpec extends Specification
         controller.delete note.id.toString()
 
         then: 'the instance is deleted'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(note.id) >> note
         '/note/index' == response.redirectedUrl
         null != flash.message
@@ -111,6 +115,7 @@ class NoteControllerSpec extends Specification
         controller.delete note.id.toString()
 
         then: 'the instance is deleted in LDAP, too'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(note.id) >> note
         '/note/index' == response.redirectedUrl
         null != flash.message
@@ -129,6 +134,7 @@ class NoteControllerSpec extends Specification
         controller.edit null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -145,6 +151,7 @@ class NoteControllerSpec extends Specification
         controller.edit note.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(note.id) >> note
         note == model.note
     }
@@ -160,6 +167,7 @@ class NoteControllerSpec extends Specification
         and: 'a service instance'
         NoteService service = Mock()
         1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.noteService = service
 
@@ -184,8 +192,10 @@ class NoteControllerSpec extends Specification
 
         and: 'a service instance'
         NoteService service = Mock()
+        //noinspection GroovyAssignabilityCheck
         2 * service.countByTitleLessThan('E') >>> [45, 40]
         2 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         2 * service.list(getParameterMap(
             letter: 'E', max: 10, offset: 40, sort: 'title'
         )) >> list
@@ -227,6 +237,7 @@ class NoteControllerSpec extends Specification
         and: 'a service instance'
         NoteService service = Mock()
         1 * service.countByTitleLike('%ote%') >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByTitleLike(
             '%ote%', getParameterMap(max: 10, offset: 20, search: 'ote')
         ) >> list
@@ -276,10 +287,13 @@ class NoteControllerSpec extends Specification
         controller.listEmbedded null, null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * organizationService.get(_)
         0 * personService.get(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.findAllByOrganization(_, _)
         0 * service.countByOrganization(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.findAllByPerson(_, _)
         0 * service.countByPerson(_)
         404 == response.status
@@ -304,8 +318,10 @@ class NoteControllerSpec extends Specification
         controller.listEmbedded org.id.toString(), null
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * organizationService.get(org.id) >> org
         0 * personService.get(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByOrganization(
             org, getParameterMap(max: 20, offset: 40)
         ) >> list
@@ -337,9 +353,12 @@ class NoteControllerSpec extends Specification
 
         then: 'the model is correct'
         0 * organizationService.get(_)
+        //noinspection GroovyAssignabilityCheck
         1 * personService.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
         0 * service.findAllByOrganization(_)
         0 * service.countByOrganization(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByPerson(
             person, getParameterMap(max: 20, offset: 40)
         ) >> list
@@ -368,8 +387,10 @@ class NoteControllerSpec extends Specification
         controller.listEmbedded org.id.toString(), person.id.toString()
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         1 * organizationService.get(org.id) >> org
         0 * personService.get(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.findAllByOrganization(
             org, getParameterMap(max: 20, offset: 40)
         ) >> list
@@ -393,9 +414,11 @@ class NoteControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'POST'
+        webRequest.actionName = 'save'
         controller.save null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/note/index' == response.redirectedUrl
         null != flash.message
@@ -405,6 +428,7 @@ class NoteControllerSpec extends Specification
         controller.save note
 
         then: 'the create view is rendered again with the correct model'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(note) >> {
             throw new ValidationException('', new ValidationErrors(note))
         }
@@ -415,9 +439,47 @@ class NoteControllerSpec extends Specification
         response.reset()
         controller.save note
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(note) >> note
+        '/note/edit/' + note.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save note
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(note) >> note
+        //noinspection SpellCheckingInspection
+        '/note/edit/' + note.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save note
+
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(note) >> note
         '/note/show/' + note.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save note
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(note) >> note
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 
@@ -434,6 +496,7 @@ class NoteControllerSpec extends Specification
         controller.show null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -450,6 +513,7 @@ class NoteControllerSpec extends Specification
         controller.show note.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(note.id) >> note
         note == model.note
     }
@@ -466,9 +530,11 @@ class NoteControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'PUT'
+        webRequest.actionName = 'update'
         controller.update null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/note/index' == response.redirectedUrl
         null != flash.message
@@ -478,6 +544,7 @@ class NoteControllerSpec extends Specification
         controller.update note
 
         then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(note) >> {
             throw new ValidationException('', new ValidationErrors(note))
         }
@@ -488,9 +555,47 @@ class NoteControllerSpec extends Specification
         response.reset()
         controller.update note
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(note) >> note
+        '/note/edit/' + note.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.update note
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(note) >> note
+        //noinspection SpellCheckingInspection
+        '/note/edit/' + note.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.update note
+
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(note) >> note
         '/note/show/' + note.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.update note
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(note) >> note
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 

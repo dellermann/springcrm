@@ -32,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile
  * @version 2.2
  * @since   1.4
  */
-class TicketController extends GeneralController<Ticket> {
+class TicketController extends OldGeneralController<Ticket> {
 
     //-- Constants ------------------------------
 

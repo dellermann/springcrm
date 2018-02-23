@@ -35,7 +35,7 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class ProjectController extends GeneralController<Project> {
+class ProjectController extends OldGeneralController<Project> {
 
     //-- Fields ---------------------------------
 

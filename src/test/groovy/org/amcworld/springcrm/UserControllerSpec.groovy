@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.testing.gorm.DataTest
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.validation.ValidationErrors
@@ -45,6 +44,7 @@ class UserControllerSpec extends Specification
 
         then: 'the model is correctly created'
         null != model.user
+        //noinspection SpellCheckingInspection
         'jdoe' == model.user.username
         'John' == model.user.firstName
         'Doe' == model.user.lastName
@@ -67,6 +67,7 @@ class UserControllerSpec extends Specification
 
         then: 'the model is correctly created'
         null != model.user
+        //noinspection SpellCheckingInspection
         'jdoe' == model.user.username
         'John' == model.user.firstName
         'Doe' == model.user.lastName
@@ -86,9 +87,11 @@ class UserControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'DELETE'
+        webRequest.actionName = 'delete'
         controller.delete null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.delete(_)
         '/user/index' == response.redirectedUrl
         null != flash.message
@@ -107,6 +110,7 @@ class UserControllerSpec extends Specification
         controller.delete user.id.toString()
 
         then: 'the instance is deleted'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(user.id) >> user
         '/user/index' == response.redirectedUrl
         null != flash.message
@@ -125,6 +129,7 @@ class UserControllerSpec extends Specification
         controller.edit null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -141,6 +146,7 @@ class UserControllerSpec extends Specification
         controller.edit user.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(user.id) >> user
         user == model.user
     }
@@ -156,6 +162,7 @@ class UserControllerSpec extends Specification
         and: 'a service instance'
         UserService service = Mock()
         1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.userService = service
 
@@ -180,8 +187,10 @@ class UserControllerSpec extends Specification
 
         and: 'a service instance'
         UserService service = Mock()
+        //noinspection GroovyAssignabilityCheck
         1 * service.countByUsernameLessThan('E') >>> [45, 40]
         1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(
             getParameterMap(letter: 'E', max: 10, offset: 40, sort: 'username')
         ) >> list
@@ -211,10 +220,13 @@ class UserControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'POST'
+        webRequest.actionName = 'save'
         controller.save null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.encodePassword(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/user/index' == response.redirectedUrl
         null != flash.message
@@ -225,6 +237,7 @@ class UserControllerSpec extends Specification
 
         then: 'the create view is rendered again with the correct model'
         0 * service.encodePassword(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.save({ it.errors.hasFieldErrors('password') }) >> {
             throw new ValidationException('', new ValidationErrors(user))
         }
@@ -238,6 +251,7 @@ class UserControllerSpec extends Specification
 
         then: 'the create view is rendered again with the correct model'
         0 * service.encodePassword(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.save({ it.errors.hasFieldErrors('password') }) >> {
             throw new ValidationException('', new ValidationErrors(user))
         }
@@ -246,13 +260,17 @@ class UserControllerSpec extends Specification
 
         when: 'the action is executed with a wrong repeated password'
         response.reset()
+        //noinspection SpellCheckingInspection
         user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
         params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
         params.passwordRepeat = 'abcdee'
         controller.save user
 
         then: 'the create view is rendered again with the correct model'
         0 * service.encodePassword(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.save({ it.errors.hasFieldErrors('password') }) >> {
             throw new ValidationException('', new ValidationErrors(user))
         }
@@ -261,17 +279,23 @@ class UserControllerSpec extends Specification
 
         when: 'the action is executed with an invalid instance'
         response.reset()
+        //noinspection SpellCheckingInspection
         user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
         params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
         params.passwordRepeat = 'abcdef'
         controller.save user
 
         then: 'the create view is rendered again with the correct model'
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
         1 * service.encodePassword('abcdef') >> 'encrypted'
-        1 * service.save(
-            { it.username == 'jdoe' && it.password == 'encrypted' &&
-                it.firstName == 'John' && it.lastName == 'Doe' }
-        ) >> {
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'jdoe' && it.password == 'encrypted' &&
+                it.firstName == 'John' && it.lastName == 'Doe'
+        }) >> {
             throw new ValidationException('', new ValidationErrors(user))
         }
         user == model.user
@@ -279,18 +303,97 @@ class UserControllerSpec extends Specification
 
         when: 'the action is executed with a valid instance'
         response.reset()
+        //noinspection SpellCheckingInspection
         user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
         params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
         params.passwordRepeat = 'abcdef'
         controller.save user
 
-        then: 'a redirect is issued to the show action'
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
         1 * service.encodePassword('abcdef') >> 'encrypted'
-        1 * service.save(
-            { it.username == 'jdoe' && it.password == 'encrypted' &&
-                it.firstName == 'John' && it.lastName == 'Doe' }
-        ) >> user
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'jdoe' && it.password == 'encrypted' &&
+                it.firstName == 'John' && it.lastName == 'Doe'
+        }) >> user
+        '/user/edit/' + user.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        //noinspection SpellCheckingInspection
+        user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.passwordRepeat = 'abcdef'
+        params.returnUrl = '/invoice/show/12345'
+        controller.save user
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
+        1 * service.encodePassword('abcdef') >> 'encrypted'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'jdoe' && it.password == 'encrypted' &&
+                it.firstName == 'John' && it.lastName == 'Doe'
+        }) >> user
+        //noinspection SpellCheckingInspection
+        '/user/edit/' + user.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        //noinspection SpellCheckingInspection
+        user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.passwordRepeat = 'abcdef'
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save user
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
+        1 * service.encodePassword('abcdef') >> 'encrypted'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'jdoe' && it.password == 'encrypted' &&
+                it.firstName == 'John' && it.lastName == 'Doe'
+        }) >> user
         '/user/show/' + user.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        //noinspection SpellCheckingInspection
+        user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.passwordRepeat = 'abcdef'
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save user
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
+        1 * service.encodePassword('abcdef') >> 'encrypted'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'jdoe' && it.password == 'encrypted' &&
+                it.firstName == 'John' && it.lastName == 'Doe'
+        }) >> user
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 
@@ -318,6 +421,7 @@ class UserControllerSpec extends Specification
         controller.show null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -334,6 +438,7 @@ class UserControllerSpec extends Specification
         controller.show user.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(user.id) >> user
         user == model.user
     }
@@ -344,6 +449,7 @@ class UserControllerSpec extends Specification
         given: 'an instance'
         User user = instance
         user.id = new ObjectId()
+        //noinspection SpellCheckingInspection
         user.password = 'abcdef'
 
         and: 'a service instance'
@@ -353,10 +459,13 @@ class UserControllerSpec extends Specification
         when: 'the action is called for a null instance'
 		request.contentType = FORM_CONTENT_TYPE
 		request.method = 'PUT'
+        webRequest.actionName = 'update'
 		controller.update null
 
 		then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/user/index' == response.redirectedUrl
         null != flash.message
@@ -373,19 +482,24 @@ class UserControllerSpec extends Specification
 
         when: 'no password is passed to the update action'
         response.reset()
+        //noinspection SpellCheckingInspection
         params.username = 'bboo'
         params.firstName = 'Betty'
         params.lastName = 'Boo'
         controller.update user.id.toString()
 
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(user.id) >> user
+        //noinspection GroovyAssignabilityCheck
         0 * service.encodePassword(_)
-        1 * service.save(
-            { it.username == 'bboo' && it.password == 'abcdef' &&
-                it.firstName == 'Betty' && it.lastName == 'Boo' }
-        ) >> user
-        '/user/show/' + user.id == response.redirectedUrl
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'bboo' && it.password == 'abcdef' &&
+                it.firstName == 'Betty' && it.lastName == 'Boo'
+        }) >> user
+        '/user/edit/' + user.id == response.redirectedUrl
         null != controller.flash.message
 
 		when: 'an invalid domain instance is passed to the update action'
@@ -393,8 +507,10 @@ class UserControllerSpec extends Specification
 		controller.update user.id.toString()
 
 		then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(user.id) >> user
         0 * service.encodePassword(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(user) >> {
             throw new ValidationException('', new ValidationErrors(user))
         }
@@ -403,6 +519,7 @@ class UserControllerSpec extends Specification
 
 		when: 'an wrong repeated password is passed to the update action'
 		response.reset()
+        //noinspection SpellCheckingInspection
         params.username = 'bboo'
         params.password = '123456'
         params.passwordRepeat = '123455'
@@ -411,8 +528,10 @@ class UserControllerSpec extends Specification
 		controller.update user.id.toString()
 
 		then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(user.id) >> user
         0 * service.encodePassword(_)
+        //noinspection GroovyAssignabilityCheck
         1 * service.save({ it.errors.hasFieldErrors('password') }) >> {
             throw new ValidationException('', new ValidationErrors(user))
         }
@@ -421,6 +540,7 @@ class UserControllerSpec extends Specification
 
 		when: 'a valid domain instance is passed to the update action'
 		response.reset()
+        //noinspection SpellCheckingInspection
         params.username = 'bboo'
         params.password = '123456'
         params.passwordRepeat = '123456'
@@ -429,13 +549,96 @@ class UserControllerSpec extends Specification
 		controller.update user.id.toString()
 
 		then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(user.id) >> user
+        //noinspection GroovyAssignabilityCheck
         1 * service.encodePassword('123456') >> 'encrypted'
-        1 * service.save(
-            { it.username == 'bboo' && it.password == 'encrypted' &&
-                it.firstName == 'Betty' && it.lastName == 'Boo' }
-        ) >> user
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'bboo' && it.password == 'encrypted' &&
+            it.firstName == 'Betty' && it.lastName == 'Boo'
+        }) >> user
+        '/user/edit/' + user.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        //noinspection SpellCheckingInspection
+        user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.passwordRepeat = 'abcdef'
+        params.returnUrl = '/invoice/show/12345'
+        controller.update user.id.toString()
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(user.id) >> user
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
+        1 * service.encodePassword('abcdef') >> 'encrypted'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'bboo' && it.password == 'encrypted' &&
+                it.firstName == 'Betty' && it.lastName == 'Boo'
+        }) >> user
+        //noinspection SpellCheckingInspection
+        '/user/edit/' + user.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        //noinspection SpellCheckingInspection
+        user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.passwordRepeat = 'abcdef'
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.update user.id.toString()
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(user.id) >> user
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
+        1 * service.encodePassword('abcdef') >> 'encrypted'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'bboo' && it.password == 'encrypted' &&
+                it.firstName == 'Betty' && it.lastName == 'Boo'
+        }) >> user
         '/user/show/' + user.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        //noinspection SpellCheckingInspection
+        user.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.password = 'abcdef'
+        //noinspection SpellCheckingInspection
+        params.passwordRepeat = 'abcdef'
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.update user.id.toString()
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(user.id) >> user
+        //noinspection GroovyAssignabilityCheck,SpellCheckingInspection
+        1 * service.encodePassword('abcdef') >> 'encrypted'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({
+            //noinspection SpellCheckingInspection
+            it.username == 'bboo' && it.password == 'encrypted' &&
+                it.firstName == 'Betty' && it.lastName == 'Boo'
+        }) >> user
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
 	}
 
@@ -456,6 +659,7 @@ class UserControllerSpec extends Specification
     private static void populateValidParams(Map params) {
         assert params != null
 
+        //noinspection SpellCheckingInspection
         params.username = 'jdoe'
         params.firstName = 'John'
         params.lastName = 'Doe'

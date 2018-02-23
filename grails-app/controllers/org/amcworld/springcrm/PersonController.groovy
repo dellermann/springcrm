@@ -42,7 +42,7 @@ import org.bson.types.ObjectId
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_CONTACT'])
-class PersonController {
+class PersonController extends GeneralController<Person> {
 
     //-- Fields ---------------------------------
 
@@ -50,8 +50,14 @@ class PersonController {
     LdapService ldapService
     OrganizationService organizationService
     PersonService personService
-    UserService userService
     UserSettingService userSettingService
+
+
+    //-- Constructors ---------------------------
+
+    PersonController() {
+        super(Person)
+    }
 
 
     //-- Public methods -------------------------
@@ -75,16 +81,7 @@ class PersonController {
             ldapService.delete person
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'person.label'), person]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete person
     }
 
     def edit(String id) {
@@ -98,6 +95,7 @@ class PersonController {
         respond personService.search(org, params.name?.toString())
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     def gdatasync() {
         if (googleContactSync != null) {
             googleContactSync.sync currentUser
@@ -151,14 +149,17 @@ class PersonController {
         )
     }
 
+    @SuppressWarnings("GroovyUnusedDeclaration")
     def handleAuthenticationException(AuthenticationException ignore) {
         handleLdapException 'authentication'
     }
 
+    @SuppressWarnings("GroovyUnusedDeclaration")
     def handleConnectException(CommunicationException ignore) {
         handleLdapException 'communication'
     }
 
+    @SuppressWarnings("GroovyUnusedDeclaration")
     def handleNameNotFoundException(NameNotFoundException ignore) {
         handleLdapException 'nameNotFound'
     }
@@ -178,6 +179,7 @@ class PersonController {
         )
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     def ldapdelete(String id) {
         if (ldapService && id) {
             Person person = personService.get(new ObjectId(id))
@@ -189,6 +191,7 @@ class PersonController {
         redirect action: 'index'
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     def ldapexport(String id) {
         if (ldapService) {
             List<String> excludeIds = excludeFromSyncValues
@@ -252,21 +255,9 @@ class PersonController {
         }
 
         try {
-            personService.save person
+            redirectAfterStorage personService.save(person)
         } catch (ValidationException ignored) {
             respond person.errors, view: 'create'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'person.label'), person]
-                ) as Object
-                redirect person
-            }
-            '*' { respond person, [status: CREATED] }
         }
     }
 
@@ -291,36 +282,14 @@ class PersonController {
         }
 
         try {
-            personService.save person
+            redirectAfterStorage personService.save(person)
         } catch (ValidationException ignored) {
             respond person.errors, view: 'edit'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'person.label'), person]
-                ) as Object
-                redirect person
-            }
-            '*' { respond person, [status: OK] }
         }
     }
 
 
     //-- Non-public methods ---------------------
-
-    /**
-     * Gets the currently logged in user.
-     *
-     * @return  the currently logged in user
-     * @since   3.0
-     */
-    private User getCurrentUser() {
-        userService.getCurrentUser()
-    }
 
     /**
      * Gets the IDs of the {@code Rating} instances which should be exclude
@@ -368,18 +337,5 @@ class PersonController {
      */
     private static boolean isExcludeFromSync(Person p, List<String> ids) {
         p.organization.rating?.id?.toString() in ids
-    }
-
-    private void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'person.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
-        }
     }
 }

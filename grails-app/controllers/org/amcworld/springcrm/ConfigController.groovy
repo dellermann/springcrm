@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.artefact.Controller
 import grails.converters.JSON
 import grails.core.GrailsClass
 import grails.plugin.springsecurity.annotation.Secured
@@ -38,7 +37,7 @@ import org.grails.web.json.JSONObject
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN'])
-class ConfigController implements Controller {
+class ConfigController {
 
     //-- Constants ------------------------------
 

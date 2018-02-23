@@ -30,7 +30,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
  * @version 2.2
  * @since   1.4
  */
-class HelpdeskController extends GeneralController<Helpdesk> {
+class HelpdeskController extends OldGeneralController<Helpdesk> {
 
     //-- Fields ---------------------------------
 

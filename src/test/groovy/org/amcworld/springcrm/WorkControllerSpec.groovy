@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
@@ -29,7 +30,7 @@ import spock.lang.Specification
 
 
 class WorkControllerSpec extends Specification
-    implements ControllerUnitTest<WorkController>
+    implements ControllerUnitTest<WorkController>, DomainUnitTest<Work>
 {
 
     //-- Feature methods ------------------------
@@ -83,6 +84,7 @@ class WorkControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'DELETE'
+        webRequest.actionName = 'delete'
         controller.delete null
 
         then: 'a 404 error is returned'
@@ -293,6 +295,7 @@ class WorkControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'POST'
+        webRequest.actionName = 'save'
         controller.save null
 
         then: 'a 404 error is returned'
@@ -317,14 +320,51 @@ class WorkControllerSpec extends Specification
         response.reset()
         controller.save work
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(work) >> work
+        '/work/edit/' + work.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save work
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(work) >> work
+        //noinspection SpellCheckingInspection
+        '/work/edit/' + work.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save work
+
         then: 'a redirect is issued to the show action'
         //noinspection GroovyAssignabilityCheck
         1 * service.save(work) >> work
         '/work/show/' + work.id == response.redirectedUrl
         null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save work
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(work) >> work
+        '/invoice/show/12345' == response.redirectedUrl
+        null != controller.flash.message
     }
 
-    // TODO selectorList
+    // TODO selectorList action
 
     void 'The show action returns the correct model'() {
         given: 'an instance'
@@ -373,6 +413,7 @@ class WorkControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'PUT'
+        webRequest.actionName = 'update'
         controller.update null
 
         then: 'a 404 error is returned'
@@ -397,10 +438,47 @@ class WorkControllerSpec extends Specification
         response.reset()
         controller.update work
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(work) >> work
+        '/work/edit/' + work.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.update work
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(work) >> work
+        //noinspection SpellCheckingInspection
+        '/work/edit/' + work.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.update work
+
         then: 'a redirect is issued to the show action'
         //noinspection GroovyAssignabilityCheck
         1 * service.save(work) >> work
         '/work/show/' + work.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.update work
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(work) >> work
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 

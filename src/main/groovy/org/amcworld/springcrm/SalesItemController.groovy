@@ -29,7 +29,7 @@ package org.amcworld.springcrm
  * @version 2.2
  * @since   2.2
  */
-class SalesItemController<T extends SalesItem> extends GeneralController<T> {
+class SalesItemController<T extends SalesItem> extends OldGeneralController<T> {
 
     //-- Fields ---------------------------------
 

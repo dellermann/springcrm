@@ -20,11 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.springframework.http.HttpStatus.CREATED
-import static org.springframework.http.HttpStatus.NOT_FOUND
-import static org.springframework.http.HttpStatus.NO_CONTENT
-import static org.springframework.http.HttpStatus.OK
-
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import org.bson.types.ObjectId
@@ -38,17 +33,24 @@ import org.bson.types.ObjectId
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_CONTACT'])
-class OrganizationController {
+class OrganizationController extends GeneralController<Organization> {
 
     //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
 
 
-    //-- Fields -------------------------------------
+    //-- Fields ---------------------------------
 
     ConfigService configService
     OrganizationService organizationService
+
+
+    //-- Constructors ---------------------------
+
+    OrganizationController() {
+        super(Organization)
+    }
 
 
     //-- Public methods -------------------------
@@ -67,19 +69,7 @@ class OrganizationController {
             return
         }
 
-        Organization organization = organizationService.delete new ObjectId(id)
-
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'organization.label'), organization]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete organizationService.delete(new ObjectId(id))
     }
 
     def edit(String id) {
@@ -173,22 +163,12 @@ class OrganizationController {
         }
 
         try {
-            organizationService.save organization
+            redirectAfterStorage(
+                organizationService.save(organization),
+                [listType: params.listType]
+            )
         } catch (ValidationException ignored) {
             respond organization.errors, view: 'create'
-            return
-        }
-
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'organization.label'), organization]
-                ) as Object
-                redirect organization
-            }
-            '*' { respond organization, [status: CREATED] }
         }
     }
 
@@ -203,39 +183,12 @@ class OrganizationController {
         }
 
         try {
-            organizationService.save organization
+            redirectAfterStorage(
+                organizationService.save(organization),
+                [listType: params.listType]
+            )
         } catch (ValidationException ignored) {
             respond organization.errors, view: 'edit'
-            return
-        }
-
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'organization.label'), organization]
-                ) as Object
-                redirect organization
-            }
-            '*' { respond organization, [status: OK] }
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void notFound() {
-        request.withFormat {
-            //noinspection GroovyAssignabilityCheck
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'organization.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
         }
     }
 }

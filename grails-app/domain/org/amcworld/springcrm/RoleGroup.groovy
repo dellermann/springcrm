@@ -39,6 +39,7 @@ class RoleGroup implements Serializable {
 
     //-- Constants ------------------------------
 
+    @SuppressWarnings("GroovyUnusedDeclaration")
     private static final long serialVersionUID = 1L
 
 

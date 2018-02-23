@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
@@ -29,7 +30,7 @@ import spock.lang.Specification
 
 
 class QuoteControllerSpec extends Specification
-    implements ControllerUnitTest<QuoteController>
+    implements ControllerUnitTest<QuoteController>, DomainUnitTest<Quote>
 {
 
     //-- Feature methods ------------------------
@@ -82,6 +83,7 @@ class QuoteControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'DELETE'
+        webRequest.actionName = 'delete'
         controller.delete null
 
         then: 'a 404 error is returned'
@@ -521,6 +523,7 @@ class QuoteControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'POST'
+        webRequest.actionName = 'save'
         controller.save null
 
         then: 'a 404 error is returned'
@@ -545,10 +548,47 @@ class QuoteControllerSpec extends Specification
         response.reset()
         controller.save quote
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(quote) >> quote
+        '/quote/edit/' + quote.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save quote
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(quote) >> quote
+        //noinspection SpellCheckingInspection
+        '/quote/edit/' + quote.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save quote
+
         then: 'a redirect is issued to the show action'
         //noinspection GroovyAssignabilityCheck
         1 * service.save(quote) >> quote
         '/quote/show/' + quote.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save quote
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(quote) >> quote
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 
@@ -599,6 +639,7 @@ class QuoteControllerSpec extends Specification
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
         request.method = 'PUT'
+        webRequest.actionName = 'update'
         controller.update null
 
         then: 'a 404 error is returned'
@@ -623,10 +664,47 @@ class QuoteControllerSpec extends Specification
         response.reset()
         controller.update quote
 
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(quote) >> quote
+        '/quote/edit/' + quote.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with a return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        controller.save quote
+
+        then: 'a redirect is issued to the edit action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(quote) >> quote
+        //noinspection SpellCheckingInspection
+        '/quote/edit/' + quote.id + '?returnUrl=%2Finvoice%2Fshow%2F12345' ==
+            response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag'
+        response.reset()
+        params.remove 'returnUrl'
+        params.close = 1
+        controller.save quote
+
         then: 'a redirect is issued to the show action'
         //noinspection GroovyAssignabilityCheck
         1 * service.save(quote) >> quote
         '/quote/show/' + quote.id == response.redirectedUrl
+        null != controller.flash.message
+
+        when: 'the action is executed with the close flag and return URL'
+        response.reset()
+        params.returnUrl = '/invoice/show/12345'
+        params.close = 1
+        controller.save quote
+
+        then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save(quote) >> quote
+        '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
     }
 

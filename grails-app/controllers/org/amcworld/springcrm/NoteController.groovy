@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.springframework.http.HttpStatus.*
-
 import grails.validation.ValidationException
 import org.bson.types.ObjectId
 import org.springframework.web.bind.annotation.RequestAttribute
@@ -33,13 +31,20 @@ import org.springframework.web.bind.annotation.RequestAttribute
  * @author  Daniel Ellermann
  * @version 3.0
  */
-class NoteController {
+class NoteController extends GeneralController<Note> {
 
     //-- Fields -------------------------------------
 
     NoteService noteService
     OrganizationService organizationService
     PersonService personService
+
+
+    //-- Constructors ---------------------------
+
+    NoteController() {
+        super(Note)
+    }
 
 
     //-- Public methods -------------------------
@@ -58,18 +63,7 @@ class NoteController {
             return
         }
 
-        Note note = noteService.delete new ObjectId(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.deleted.message',
-                    args: [message(code: 'note.label'), note]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NO_CONTENT }
-        }
+        redirectAfterDelete noteService.delete(new ObjectId(id))
     }
 
     def edit(String id) {
@@ -136,21 +130,9 @@ class NoteController {
         }
 
         try {
-            noteService.save note
+            redirectAfterStorage noteService.save(note)
         } catch (ValidationException ignored) {
             respond note.errors, view: 'create'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.created.message',
-                    args: [message(code: 'note.label'), note]
-                ) as Object
-                redirect note
-            }
-            '*' { respond note, [status: CREATED] }
         }
     }
 
@@ -165,37 +147,9 @@ class NoteController {
         }
 
         try {
-            noteService.save note
+            redirectAfterStorage noteService.save(note)
         } catch (ValidationException ignored) {
             respond note.errors, view: 'edit'
-            return
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.updated.message',
-                    args: [message(code: 'note.label'), note]
-                ) as Object
-                redirect note
-            }
-            '*' { respond note, [status: OK] }
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'note.label'), params.id]
-                ) as Object
-                redirect action: 'index', method: 'GET'
-            }
-            '*' { render status: NOT_FOUND }
         }
     }
 }
