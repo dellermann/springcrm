@@ -1,7 +1,7 @@
 /*
  * InvoicingItemsInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,16 @@ import groovy.transform.CompileStatic
  * model which are used in views.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
 class InvoicingItemsInterceptor implements Interceptor {
+
+    //-- Fields ---------------------------------
+
+    SelValueService selValueService
+
 
     //-- Constructors ---------------------------
 
@@ -58,8 +63,8 @@ class InvoicingItemsInterceptor implements Interceptor {
      */
     boolean after() {
         if (model != null) {
-            model.units = Unit.list(sort: 'orderId')
-            model.taxRates = TaxRate.list(sort: 'orderId')
+            model.units = selValueService.findAllByClass(Unit)
+            model.taxRates = selValueService.findAllByClass(TaxRate)
         }
 
         true

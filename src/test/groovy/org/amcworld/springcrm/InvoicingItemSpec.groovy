@@ -31,10 +31,10 @@ class InvoicingItemSpec extends Specification
     //-- Feature Methods ------------------------
 
     def 'Creating an empty item initializes the properties'() {
-        when: 'I create an empty invoicing item'
+        when: 'an empty invoicing item is created'
         def i = new InvoicingItem()
 
-        then: 'the properties are initialized properly'
+        then: 'the properties have been initialized properly'
         0.0 == i.quantity
         null == i.unit
         null == i.name
@@ -42,7 +42,6 @@ class InvoicingItemSpec extends Specification
         0.0 == i.unitPrice
         0.0 == i.tax
         null == i.salesItem
-        null == i.invoicingTransaction
         null == i.id
     }
 
@@ -50,7 +49,7 @@ class InvoicingItemSpec extends Specification
         given: 'an empty invoicing item'
         def i1 = new InvoicingItem()
 
-        when: 'I copy the invoicing item using the constructor'
+        when: 'the invoicing item is copied using the constructor'
         def i2 = new InvoicingItem(i1)
 
         then: 'the properties are set properly'
@@ -61,7 +60,6 @@ class InvoicingItemSpec extends Specification
         BigDecimal.ZERO == i2.unitPrice
         BigDecimal.ZERO == i2.tax
         null == i2.salesItem
-        null == i2.invoicingTransaction
         null == i2.id
     }
 
@@ -77,7 +75,7 @@ class InvoicingItemSpec extends Specification
             salesItem: new SalesItem(name: '12" pipe', type: 'P')
         )
 
-        when: 'I copy the invoicing item using the constructor'
+        when: 'the invoicing item is copied using the constructor'
         def i2 = new InvoicingItem(i1)
 
         then: 'some properties are the equal'
@@ -99,7 +97,7 @@ class InvoicingItemSpec extends Specification
         given: 'an empty invoicing item'
         def i = new InvoicingItem()
 
-        when: 'I set the decimal values to null'
+        when: 'the decimal values are set to null'
         i.quantity = null
         i.unitPrice = null
         i.tax = null
@@ -109,7 +107,7 @@ class InvoicingItemSpec extends Specification
         0.0 == i.unitPrice
         0.0 == i.tax
 
-        when: 'I create an invoicing item with null values'
+        when: 'an invoicing item is created with null values'
         i = new InvoicingItem(quantity: null, unitPrice: null, tax: null)
 
         then: 'all decimal values are never null'
@@ -118,12 +116,12 @@ class InvoicingItemSpec extends Specification
         0.0 == i.tax
     }
 
-    def 'Get the total price'() {
-        when: 'I create an invoicing item with quantity and unit price'
+    def 'Get the net total price'() {
+        when: 'an invoicing item is created with quantity and unit price'
         def i = new InvoicingItem(quantity: q, unitPrice: up)
 
-        then: 'the I get the correct net total price'
-        t == i.total
+        then: 'the correct net total price has been computed'
+        t == i.totalNet
 
         where:
         q       | up        || t
@@ -150,10 +148,10 @@ class InvoicingItemSpec extends Specification
     }
 
     def 'Get the gross total price'() {
-        when: 'I create an invoicing item with quantity and unit price'
+        when: 'an invoicing item is created with quantity and unit price'
         def i = new InvoicingItem(quantity: q, unitPrice: up, tax: 19.00)
 
-        then: 'the I get the correct gross total price'
+        then: 'the correct gross total price has been computed'
         t == i.totalGross
 
         where:
@@ -187,6 +185,7 @@ class InvoicingItemSpec extends Specification
         expect:
         null != i
         i != null
+        //noinspection ChangeToOperator
         !i.equals(null)
     }
 
@@ -201,8 +200,39 @@ class InvoicingItemSpec extends Specification
         i != new Date()
     }
 
-    def 'Not persisted instances are equal'() {
+    def 'Instances with same data are equal'() {
         given: 'three instances without ID'
+        def i1 = new InvoicingItem(
+            quantity: 5, name: '12" pipe', unitPrice: 6.8, description: 'Pipe',
+            tax: 0.19, unit: 'pc'
+        )
+        def i2 = new InvoicingItem(
+            quantity: 5, name: '12" pipe', unitPrice: 6.8, description: 'Pipe',
+            tax: 0.19, unit: 'pc'
+        )
+        def i3 = new InvoicingItem(
+            quantity: 5, name: '12" pipe', unitPrice: 6.8, description: 'Pipe',
+            tax: 0.19, unit: 'pc'
+        )
+
+        expect: 'equals() is reflexive'
+        i1 == i1
+        i2 == i2
+        i3 == i3
+
+        and: 'all instances are equal and equals() is symmetric'
+        i1 == i2
+        i2 == i1
+        i2 == i3
+        i3 == i2
+
+        and: 'equals() is transitive'
+        i1 == i3
+        i3 == i1
+    }
+
+    def 'Instances with different data are unequal'() {
+        given: 'three invoicing items with different properties'
         def i1 = new InvoicingItem(
             quantity: 5, name: '12" pipe', unitPrice: 6.8
         )
@@ -218,56 +248,6 @@ class InvoicingItemSpec extends Specification
         i2 == i2
         i3 == i3
 
-        and: 'all instances are equal and equals() is symmetric'
-        i1 == i2
-        i2 == i1
-        i2 == i3
-        i3 == i2
-
-        and: 'equals() is transitive'
-        i1 == i3
-        i3 == i1
-    }
-
-    def 'Persisted instances are equal if they have the same ID'() {
-        given: 'two invoicing items with different properties'
-        def i1 = new InvoicingItem(name: '12" pipe')
-        i1.id = 7403L
-        def i2 = new InvoicingItem(name: '10" pipe')
-        i2.id = 7403L
-        def i3 = new InvoicingItem(name: '14" pipe')
-        i3.id = 7403L
-
-        expect: 'equals() is reflexive'
-        i1 == i1
-        i2 == i2
-        i3 == i3
-
-        and: 'all instances are equal and equals() is symmetric'
-        i1 == i2
-        i2 == i1
-        i2 == i3
-        i3 == i2
-
-        and: 'equals() is transitive'
-        i1 == i3
-        i3 == i1
-    }
-
-    def 'Persisted instances are unequal if they have the different ID'() {
-        given: 'two invoicing items with different properties'
-        def i1 = new InvoicingItem(name: '12" pipe')
-        i1.id = 7403L
-        def i2 = new InvoicingItem(name: '12" pipe')
-        i2.id = 7404L
-        def i3 = new InvoicingItem(name: '12" pipe')
-        i3.id = 8473L
-
-        expect: 'equals() is reflexive'
-        i1 == i1
-        i2 == i2
-        i3 == i3
-
         and: 'all instances are unequal and equals() is symmetric'
         i1 != i2
         i2 != i1
@@ -277,22 +257,6 @@ class InvoicingItemSpec extends Specification
         and: 'equals() is transitive'
         i1 != i3
         i3 != i1
-    }
-
-    def 'Can compute hash code of an empty instance'() {
-        given: 'an empty instance'
-        def i = new InvoicingItem()
-
-        expect:
-        0i == i.hashCode()
-    }
-
-    def 'Can compute hash code of a not persisted instance'() {
-        given: 'an empty instance'
-        def i = new InvoicingItem(name: '12" pipe')
-
-        expect:
-        0i == i.hashCode()
     }
 
     def 'Hash codes are consistent'() {
@@ -313,12 +277,18 @@ class InvoicingItemSpec extends Specification
 
     def 'Equal instances produce the same hash code'() {
         given: 'two invoicing items with different properties'
-        def i1 = new InvoicingItem(name: '12" pipe')
-        i1.id = 7403L
-        def i2 = new InvoicingItem(name: '10" pipe')
-        i2.id = 7403L
-        def i3 = new InvoicingItem(name: '14" pipe')
-        i3.id = 7403L
+        def i1 = new InvoicingItem(
+            quantity: 5, name: '12" pipe', unitPrice: 6.8, description: 'Pipe',
+            tax: 0.19, unit: 'pc'
+        )
+        def i2 = new InvoicingItem(
+            quantity: 5, name: '12" pipe', unitPrice: 6.8, description: 'Pipe',
+            tax: 0.19, unit: 'pc'
+        )
+        def i3 = new InvoicingItem(
+            quantity: 5, name: '12" pipe', unitPrice: 6.8, description: 'Pipe',
+            tax: 0.19, unit: 'pc'
+        )
 
         expect:
         i1.hashCode() == i2.hashCode()
@@ -326,13 +296,16 @@ class InvoicingItemSpec extends Specification
     }
 
     def 'Different instances produce different hash codes'() {
-        given: 'two invoicing items with different properties'
-        def i1 = new InvoicingItem(name: '12" pipe')
-        i1.id = 7403L
-        def i2 = new InvoicingItem(name: '12" pipe')
-        i2.id = 7404L
-        def i3 = new InvoicingItem(name: '12" pipe')
-        i3.id = 8473L
+        given: 'three invoicing items with different properties'
+        def i1 = new InvoicingItem(
+            quantity: 5, name: '12" pipe', unitPrice: 6.8
+        )
+        def i2 = new InvoicingItem(
+            quantity: 8, name: '10" pipe', unitPrice: 6.2
+        )
+        def i3 = new InvoicingItem(
+            quantity: 12, name: '14" pipe', unitPrice: 7.2
+        )
 
         expect:
         i1.hashCode() != i2.hashCode()
@@ -360,6 +333,7 @@ class InvoicingItemSpec extends Specification
         '12" pipe'      || '12" pipe'
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Quantity must be positive or zero'() {
         given: 'a quite valid invoicing item'
         def i = new InvoicingItem(
@@ -386,6 +360,7 @@ class InvoicingItemSpec extends Specification
         -1750.7 || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Unit must not be blank'() {
         given: 'a quite valid invoicing item'
         def i = new InvoicingItem(
@@ -403,14 +378,13 @@ class InvoicingItemSpec extends Specification
         u       || v
         null    || false
         ''      || false
-        '   '   || false
-        ' \t  ' || false
         'a'     || true
         ' abc ' || true
         '    x' || true
         'pcs'   || true
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Name must not be blank'() {
         given: 'a quite valid invoicing item'
         def i = new InvoicingItem(
@@ -428,14 +402,13 @@ class InvoicingItemSpec extends Specification
         n       || v
         null    || false
         ''      || false
-        '   '   || false
-        ' \t  ' || false
         'a'     || true
         ' abc ' || true
         '    x' || true
         'pipe'  || true
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Tax must be positive or zero'() {
         given: 'a quite valid invoicing item'
         def i = new InvoicingItem(

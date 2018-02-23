@@ -81,8 +81,12 @@ class QuoteController {
         respond id == null ? null : quoteService.get(new ObjectId(id))
     }
 
-    def find() {
-        String name = params.name
+    def find(String name) {
+        if (!name) {
+            render status: NOT_FOUND
+            return
+        }
+
         Integer number
         try {
             number = name as Integer
@@ -94,7 +98,6 @@ class QuoteController {
         Organization organization = organizationId == null ? null
             : organizationService.get(new ObjectId(organizationId))
 
-        //noinspection GroovyVariableNotAssigned
         respond quoteService.find(number, name, organization)
     }
 
@@ -146,11 +149,11 @@ class QuoteController {
     def print(String id, String template) {
         Quote quote = id == null ? null : quoteService.get(new ObjectId(id))
         if (quote == null) {
-            notFound()
+            respond quote
             return
         }
 
-        boolean duplicate = !params.duplicate?.isBlank()
+        boolean duplicate = params.duplicate
         byte [] pdf =
             invoicingTransactionService.print(quote, template, duplicate)
 

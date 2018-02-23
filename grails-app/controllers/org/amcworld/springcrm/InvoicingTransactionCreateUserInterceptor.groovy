@@ -63,10 +63,10 @@ class InvoicingTransactionCreateUserInterceptor implements Interceptor {
      * @return  always {@code true}
      */
     boolean after() {
-        def instance = model?.get("${controllerName}Instance".toString())
+        def instance = model?.get(controllerName)
         if (instance instanceof InvoicingTransaction) {
             InvoicingTransaction ix = (InvoicingTransaction) instance
-            ix.createUser = userService.currentUser
+            ix.createUser = userService.getCurrentUser()
         }
 
         true

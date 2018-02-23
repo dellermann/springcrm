@@ -50,6 +50,7 @@ class Quote extends InvoicingTransaction {
         validUntil nullable: true
     }
     static hasMany = [salesOrders: SalesOrder, invoices: Invoice]
+    @SuppressWarnings("GroovyUnusedDeclaration")
     static nextNumberFilters = [Filters.eq('type', TYPE)]
 
 
@@ -84,5 +85,44 @@ class Quote extends InvoicingTransaction {
     Quote(Quote q) {
         super(q)
         type = q.type
+    }
+
+
+    //-- Properties -----------------------------
+
+    /*
+     * XXX These properties need to be re-implemented from the super class
+     * because otherwise the compile-time implementation of QuoteService does
+     * not work.  It seems to be a bug in Grails for MongoDB.
+     */
+
+    @Override
+    Organization getOrganization() {
+        super.getOrganization()
+    }
+
+    @Override
+    void setOrganization(Organization organization) {
+        super.setOrganization organization
+    }
+
+    @Override
+    Person getPerson() {
+        super.getPerson()
+    }
+
+    @Override
+    void setPerson(Person person) {
+        super.setPerson person
+    }
+
+    @Override
+    String getSubject() {
+        super.getSubject()
+    }
+
+    @Override
+    void setSubject(String subject) {
+        super.setSubject subject
     }
 }

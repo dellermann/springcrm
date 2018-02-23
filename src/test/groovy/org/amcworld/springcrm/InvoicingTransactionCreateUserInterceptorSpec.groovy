@@ -30,10 +30,11 @@ class InvoicingTransactionCreateUserInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -71,10 +72,15 @@ class InvoicingTransactionCreateUserInterceptorSpec extends Specification
         given: 'an instance'
         def instance = new Invoice()
 
-        when: 'I call the interceptor'
+        and: 'a user service instance'
+        UserService userService = Mock()
+        interceptor.userService = userService
+
+        when: 'the interceptor is called'
         interceptor.after()
 
         then: 'no create user has been set'
+        0 * userService.getCurrentUser()
         null == instance.createUser
     }
 
@@ -82,28 +88,18 @@ class InvoicingTransactionCreateUserInterceptorSpec extends Specification
         given: 'an instance'
         def instance = new Invoice()
 
+        and: 'a user service instance'
+        UserService userService = Mock()
+        interceptor.userService = userService
+
         and: 'a controller name'
         webRequest.controllerName = 'invoice'
 
         and: 'an invalid instance in model'
-        interceptor.model = [invoiceInstance: instance]
+        interceptor.model = [invoice: instance]
 
-        and: 'a credential'
-        def user = makeUser()
-//        session.credential = new Credential(user)
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'no create user has been set'
-        user == instance.createUser
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private User makeUser() {
-        def u = new User(
+        and: 'a user'
+        User user = new User(
             username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
@@ -112,12 +108,14 @@ class InvoicingTransactionCreateUserInterceptorSpec extends Specification
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            email: 'j.smith@example.com',
-//            admin: true
+            email: 'j.smith@example.com'
         )
-        u.save failOnError: true
-        u.afterLoad()       // initialize user settings
 
-        u
+        when: 'the interceptor is called'
+        interceptor.after()
+
+        then: 'no create user has been set'
+        1 * userService.getCurrentUser() >> user
+        user == instance.createUser
     }
 }

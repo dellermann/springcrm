@@ -30,10 +30,11 @@ class InvoicingItemsInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -114,13 +115,30 @@ class InvoicingItemsInterceptorSpec extends Specification
 
     def 'Units and tax rates are stored in model'() {
         given: 'some units and tax rates'
-        makeUnits()
-        makeTaxRates()
+        List<Unit> units = [
+            new Unit(name: 'm', orderId: 10),
+            new Unit(name: 'pkg', orderId: 20),
+            new Unit(name: 'parcel', orderId: 30),
+            new Unit(name: 'kg', orderId: 40)
+        ]
+        List<TaxRate> taxRates = [
+            new TaxRate(name: '19 %', taxValue: 0.19, orderId: 10),
+            new TaxRate(name: '7 %', taxValue: 0.07, orderId: 20),
+            new TaxRate(name: '21 %', taxValue: 0.21, orderId: 30)
+        ]
+
+        and: 'a selector value service instance'
+        SelValueService selValueService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * selValueService.findAllByClass(Unit) >> units
+        //noinspection GroovyAssignabilityCheck
+        1 * selValueService.findAllByClass(TaxRate) >> taxRates
+        interceptor.selValueService = selValueService
 
         and: 'an empty model'
         interceptor.model = [: ]
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
         then: 'the units are stored in the correct order'
@@ -128,21 +146,5 @@ class InvoicingItemsInterceptorSpec extends Specification
 
         and: 'the tax rates are stored in correct order'
         ['19 %', '7 %', '21 %'] == interceptor.model.taxRates*.name
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void makeUnits() {
-        new Unit(name: 'kg', orderId: 40).save failOnError: true
-        new Unit(name: 'm', orderId: 10).save failOnError: true
-        new Unit(name: 'parcel', orderId: 30).save failOnError: true
-        new Unit(name: 'pkg', orderId: 20).save failOnError: true
-    }
-
-    private void makeTaxRates() {
-        new TaxRate(name: '7 %', taxValue: 0.07, orderId: 20).save failOnError: true
-        new TaxRate(name: '19 %', taxValue: 0.19, orderId: 10).save failOnError: true
-        new TaxRate(name: '21 %', taxValue: 0.21, orderId: 30).save failOnError: true
     }
 }

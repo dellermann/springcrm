@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.testing.gorm.DomainUnitTest
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 
@@ -200,7 +201,6 @@ class InvoicingTransactionSpec extends Specification
         i.discountPercent = null
         i.shippingCosts = null
         i.shippingTax = null
-        i.total = null
 
         then: 'all decimal values are never null'
         0.0 == i.adjustment
@@ -253,64 +253,47 @@ class InvoicingTransactionSpec extends Specification
           25.78 || 109.85349109
     }
 
-    def 'Get the full name'() {
-        given: 'a mocked sequence number service'
-        def i = new InvoicingTransaction()
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.formatWithPrefix(_, _) >> 'R-39999'
-
-        and: 'an organization'
-        i.organization = new Organization(number: 10405)
-
-        when: 'I set the subject'
-        i.subject = s
-
-        then: 'I get the correct full name'
-        f == i.fullName
-
-        where:
-        s                       || f
-        null                    || 'R-39999-10405 null'
-        ''                      || 'R-39999-10405 '
-        'foo'                   || 'R-39999-10405 foo'
-        'Test invoice'          || 'R-39999-10405 Test invoice'
-    }
-
     def 'Get the full number without organization'() {
-        given: 'a mocked sequence number service'
-        def i = new InvoicingTransaction()
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.formatWithPrefix(_, _) >> 'R-39999'
+        given: 'a sequence number'
+        SeqNumber seqNumber = new SeqNumber(
+            prefix: 'R', startValue: 10000i, suffix: 'S'
+        )
 
-        when: 'I unset the organization'
+        and: 'an instance'
+        def i = new InvoicingTransaction(number: 39999i)
+
+        and: 'an unset organization'
         i.organization = null
 
-        then: 'I get the correct full number'
-        'R-39999' == i.fullNumber
+        expect:
+        'R-39999-S' == i.computeFullNumber(seqNumber)
     }
 
-    def 'Get the full number with organization'() {
-        given: 'a mocked sequence number service'
-        def i = new InvoicingTransaction()
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.formatWithPrefix(_, _) >> 'R-39999'
+    def 'Get the full number with organization'(int n, String fn) {
+        given: 'a sequence number'
+        SeqNumber seqNumber = new SeqNumber(
+            prefix: 'R', startValue: 10000i, suffix: 'S'
+        )
 
-        when: 'I set the number'
+        and: 'an instance'
+        def i = new InvoicingTransaction(number: 39999i)
+
+        and: 'an organization'
         i.organization = new Organization(number: n)
 
-        then: 'I get the correct full number'
-        fn == i.fullNumber
+        expect:
+        fn == i.computeFullNumber(seqNumber)
 
         where:
         n       || fn
-        0       || 'R-39999-0'
-        1       || 'R-39999-1'
-        25      || 'R-39999-25'
-        147     || 'R-39999-147'
-        7473    || 'R-39999-7473'
-        10405   || 'R-39999-10405'
-        759734  || 'R-39999-759734'
-        5749053 || 'R-39999-5749053'
+        0       || 'R-39999-0-S'
+        1       || 'R-39999-1-S'
+        25      || 'R-39999-25-S'
+        147     || 'R-39999-147-S'
+        7473    || 'R-39999-7473-S'
+        10405   || 'R-39999-10405-S'
+        759734  || 'R-39999-759734-S'
+        5749053 || 'R-39999-5749053-S'
     }
 
     def 'Get the shipping costs gross'() {
@@ -555,7 +538,7 @@ class InvoicingTransactionSpec extends Specification
     def 'Compute tax rate sums without items'() {
         when: 'I use an empty invoicing transaction and obtain the tax rates'
         def i = new InvoicingTransaction()
-        Map<BigDecimal, BigDecimal> taxRateSums = i.taxRateSums
+        Map<Double, BigDecimal> taxRateSums = i.taxRateSums
 
         then: 'I get an empty map'
         null != taxRateSums
@@ -570,19 +553,22 @@ class InvoicingTransactionSpec extends Specification
         taxRateSums.isEmpty()
     }
 
-    def 'Compute tax rate sums with items'() {
+    def 'Compute tax rate sums with items'(BigDecimal up, BigDecimal t,
+                                           BigDecimal trs1, BigDecimal trs2,
+                                           BigDecimal trs3)
+    {
         given: 'an empty invoicing transaction'
         def i = new InvoicingTransaction(items: [])
 
         when: 'I add an item and obtain the tax rates'
         i.items << new InvoicingItem(quantity: 5, unitPrice: up, tax: t)
-        Map<BigDecimal, BigDecimal> taxRateSums = i.taxRateSums
+        Map<Double, BigDecimal> taxRateSums = i.taxRateSums
 
         then: 'I get an ordered map containing the tax rates and their sums'
         null != taxRateSums
         taxRateSums instanceof LinkedHashMap
         1 == taxRateSums.size()
-        trs1 == taxRateSums[(Double)(double) (t ?: 0d)]
+        trs1 == taxRateSums[(Double) (t ?: 0d)]
 
         when: 'I add another item and obtain the tax rates'
         i.items << new InvoicingItem(
@@ -594,8 +580,8 @@ class InvoicingTransactionSpec extends Specification
         null != taxRateSums
         taxRateSums instanceof LinkedHashMap
         2 == taxRateSums.size()
-        trs1 == taxRateSums[(Double)(double) (t ?: 0d)]
-        trs3 == taxRateSums[(Double)(double) ((t ?: 0d) + 2.0d)]
+        trs1 == taxRateSums[(Double) (t ?: 0d)]
+        trs3 == taxRateSums[(Double) ((t ?: 0d) + 2.0d)]
 
         when: 'I add another item and obtain the tax rates'
         i.items << new InvoicingItem(
@@ -607,9 +593,9 @@ class InvoicingTransactionSpec extends Specification
         null != taxRateSums
         taxRateSums instanceof LinkedHashMap
         3 == taxRateSums.size()
-        trs1 == taxRateSums[(Double)(double) (t ?: 0d)]
-        trs2 == taxRateSums[(Double)(double) ((t ?: 0d) + 1.5d)]
-        trs3 == taxRateSums[(Double)(double) ((t ?: 0d) + 2.0d)]
+        trs1 == taxRateSums[(Double) (t ?: 0d)]
+        trs2 == taxRateSums[(Double) ((t ?: 0d) + 1.5d)]
+        trs3 == taxRateSums[(Double) ((t ?: 0d) + 2.0d)]
 
         where:
         up      | t         || trs1     | trs2      | trs3
@@ -630,20 +616,41 @@ class InvoicingTransactionSpec extends Specification
         0.28    | 19        || 0.266    | 0.287     | 0.294
     }
 
-    def 'Number is computed before insert'() {
-        given: 'a mocked sequence number service'
-        def i = new InvoicingTransaction()
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.nextNumber(_) >> 20473
+    def 'Compute dynamic values before insert'() {
+        given: 'an invoicing transaction'
+        def i = new InvoicingTransaction(
+            adjustment: -5.47313,
+            discountAmount: 2.98657,
+            discountPercent: 2.5,
+            items: [
+                new InvoicingItem(quantity: 4, unitPrice: 44.99, tax: 19),
+                new InvoicingItem(quantity: 10.5, unitPrice: 0.89, tax: 7),
+                new InvoicingItem(quantity: 4.25, unitPrice: 39, tax: 19)
+            ],
+            shippingCosts: 4.5,
+            shippingTax: 5
+        )
 
-        when: 'I call beforeInsert'
+        when: 'the beforeInsert event is called'
         i.beforeInsert()
 
-        then: 'the next sequence number has been set'
-        20473 == i.number
+        then: 'the correct dynamic values have been computed'
+        359.555 == i['subtotalNet']
+        426.119_05 == i['subtotalGross']
+        4.725 == i['shippingCostsGross']
+        10.652_976_25 == i['discountPercentAmount']
+        407.006_373_75 == i['total']
+
+        and: 'the correct dynamic values on items have been computed'
+        179.96 == i.items[0]['totalNet']
+        214.152_4 == i.items[0]['totalGross']
+        9.345 == i.items[1]['totalNet']
+        9.999_15 == i.items[1]['totalGross']
+        165.75 == i.items[2]['totalNet']
+        197.242_5 == i.items[2]['totalGross']
     }
 
-    def 'Total value is computed before insert'() {
+    def 'Compute dynamic values before update'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction(
             adjustment: -5.47313,
@@ -658,100 +665,26 @@ class InvoicingTransactionSpec extends Specification
             shippingTax: 5
         )
 
-        and: 'a mocked sequence number service'
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.nextNumber(_) >> 20473
-
-        when: 'I call beforeInsert'
-        i.beforeInsert()
-
-        then: 'I get the correct total value'
-        407.00637375 == i.total
-    }
-
-    def 'Number is not altered before update'() {
-        given: 'an invoicing transaction with a number'
-        def i = new InvoicingTransaction(number: 12345)
-
-        and: 'a mocked sequence number service'
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.nextNumber(_) >> 20473
-
-        when: 'I call beforeUpdate'
+        when: 'the beforeUpdate event is called'
         i.beforeUpdate()
 
-        then: 'the sequence number has not been altered'
-        12345 == i.number
+        then: 'the correct dynamic values have been computed'
+        359.555 == i['subtotalNet']
+        426.119_05 == i['subtotalGross']
+        4.725 == i['shippingCostsGross']
+        10.652_976_25 == i['discountPercentAmount']
+        407.006_373_75 == i['total']
+
+        and: 'the correct dynamic values on items have been computed'
+        179.96 == i.items[0]['totalNet']
+        214.152_4 == i.items[0]['totalGross']
+        9.345 == i.items[1]['totalNet']
+        9.999_15 == i.items[1]['totalGross']
+        165.75 == i.items[2]['totalNet']
+        197.242_5 == i.items[2]['totalGross']
     }
 
-    def 'Total value is computed before update'() {
-        given: 'an invoicing transaction'
-        def i = new InvoicingTransaction(
-            adjustment: -5.47313,
-            discountAmount: 2.98657,
-            discountPercent: 2.5,
-            items: [
-                new InvoicingItem(quantity: 4, unitPrice: 44.99, tax: 19),
-                new InvoicingItem(quantity: 10.5, unitPrice: 0.89, tax: 7),
-                new InvoicingItem(quantity: 4.25, unitPrice: 39, tax: 19)
-            ],
-            shippingCosts: 4.5,
-            shippingTax: 5
-        )
-
-        and: 'a mocked sequence number service'
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.nextNumber(_) >> 20473
-
-        when: 'I call beforeUpdate'
-        i.beforeUpdate()
-
-        then: 'I get the correct total value'
-        407.00637375 == i.total
-    }
-
-    def 'Number is not altered before validate'() {
-        given: 'an invoicing transaction with a number'
-        def i = new InvoicingTransaction(number: 12345)
-
-        and: 'a mocked sequence number service'
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.nextNumber(_) >> 20473
-
-        when: 'I call beforeValidate'
-        i.beforeValidate()
-
-        then: 'the sequence number has not been altered'
-        12345 == i.number
-    }
-
-    def 'Total value is computed before validate'() {
-        given: 'an invoicing transaction'
-        def i = new InvoicingTransaction(
-            adjustment: -5.47313,
-            discountAmount: 2.98657,
-            discountPercent: 2.5,
-            items: [
-                new InvoicingItem(quantity: 4, unitPrice: 44.99, tax: 19),
-                new InvoicingItem(quantity: 10.5, unitPrice: 0.89, tax: 7),
-                new InvoicingItem(quantity: 4.25, unitPrice: 39, tax: 19)
-            ],
-            shippingCosts: 4.5,
-            shippingTax: 5
-        )
-
-        and: 'a mocked sequence number service'
-        i.seqNumberService = Mock(SeqNumberService)
-        i.seqNumberService.nextNumber(_) >> 20473
-
-        when: 'I call beforeValidate'
-        i.beforeValidate()
-
-        then: 'I get the correct total value'
-        407.00637375 == i.total
-    }
-
-    def 'Compute total'() {
+    def 'Get total'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction(
             discountPercent: 2.5,
@@ -769,7 +702,7 @@ class InvoicingTransactionSpec extends Specification
         i.adjustment = a
 
         then: 'I get the correct total price'
-        e == i.computeTotal()       // 415,46607375
+        e == i.getTotal()       // 415,46607375
 
         where:
         da      | a         || e
@@ -869,6 +802,7 @@ class InvoicingTransactionSpec extends Specification
         expect:
         null != i
         i != null
+        //noinspection ChangeToOperator
         !i.equals(null)
     }
 
@@ -907,12 +841,13 @@ class InvoicingTransactionSpec extends Specification
 
     def 'Persisted instances are equal if they have the same ID'() {
         given: 'three invoicing transactions with same ID'
+        def id = new ObjectId()
         def i1 = new InvoicingTransaction(subject: 'Repair')
-        i1.id = 7403L
+        i1.id = id
         def i2 = new InvoicingTransaction(subject: 'Pipes')
-        i2.id = 7403L
+        i2.id = id
         def i3 = new InvoicingTransaction(subject: 'Service')
-        i3.id = 7403L
+        i3.id = id
 
         expect: 'equals() is reflexive'
         i1 == i1
@@ -933,11 +868,11 @@ class InvoicingTransactionSpec extends Specification
     def 'Persisted instances are unequal if they have the different ID'() {
         given: 'three invoicing transactions with different IDs'
         def i1 = new InvoicingTransaction(subject: 'Repair')
-        i1.id = 7403L
+        i1.id = new ObjectId()
         def i2 = new InvoicingTransaction(subject: 'Pipes')
-        i2.id = 7404L
+        i2.id = new ObjectId()
         def i3 = new InvoicingTransaction(subject: 'Service')
-        i3.id = 8473L
+        i3.id = new ObjectId()
 
         expect: 'equals() is reflexive'
         i1 == i1
@@ -960,7 +895,7 @@ class InvoicingTransactionSpec extends Specification
         def i = new InvoicingTransaction()
 
         expect:
-        0i == i.hashCode()
+        3937i == i.hashCode()
     }
 
     def 'Can compute hash code of a not persisted instance'() {
@@ -968,13 +903,16 @@ class InvoicingTransactionSpec extends Specification
         def i = new InvoicingTransaction(subject: 'Repair')
 
         expect:
-        0i == i.hashCode()
+        3937i == i.hashCode()
     }
 
     def 'Hash codes are consistent'() {
-        given: 'an instance'
+        given: 'an ID'
+        def id = new ObjectId()
+
+        and: 'an instance'
         def i = new InvoicingTransaction(subject: 'Repair')
-        i.id = 7403L
+        i.id = id
 
         when: 'I compute the hash code'
         int h = i.hashCode()
@@ -982,19 +920,20 @@ class InvoicingTransactionSpec extends Specification
         then: 'the hash code remains consistent'
         for (int j = 0; j < 500; j++) {
             i = new InvoicingTransaction(subject: 'Repair')
-            i.id = 7403L
+            i.id = id
             h == i.hashCode()
         }
     }
 
     def 'Equal instances produce the same hash code'() {
         given: 'three invoicing transactions with same ID'
+        def id = new ObjectId()
         def i1 = new InvoicingTransaction(subject: 'Repair')
-        i1.id = 7403L
+        i1.id = id
         def i2 = new InvoicingTransaction(subject: 'Pipes')
-        i2.id = 7403L
+        i2.id = id
         def i3 = new InvoicingTransaction(subject: 'Service')
-        i3.id = 7403L
+        i3.id = id
 
         expect:
         i1.hashCode() == i2.hashCode()
@@ -1004,11 +943,11 @@ class InvoicingTransactionSpec extends Specification
     def 'Different instances produce different hash codes'() {
         given: 'three invoicing transactions with different properties'
         def i1 = new InvoicingTransaction(subject: 'Repair')
-        i1.id = 7403L
+        i1.id = new ObjectId()
         def i2 = new InvoicingTransaction(subject: 'Pipes')
-        i2.id = 7404L
+        i2.id = new ObjectId()
         def i3 = new InvoicingTransaction(subject: 'Service')
-        i3.id = 8473L
+        i3.id = new ObjectId()
 
         expect:
         i1.hashCode() != i2.hashCode()
@@ -1036,6 +975,7 @@ class InvoicingTransactionSpec extends Specification
         'Services'      || 'Services'
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Type must not be blank or longer than one character'(String t,
                                                               boolean v)
     {
@@ -1060,13 +1000,13 @@ class InvoicingTransactionSpec extends Specification
         t       || v
         null    || false
         ''      || false
-        '  \t ' || false
         'a'     || true
         'I'     || true
         'xx'    || false
         'name'  || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Subject must not be blank'(String s, boolean v) {
         given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
@@ -1089,7 +1029,6 @@ class InvoicingTransactionSpec extends Specification
         s       || v
         null    || false
         ''      || false
-        '  \t ' || false
         'a'     || true
         'abc'   || true
         'a  x ' || true
@@ -1182,6 +1121,7 @@ class InvoicingTransactionSpec extends Specification
         !i.validate()
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Discount percent must not be less than zero'() {
         given: 'a valid invoicing transaction'
         def i = new InvoicingTransaction(
@@ -1203,20 +1143,21 @@ class InvoicingTransactionSpec extends Specification
         valid != i.hasErrors()
 
         where:
-          dp        | valid
-        null        | true
-        -100        | false
-          -5        | false
-          -1        | false
-          -0.005    | false
-           0        | true
-           0.005    | true
-           1        | true
-           5        | true
-         100        | true
-         200        | true
+          dp        || valid
+        null        || true
+        -100        || false
+          -5        || false
+          -1        || false
+          -0.005    || false
+           0        || true
+           0.005    || true
+           1        || true
+           5        || true
+         100        || true
+         200        || true
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Shipping tax must not be less than zero'() {
         given: 'a valid invoicing transaction'
         def i = new InvoicingTransaction(
@@ -1238,14 +1179,14 @@ class InvoicingTransactionSpec extends Specification
         valid != i.hasErrors()
 
         where:
-        st              | valid
-        null            | true
-        -120034.005     | false
-        -5              | false
-        1003            | true
-        4               | true
-        100D            | true
-        100.0d          | true
-        1e2d            | true
+        st              || valid
+        null            || true
+        -120034.005     || false
+        -5              || false
+        1003            || true
+        4               || true
+        100D            || true
+        100.0d          || true
+        1e2d            || true
     }
 }

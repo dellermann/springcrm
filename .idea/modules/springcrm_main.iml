@@ -175,8 +175,8 @@
     <orderEntry type="library" name="Gradle: org.springframework:spring-expression:4.3.12.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-xml:2.4.13" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-templates:2.4.13" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.grails.plugins:asset-pipeline:3.1.0" level="project" />
     <orderEntry type="library" name="Gradle: javax.transaction:jta:1.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.grails.plugins:asset-pipeline:3.1.0" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-databinding:3.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-url-mappings:3.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-mvc:3.3.2" level="project" />
@@ -244,6 +244,9 @@
     <orderEntry type="library" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" level="project" />
     <orderEntry type="library" name="Gradle: commons-collections:commons-collections:3.2.2" level="project" />
     <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:19.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -253,9 +256,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.4" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.guava:guava:19.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="library" name="Gradle: org.mongodb:bson:3.5.0" level="project" />
   </component>
 </module>

@@ -86,6 +86,7 @@ class WorkControllerSpec extends Specification
         controller.delete null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.delete(_)
         '/work/index' == response.redirectedUrl
         null != flash.message
@@ -104,15 +105,7 @@ class WorkControllerSpec extends Specification
         controller.delete work.id.toString()
 
         then: 'the instance is deleted'
-        1 * service.delete(work.id) >> work
-        '/work/index' == response.redirectedUrl
-        null != flash.message
-
-        when: 'the action is called with an LDAP service'
-        response.reset()
-        controller.delete work.id.toString()
-
-        then: 'the instance is deleted in LDAP, too'
+        //noinspection GroovyAssignabilityCheck
         1 * service.delete(work.id) >> work
         '/work/index' == response.redirectedUrl
         null != flash.message
@@ -131,6 +124,7 @@ class WorkControllerSpec extends Specification
         controller.edit null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -147,9 +141,12 @@ class WorkControllerSpec extends Specification
         controller.edit work.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(work.id) >> work
         work == model.work
     }
+
+    // TODO find action
 
 //    void 'The find action without type returns the correct model'() {
 //        given: 'a list of services'
@@ -236,6 +233,7 @@ class WorkControllerSpec extends Specification
         controller.get null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -252,6 +250,7 @@ class WorkControllerSpec extends Specification
         controller.get work.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(work.id) >> work
         work == model.work
     }
@@ -267,6 +266,7 @@ class WorkControllerSpec extends Specification
         and: 'a service instance'
         WorkService service = Mock()
         1 * service.count() >> list.size()
+        //noinspection GroovyAssignabilityCheck
         1 * service.list(getParameterMap(max: 10, offset: 20)) >> list
         controller.workService = service
 
@@ -296,6 +296,7 @@ class WorkControllerSpec extends Specification
         controller.save null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/work/index' == response.redirectedUrl
         null != flash.message
@@ -305,6 +306,7 @@ class WorkControllerSpec extends Specification
         controller.save work
 
         then: 'the create view is rendered again with the correct model'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(work) >> {
             throw new ValidationException('', new ValidationErrors(work))
         }
@@ -316,6 +318,7 @@ class WorkControllerSpec extends Specification
         controller.save work
 
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(work) >> work
         '/work/show/' + work.id == response.redirectedUrl
         null != controller.flash.message
@@ -336,6 +339,7 @@ class WorkControllerSpec extends Specification
         controller.show null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.get(_)
         404 == response.status
 
@@ -352,6 +356,7 @@ class WorkControllerSpec extends Specification
         controller.show work.id.toString()
 
         then: 'a model is populated containing the domain instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.get(work.id) >> work
         work == model.work
     }
@@ -371,6 +376,7 @@ class WorkControllerSpec extends Specification
         controller.update null
 
         then: 'a 404 error is returned'
+        //noinspection GroovyAssignabilityCheck
         0 * service.save(_)
         '/work/index' == response.redirectedUrl
         null != flash.message
@@ -380,6 +386,7 @@ class WorkControllerSpec extends Specification
         controller.update work
 
         then: 'the edit view is rendered again with the invalid instance'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(work) >> {
             throw new ValidationException('', new ValidationErrors(work))
         }
@@ -391,6 +398,7 @@ class WorkControllerSpec extends Specification
         controller.update work
 
         then: 'a redirect is issued to the show action'
+        //noinspection GroovyAssignabilityCheck
         1 * service.save(work) >> work
         '/work/show/' + work.id == response.redirectedUrl
         null != controller.flash.message

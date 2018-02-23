@@ -321,7 +321,6 @@ class FopServiceSpec extends Specification
 
     def 'Output PDF of an invoice'() {
         given: 'some necessary values'
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()
         String xml = '<?xml test data?>'
         byte [] result = 'PDF1.1/Test result'.bytes
 
@@ -382,33 +381,11 @@ class FopServiceSpec extends Specification
         1 * fopFactory.newFOUserAgent() >> new FOUserAgent(fopFactory)
         service.fopFactory = fopFactory
 
-        and: 'a mocked servlet output stream'
-        ServletOutputStream outputStream = Mock()
-        1 * outputStream.write(_ as byte[]) >> {
-
-            /*
-             * XXX despite I call outputStream.write with a byte [] I get a
-             * list with one element representing the byte array.  This could
-             * be an error in Spock.
-             */
-            baos.write it[0]
-        }
-        1 * outputStream.flush()
-
-        and: 'a mocked HTTP response'
-        HttpServletResponse response = Mock()
-        1 * response.setContentType('application/pdf')
-        1 * response.addHeader('Content-Disposition', 'attachment; filename="Invoice I-40473-10473.pdf"')
-        1 * response.setContentLength(result.length)
-        response.outputStream >> outputStream
-
         when: 'I output the PDF document'
-        service.outputPdf(
-            xml, 'invoice', 'bar', response, 'Invoice I-40473-10473.pdf'
-        )
+        byte [] pdf = service.outputPdf(xml, 'invoice', 'bar')
 
         then: 'the output stream contains the correct result'
-        'PDF1.1/Test result' == baos.toString()
+        'PDF1.1/Test result' == pdf.toString()
 
         cleanup:
         tempDir.deleteDir()
