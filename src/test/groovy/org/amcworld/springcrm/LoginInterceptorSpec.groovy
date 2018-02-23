@@ -28,18 +28,13 @@ class LoginInterceptorSpec extends Specification
     implements InterceptorUnitTest<LoginInterceptor>
 {
 
-    //-- Fixture methods ------------------------
-
-    def setup() {
-        Config.metaClass.static.withNewSession = { Closure c -> c.call() }
-    }
-
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -65,18 +60,6 @@ class LoginInterceptorSpec extends Specification
         'assets'            | 'save'                || false
         'help'              | 'save'                || false
         'install'           | 'save'                || false
-        'phoneCall'         | 'login'               || false
-        'organization'      | 'login'               || false
-        'user'              | 'login'               || false
-        'assets'            | 'login'               || false
-        'help'              | 'login'               || false
-        'install'           | 'login'               || false
-        'phoneCall'         | 'authenticate'        || false
-        'organization'      | 'authenticate'        || false
-        'user'              | 'authenticate'        || false
-        'assets'            | 'authenticate'        || false
-        'help'              | 'authenticate'        || false
-        'install'           | 'authenticate'        || false
         'phoneCall'         | 'frontend'            || false
         'organization'      | 'frontend'            || false
         'user'              | 'frontend'            || false
@@ -91,40 +74,47 @@ class LoginInterceptorSpec extends Specification
         'install'           | 'frontendSave'        || false
     }
 
-    def 'Other interceptor methods return true'() {
+    void 'Other interceptor methods return true'() {
         expect:
         interceptor.after()
     }
 
-    def 'Redirect if application is uninitialized'() {
-        given: 'a mocked install service'
-        interceptor.installService = Mock(InstallService)
+    void 'Redirect if application is uninitialized'() {
+        given: 'an install service instance'
+        InstallService installService = Mock()
+        interceptor.installService = installService
 
-        when: 'I call the interceptor'
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * configService.getInteger('installStatus') >> 0
+        interceptor.configService = configService
+
+        when: 'the interceptor is called'
         boolean res = interceptor.before()
 
         then: 'the action is not called'
         !res
 
         and: 'the installer is enabled'
-        1 * interceptor.installService.enableInstaller()
+        1 * installService.enableInstaller()
 
         and: 'I am redirected to installer'
-        response.redirectedUrl == '/install/index'
+        '/install/index' == response.redirectedUrl
     }
 
-    def 'No redirect if application is initialized'() {
-        given: 'a configuration that the application has been initialized'
-        new Config(name: 'installStatus', value: '1').save()
-
-        and: 'a mocked install service'
+    void 'No redirect if application is already initialized'() {
+        given: 'an install service instance'
         InstallService installService = Mock()
         interceptor.installService = installService
 
-        and: 'a mocked credential'
-        session.credential = 'foo'
+        and: 'a configuration service instance'
+        ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * configService.getInteger('installStatus') >> 1
+        interceptor.configService = configService
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         boolean res = interceptor.before()
 
         then: 'the action is called'
@@ -132,19 +122,5 @@ class LoginInterceptorSpec extends Specification
 
         and: 'the installer is not enabled'
         0 * installService.enableInstaller()
-    }
-
-    def 'Redirect if user is not logged in'() {
-        given: 'a configuration that the application has been initialized'
-        new Config(name: 'installStatus', value: '1').save()
-
-        when: 'I call the interceptor'
-        boolean res = interceptor.before()
-
-        then: 'the action is not called'
-        !res
-
-        and: 'I am redirected to login page'
-        response.redirectedUrl == '/user/login'
     }
 }
