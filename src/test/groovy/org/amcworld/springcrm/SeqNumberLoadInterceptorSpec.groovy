@@ -30,10 +30,11 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -64,40 +65,62 @@ class SeqNumberLoadInterceptorSpec extends Specification
         'user'              | 'update'              || true
     }
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         expect:
         interceptor.after()
         interceptor.before()
     }
 
-    def 'No model leaves it unmodified'() {
+    void 'No model leaves it unmodified'() {
         given: 'a mocked sequence number service'
         interceptor.seqNumberService = Mock(SeqNumberService)
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
         then: 'the sequence number service is not used'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.seqNumberService.get(_)
     }
 
-    def 'An empty model leaves it unmodified'() {
+    void 'An empty model leaves it unmodified'() {
         given: 'a mocked sequence number service'
         interceptor.seqNumberService = Mock(SeqNumberService)
 
         and: 'an empty model'
         interceptor.model = [: ]
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'the sequence number service is not used'
+        then: 'the sequence number service has not been used'
+        //noinspection GroovyAssignabilityCheck
         0 * interceptor.seqNumberService.get(_)
     }
 
-    def 'A non-existing sequence number leaves model unmodified'() {
+    void 'A non-existing sequence number leaves model unmodified'() {
         given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
+
+        and: 'an non-empty model'
+        interceptor.model = [foo: 'bar']
+
+        and: 'a controller name'
+        webRequest.controllerName = 'phoneCall'
+
+        when: 'the interceptor is called'
+        interceptor.after()
+
+        then: 'the sequence number service has been used but returned null'
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.get('phoneCall') >> null
+    }
+
+    void 'No instance does not set number'() {
+        given: 'a mocked sequence number service'
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
 
         and: 'an non-empty model'
         interceptor.model = [foo: 'bar']
@@ -105,28 +128,83 @@ class SeqNumberLoadInterceptorSpec extends Specification
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
             prefix: 'N',
-            suffix: 'Y',
+            suffix: 'X',
             startValue: 10_000,
             endValue: 99_999
         )
         seqNumber.id = 'note'
 
         and: 'a controller name'
-        webRequest.controllerName = 'phoneCall'
+        webRequest.controllerName = 'note'
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.get(_)
+        then: 'the sequence number is obtained'
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.get('note') >> seqNumber
+        //noinspection GroovyAssignabilityCheck
+        0 * seqNumberService.nextNumber(_)
+
+        and: 'the full number has not been set'
+        null == interceptor.model.fullNumber
+
+        and: 'prefix and suffix are correct'
+        seqNumber.prefix == interceptor.model.seqNumberPrefix
+        seqNumber.suffix == interceptor.model.seqNumberSuffix
+
+        and: 'the sequence number service has been set'
+        seqNumberService == interceptor.model.seqNumberService
     }
 
-    def 'An existing sequence number model sets prefix and suffix'() {
+    void 'A non NumberedDomain instance does not set number'() {
         given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
 
         and: 'an non-empty model'
-        interceptor.model = [noteInstance: new Note(title: 'Test')]
+        interceptor.model = [note: new PhoneCall()]
+
+        and: 'a sequence number'
+        def seqNumber = new SeqNumber(
+            prefix: 'N',
+            suffix: 'X',
+            startValue: 10_000,
+            endValue: 99_999
+        )
+        seqNumber.id = 'note'
+
+        and: 'a controller name'
+        webRequest.controllerName = 'note'
+
+        when: 'the interceptor is called'
+        interceptor.after()
+
+        then: 'the sequence number is obtained'
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.get('note') >> seqNumber
+        //noinspection GroovyAssignabilityCheck
+        0 * seqNumberService.nextNumber(_)
+
+        and: 'the full number has not been set'
+        null == interceptor.model.fullNumber
+
+        and: 'prefix and suffix are correct'
+        seqNumber.prefix == interceptor.model.seqNumberPrefix
+        seqNumber.suffix == interceptor.model.seqNumberSuffix
+
+        and: 'the sequence number service has been set'
+        seqNumberService == interceptor.model.seqNumberService
+    }
+
+    void 'An existing sequence number sets prefix and suffix'() {
+        given: 'a mocked sequence number service'
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
+
+        and: 'an non-empty model'
+        Note note = new Note(number: 12000i, title: 'Test')
+        interceptor.model = [note: note]
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
@@ -141,27 +219,35 @@ class SeqNumberLoadInterceptorSpec extends Specification
         webRequest.controllerName = 'note'
         webRequest.actionName = 'edit'
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
-        then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.get('note') >> seqNumber
-        0 * interceptor.seqNumberService.nextNumber('note')
+        then: 'the sequence number has been obtained'
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.get('note') >> seqNumber
+        0 * seqNumberService.nextNumber('note')
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.getFullNumber(note) >> 'N-12000'
 
         and: 'prefix and suffix are correct'
-        'N' == interceptor.model.seqNumberPrefix
-        'X' == interceptor.model.seqNumberSuffix
+        seqNumber.prefix == interceptor.model.seqNumberPrefix
+        seqNumber.suffix == interceptor.model.seqNumberSuffix
 
-        and: 'the number of the instance is unset'
-        0i == interceptor.model.noteInstance.number
+        and: 'the sequence number service has been set'
+        seqNumberService == interceptor.model.seqNumberService
+
+        and: 'the number of the instance is unchanged'
+        12000i == interceptor.model.note.number
     }
 
-    def 'No instance does not set number in create mode'() {
+    void 'Create action sets the next sequence number'() {
         given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
 
         and: 'an non-empty model'
-        interceptor.model = [foo: 'bar']
+        Note note = new Note(title: 'Test')
+        interceptor.model = [note: note]
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
@@ -176,24 +262,33 @@ class SeqNumberLoadInterceptorSpec extends Specification
         webRequest.controllerName = 'note'
         webRequest.actionName = 'create'
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.get('note') >> seqNumber
-        0 * interceptor.seqNumberService.nextNumber('note')
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.get('note') >> seqNumber
+        1 * seqNumberService.nextNumber('note') >> 15700i
 
         and: 'prefix and suffix are correct'
-        'N' == interceptor.model.seqNumberPrefix
-        'X' == interceptor.model.seqNumberSuffix
+        seqNumber.prefix == interceptor.model.seqNumberPrefix
+        seqNumber.suffix == interceptor.model.seqNumberSuffix
+
+        and: 'the sequence number service has been set'
+        seqNumberService == interceptor.model.seqNumberService
+
+        and: 'the number of the instance has been set'
+        15700i == interceptor.model.note.number
     }
 
-    def 'No instance does not set number in copy mode'() {
+    void 'Copy action sets the next sequence number'() {
         given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
 
         and: 'an non-empty model'
-        interceptor.model = [foo: 'bar']
+        Note note = new Note(title: 'Test')
+        interceptor.model = [note: note]
 
         and: 'a sequence number'
         def seqNumber = new SeqNumber(
@@ -208,149 +303,22 @@ class SeqNumberLoadInterceptorSpec extends Specification
         webRequest.controllerName = 'note'
         webRequest.actionName = 'copy'
 
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
         interceptor.after()
 
         then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.get('note') >> seqNumber
-        0 * interceptor.seqNumberService.nextNumber('note')
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.get('note') >> seqNumber
+        1 * seqNumberService.nextNumber('note') >> 15700i
 
         and: 'prefix and suffix are correct'
-        'N' == interceptor.model.seqNumberPrefix
-        'X' == interceptor.model.seqNumberSuffix
-    }
+        seqNumber.prefix == interceptor.model.seqNumberPrefix
+        seqNumber.suffix == interceptor.model.seqNumberSuffix
 
-    def 'No numbered instance does not set number in create mode'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
+        and: 'the sequence number service has been set'
+        seqNumberService == interceptor.model.seqNumberService
 
-        and: 'an non-empty model'
-        interceptor.model = [callInstance: new PhoneCall(subject: 'Phone call')]
-
-        and: 'a sequence number'
-        def seqNumber = new SeqNumber(
-            prefix: 'T',
-            suffix: 'Y',
-            startValue: 10_000,
-            endValue: 99_999
-        )
-        seqNumber.id = 'phoneCall'
-
-        and: 'a controller and action name'
-        webRequest.controllerName = 'phoneCall'
-        webRequest.actionName = 'create'
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.get('phoneCall') >> seqNumber
-        0 * interceptor.seqNumberService.nextNumber('phoneCall')
-
-        and: 'prefix and suffix are correct'
-        'T' == interceptor.model.seqNumberPrefix
-        'Y' == interceptor.model.seqNumberSuffix
-    }
-
-    def 'No numbered instance does not set number in copy mode'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'an non-empty model'
-        interceptor.model = [callInstance: new PhoneCall(subject: 'Phone call')]
-
-        and: 'a sequence number'
-        def seqNumber = new SeqNumber(
-            prefix: 'T',
-            suffix: 'Y',
-            startValue: 10_000,
-            endValue: 99_999
-        )
-        seqNumber.id = 'phoneCall'
-
-        and: 'a controller and action name'
-        webRequest.controllerName = 'phoneCall'
-        webRequest.actionName = 'copy'
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.get('phoneCall') >> seqNumber
-        0 * interceptor.seqNumberService.nextNumber('phoneCall')
-
-        and: 'prefix and suffix are correct'
-        'T' == interceptor.model.seqNumberPrefix
-        'Y' == interceptor.model.seqNumberSuffix
-    }
-
-    def 'An existing sequence number sets number in create mode'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'an non-empty model'
-        interceptor.model = [noteInstance: new Note(title: 'Test')]
-
-        and: 'a sequence number'
-        def seqNumber = new SeqNumber(
-            prefix: 'N',
-            suffix: 'X',
-            startValue: 10_000,
-            endValue: 99_999
-        )
-        seqNumber.id = 'note'
-
-        and: 'a controller and action name'
-        webRequest.controllerName = 'note'
-        webRequest.actionName = 'create'
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.get('note') >> seqNumber
-        1 * interceptor.seqNumberService.nextNumber('note') >> 15700i
-
-        and: 'prefix and suffix are correct'
-        'N' == interceptor.model.seqNumberPrefix
-        'X' == interceptor.model.seqNumberSuffix
-
-        and: 'the number of the instance is set'
-        15700i == interceptor.model.noteInstance.number
-    }
-
-    def 'An existing sequence number sets number in copy mode'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'an non-empty model'
-        interceptor.model = [noteInstance: new Note(title: 'Test')]
-
-        and: 'a sequence number'
-        def seqNumber = new SeqNumber(
-            prefix: 'N',
-            suffix: 'X',
-            startValue: 10_000,
-            endValue: 99_999
-        )
-        seqNumber.id = 'note'
-
-        and: 'a controller and action name'
-        webRequest.controllerName = 'note'
-        webRequest.actionName = 'copy'
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number is obtained'
-        1 * interceptor.seqNumberService.get('note') >> seqNumber
-        1 * interceptor.seqNumberService.nextNumber('note') >> 15700i
-
-        and: 'prefix and suffix are correct'
-        'N' == interceptor.model.seqNumberPrefix
-        'X' == interceptor.model.seqNumberSuffix
-
-        and: 'the number of the instance is set'
-        15700i == interceptor.model.noteInstance.number
+        and: 'the number of the instance has been set'
+        15700i == interceptor.model.note.number
     }
 }

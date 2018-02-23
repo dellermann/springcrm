@@ -20,20 +20,23 @@
 
 package org.amcworld.springcrm
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
 class SeqNumberStoreInterceptorSpec extends Specification
-    implements InterceptorUnitTest<SeqNumberStoreInterceptor>
+    implements InterceptorUnitTest<SeqNumberStoreInterceptor>,
+        DomainUnitTest<Note>
 {
 
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: c, action: a
 
         then: 'the interceptor does match or not'
@@ -52,130 +55,121 @@ class SeqNumberStoreInterceptorSpec extends Specification
         'user'              | 'save'                || true
     }
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         expect:
         interceptor.after()
         interceptor.before()
     }
 
-    def 'Do not change number if number is not set'() {
-        when: 'I call the interceptor'
+    void 'Do not change number if number is set and autoNumber is off'() {
+        given: 'a sequence number service'
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
+
+        when: 'the interceptor is called'
+        params.number = 12345i
         interceptor.before()
 
-        then: 'no number has been set'
-        null == params.number
-    }
+        then: 'the number remains unchanged'
+        //noinspection GroovyAssignabilityCheck
+        0 * seqNumberService.nextNumber(_)
+        12345i == params.number
 
-    def 'Do not change number if autoNumber is not set'() {
-        given: 'a number'
-        params.number = 34
-
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
+        params.autoNumber = null
+        params.number = 12345i
         interceptor.before()
 
-        then: 'no number has been set'
-        34 == params.number
-    }
+        then: 'the number remains unchanged'
+        //noinspection GroovyAssignabilityCheck
+        0 * seqNumberService.nextNumber(_)
+        12345i == params.number
 
-    def 'Set number to zero if autoNumber is set'() {
-        given: 'a number'
-        params.number = 34
-        params.autoNumber = true
-
-        when: 'I call the interceptor'
+        when: 'the interceptor is called'
+        params.autoNumber = ''
+        params.number = 12345i
         interceptor.before()
 
-        then: 'the number has been reset'
-        0 == params.number
+        then: 'the number remains unchanged'
+        //noinspection GroovyAssignabilityCheck
+        0 * seqNumberService.nextNumber(_)
+        12345i == params.number
     }
 
-    def 'No model leaves it unmodified'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.nextNumber(_)
-    }
-
-    def 'An empty model leaves it unmodified'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'an empty model'
-        interceptor.model = [: ]
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.nextNumber(_)
-    }
-
-    def 'No instance leaves it unmodified'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'a model'
-        interceptor.model = [foo: 'bar']
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.nextNumber(_)
-    }
-
-    def 'No numbered instance leaves it unmodified'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'a model'
-        interceptor.model = [callInstance: new PhoneCall()]
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.nextNumber(_)
-    }
-
-    def 'A numbered instance with sequence number leaves it unmodified'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'a model'
-        interceptor.model = [noteInstance: new Note(number: 10474)]
-
-        when: 'I call the interceptor'
-        interceptor.after()
-
-        then: 'the sequence number service is not used'
-        0 * interceptor.seqNumberService.nextNumber(_)
-
-        and: 'the number is unchanged'
-        10474 == interceptor.model.noteInstance.number
-    }
-
-    def 'A numbered instance with no sequence number sets the next one'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'a model'
-        interceptor.model = [noteInstance: new Note()]
+    void 'Change number if number is unset or zero'() {
+        given: 'a sequence number service'
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
 
         and: 'a controller name'
         webRequest.controllerName = 'note'
 
-        when: 'I call the interceptor'
-        interceptor.after()
+        when: 'the interceptor is called'
+        interceptor.before()
 
-        then: 'the sequence number service is not used'
-        1 * interceptor.seqNumberService.nextNumber('note') >> 12074
+        then: 'the number has been changed'
+        1 * seqNumberService.nextNumber('note') >> 12002i
+        12002i == params.number
 
-        and: 'the number is unchanged'
-        12074 == interceptor.model.noteInstance.number
+        when: 'the interceptor is called'
+        params.number = 0
+        interceptor.before()
+
+        then: 'the number has been changed'
+        1 * seqNumberService.nextNumber('note') >> 12002i
+        12002i == params.number
+
+        when: 'the interceptor is called'
+        params.number = '0'
+        interceptor.before()
+
+        then: 'the number has been changed'
+        1 * seqNumberService.nextNumber('note') >> 12002i
+        12002i == params.number
+    }
+
+    void 'Change number if autoNumber is on'() {
+        given: 'a sequence number service'
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
+
+        and: 'a controller name'
+        webRequest.controllerName = 'note'
+
+        when: 'the interceptor is called'
+        params.number = '34'
+        params.autoNumber = 1
+        interceptor.before()
+
+        then: 'the number has been changed'
+        1 * seqNumberService.nextNumber('note') >> 12002i
+        12002i == params.number
+
+        when: 'the interceptor is called'
+        params.number = '34'
+        params.autoNumber = '1'
+        interceptor.before()
+
+        then: 'the number has been changed'
+        1 * seqNumberService.nextNumber('note') >> 12002i
+        12002i == params.number
+
+        when: 'the interceptor is called'
+        params.number = '34'
+        params.autoNumber = 'true'
+        interceptor.before()
+
+        then: 'the number has been changed'
+        1 * seqNumberService.nextNumber('note') >> 12002i
+        12002i == params.number
+
+        when: 'the interceptor is called'
+        params.number = '34'
+        params.autoNumber = 'X'
+        interceptor.before()
+
+        then: 'the number has been changed'
+        1 * seqNumberService.nextNumber('note') >> 12002i
+        12002i == params.number
     }
 }
