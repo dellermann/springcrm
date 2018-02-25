@@ -1,7 +1,7 @@
 #
 # sales-order-show.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,14 +25,17 @@
 # Class `SalesOrderShow` represents a sales order show view.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 #
 class SalesOrderShow
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
+
+  # @nodoc
+  SalesOrderSignature = window.modules.require 'SalesOrderSignature'
 
 
   #-- Constructor -------------------------------
@@ -42,8 +45,10 @@ class SalesOrderShow
   # @param [jQuery] $element  the element containing the form
   #
   constructor: ($element) ->
-    new SPRINGCRM.SalesOrderSignature $element,
+    new SalesOrderSignature(
+      $element,
       onChangeSignature: ($input) => @_onChangeSignature $input
+    )
 
 
   #-- Non-public methods ------------------------
@@ -59,7 +64,5 @@ class SalesOrderShow
 
     return
 
-
-#== Main ========================================
 
 new SalesOrderShow $('#sales-order-show')

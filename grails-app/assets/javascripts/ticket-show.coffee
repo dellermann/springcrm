@@ -1,7 +1,7 @@
 #
 # ticket-show.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,14 +27,20 @@
 # Class `TicketShowPage` represents the show view of the ticket section.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class TicketShowPage
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
+
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
+
+  # @nodoc
+  FileinputBuilder = window.modules.require 'FileinputBuilder'
 
 
   #-- Constructor -------------------------------
@@ -44,6 +50,8 @@ class TicketShowPage
   # @param [jQuery, Element, String] element  a jQuery object, an element or a jQuery selector representing the base element containing the whole show view
   #
   constructor: (element) ->
+    $L = __$L
+
     @$element = $elem = $(element)
       .on(
         'click', '.take-on-link', (event) => @_onClickTakeOnLink event
@@ -71,7 +79,7 @@ class TicketShowPage
 
     tmpl = Handlebars.templates['widgets/file-upload-document']
 
-    builder = new SPRINGCRM.FileinputBuilder
+    builder = new FileinputBuilder
       browseIcon: '<i class="fa fa-file-o"></i> '
       browseLabel: $L('ticket.attachment.select')
       layoutTemplates:
@@ -184,5 +192,3 @@ class TicketShowPage
 #== Main ========================================
 
 new TicketShowPage '.inner-container'
-
-# vim:set ts=2 sw=2 sts=2:

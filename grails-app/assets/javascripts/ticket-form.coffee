@@ -1,7 +1,7 @@
 #
 # ticket-form.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,14 +27,20 @@
 # Class `TicketFormPage` represents the form view of the ticket section.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class TicketFormPage
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
+
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
+
+  # @nodoc
+  FileinputBuilder = window.modules.require 'FileinputBuilder'
 
 
   #-- Constructor -------------------------------
@@ -44,11 +50,12 @@ class TicketFormPage
   # @param [jQuery, Element, String] element  a jQuery object, an element or a jQuery selector representing the base element containing the whole form view
   #
   constructor: (element) ->
+    $L = __$L
     @$element = $elem = $(element)
 
     tmpl = Handlebars.templates['widgets/file-upload-document']
 
-    builder = new SPRINGCRM.FileinputBuilder
+    builder = new FileinputBuilder
       browseIcon: '<i class="fa fa-file-o"></i> '
       browseLabel: $L('ticket.attachment.select')
       layoutTemplates:
@@ -65,5 +72,3 @@ class TicketFormPage
 #== Main ========================================
 
 new TicketFormPage '.inner-container'
-
-# vim:set ts=2 sw=2 sts=2:

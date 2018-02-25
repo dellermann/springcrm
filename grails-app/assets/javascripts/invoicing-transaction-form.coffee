@@ -38,7 +38,13 @@ class InvoicingTransaction
   $ = __jq = jQuery
 
   # @nodoc
-  $LANG = $L
+  $I = __$I = window.modules.require '$I'
+
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
+
+  # @nodoc
+  InvoicingItems = window.modules.require 'InvoicingItems'
 
 
   #-- Class variables ---------------------------
@@ -67,8 +73,7 @@ class InvoicingTransaction
     @$stillUnpaid = $('#still-unpaid')
     @options = opts = $.extend {}, InvoicingTransaction.DEFAULTS, options
 
-    unless options.reducedView
-      new SPRINGCRM.InvoicingItems($element.find '.price-table')
+    new InvoicingItems($element.find '.price-table') unless options.reducedView
 
     $element
       .on('click', '#still-unpaid', (event) => @_onClickStillUnpaid event)
@@ -138,7 +143,7 @@ class InvoicingTransaction
   # @private
   #
   _initAddrFields: ->
-    $L = $LANG
+    $L = __$L
 
     @$addresses = $('.addresses').addrfields
       menuItems:
@@ -377,7 +382,7 @@ class InvoicingTransaction
         newVal = $form.find('#stage-select').val()
         shippingStageValue = @options.stageValues.shipping
         if (oldVal < shippingStageValue) and (newVal >= shippingStageValue)
-          $.confirm($LANG('invoicingTransaction.changeState.label'))
+          $.confirm($L('invoicingTransaction.changeState.label'))
             .done ->
               $form.off('submit')
                 .submit()
@@ -411,4 +416,5 @@ class InvoicingTransaction
 
     return
 
-SPRINGCRM.InvoicingTransaction = InvoicingTransaction
+
+window.modules.register 'InvoicingTransaction', InvoicingTransaction

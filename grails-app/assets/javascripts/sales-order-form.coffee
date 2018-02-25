@@ -1,7 +1,7 @@
 #
 # sales-order-form.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,14 +27,23 @@
 # Class `SalesOrder` represents a sales order form.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 #
 class SalesOrder
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
+
+  # @nodoc
+  DocumentFileInput = window.modules.require 'DocumentFileInput'
+
+  # @nodoc
+  InvoicingTransaction = window.modules.require 'InvoicingTransaction'
+
+  # @nodoc
+  SalesOrderSignature = window.modules.require 'SalesOrderSignature'
 
 
   #-- Constructor -------------------------------
@@ -45,15 +54,11 @@ class SalesOrder
   # @param [Object] [options] any options
   #
   constructor: ($element, options = {}) ->
-    S = SPRINGCRM
-
     $element.find('#file')
-      .each -> new SPRINGCRM.DocumentFileInput $(this)
+      .each -> new DocumentFileInput $(this)
 
-    new S.SalesOrderSignature $element
-    new S.InvoicingTransaction $element, options
+    new SalesOrderSignature($element)
+    new InvoicingTransaction($element, options)
 
 
-#== Main ========================================
-
-SPRINGCRM.SalesOrder = SalesOrder
+window.modules.register 'SalesOrder', SalesOrder

@@ -1,7 +1,7 @@
 #
 # project-show.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,14 +27,17 @@ $ = jQuery
 # all entries within.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class ProjectPhases
-  
+
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
+
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
 
 
   #-- Instance variables ------------------------
@@ -56,7 +59,7 @@ class ProjectPhases
   # @param [Object] options       any options that should be set
   #
   constructor: (elem, options = {}) ->
-    $ = jq
+    $ = __jq
     @$element = $elem = $(elem)
     @options = options = $.extend {}, DEFAULT_OPTIONS, options
 
@@ -118,7 +121,7 @@ class ProjectPhases
   # @private
   #
   _onChange: (event) ->
-    $ = jq
+    $ = __jq
     options = @options
     $target = $(event.currentTarget)
 
@@ -158,7 +161,7 @@ class ProjectPhases
   # @private
   #
   _onDelete: (event) ->
-    $ = jq
+    $ = __jq
     $target = $(event.currentTarget)
 
     $.Deferred()
@@ -188,14 +191,14 @@ class ProjectPhases
 # a new project item.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class ProjectCreateItemDlg
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
 
 
   #-- Constructor -------------------------------
@@ -302,7 +305,7 @@ class ProjectSelectItemDlg
   #
   _changeVisibility: ($elem, visible) ->
     $elem[if visible then 'show' else 'hide'].call $elem
-    
+
     return
 
   # Gets the name of the controller of the item that are currently displayed.

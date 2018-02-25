@@ -1,7 +1,7 @@
 #
 # document.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ $ = jQuery
 # Class `DocumentList` handles the document list.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 # @since    2.2
 #
 class DocumentList
@@ -38,6 +38,9 @@ class DocumentList
 
   # @nodoc
   $ = jq = jQuery
+
+  # @nodoc
+  DocumentFileInput = window.modules.require 'DocumentFileInput'
 
 
   #-- Constructor -------------------------------
@@ -52,9 +55,11 @@ class DocumentList
       pathChanged: (path) => @_onPathChanged path
     @createFolderUrl = $documentList.data 'create-folder-url'
 
-    new SPRINGCRM.DocumentFileInput $('#upload-file'),
+    new DocumentFileInput(
+      $('#upload-file'),
       builderOptions:
         showUpload: true
+    )
 
     $('#create-folder-dialog').on(
         'click', '.create-btn', (event) => @_onClickCreateFolderDialog event
@@ -107,7 +112,5 @@ class DocumentList
 
     return
 
-
-#== Main ========================================
 
 new DocumentList()

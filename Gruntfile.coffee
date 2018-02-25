@@ -36,6 +36,7 @@ module.exports = (grunt) ->
         '<%= dirs.src.javascripts %>/jquery/'
         '<%= dirs.src.javascripts %>/jqueryui/'
         '<%= dirs.src.javascripts %>/lang/bootstrap-datepicker/'
+        '<%= dirs.src.javascripts %>/lang/bootstrap-fileinput/'
         '<%= dirs.src.javascripts %>/selectize/selectize.js'
         '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
         '<%= dirs.src.javascripts %>/_js-calc.coffee'
@@ -121,11 +122,19 @@ module.exports = (grunt) ->
             expand: true
             src: ['*.js']
           ,
-            dest: '<%= dirs.src.stylesheets %>/bootstrap/fileinput.css'
-            src: '<%= dirs.bower.bootstrapFileinput %>/css/fileinput.css'
+            dest: '<%= dirs.src.stylesheets %>/bootstrap/fileinput.scss'
+            src: '<%= dirs.bower.bootstrapFileinput %>/scss/fileinput.scss'
+          ,
+            cwd: '<%= dirs.bower.bootstrapFileinput %>/js/locales/'
+            dest: '<%= dirs.src.javascripts %>/lang/bootstrap-fileinput/'
+            expand: true
+            src: ['*.js']
           ,
             dest: '<%= dirs.src.javascripts %>/bootstrap/fileinput.js'
             src: '<%= dirs.bower.bootstrapFileinput %>/js/fileinput.js'
+          ,
+            dest: '<%= dirs.src.javascripts %>/bootstrap/fileinput-theme.js'
+            src: '<%= dirs.bower.bootstrapFileinput %>/themes/fa/theme.js'
           ,
             cwd: '<%= dirs.bower.fontAwesome %>/assets/stylesheets/font-awesome/'
             dest: '<%= dirs.src.stylesheets %>/font-awesome/'
@@ -230,14 +239,26 @@ module.exports = (grunt) ->
             conf = g.config
             file = g.file
 
+            bf = conf.get 'dirs.bower.bootstrapFileinput'
             jc = conf.get 'dirs.bower.jsCalc'
             tb = conf.get 'dirs.bower.typeaheadBootstrap'
-#            fa = conf.get 'dirs.bower.fontAwesome'
             vc = conf.get 'dirs.bower.vatCalc'
 
-            # if file.doesPathContain "#{fa}/less", srcPath
-            #   contents = String(contents)
-            #   contents = contents.replace /@\{fa-css-prefix}/g, 'fa'
+            if file.doesPathContain "#{bf}/js/locales", srcPath
+              contents = String(contents)
+              contents = contents.replace /^\(function\s*\(\$\)\s*\{$/m, ''
+              contents = contents.replace /^\s*"use strict";$/m, ''
+              contents = contents.replace(
+                /\$\.fn\.fileinputLocales/, 'fileinputLocales'
+              )
+              contents = contents.replace /^}\)\(window\.jQuery\);/m, ''
+              contents = """
+(function (modules) {
+    var fileinputLocales = modules.require("fileinputLocales", []);
+#{contents}
+    modules.register("fileinputLocales", fileinputLocales);
+})(window.modules);
+"""
             if file.arePathsEquivalent srcPath, "#{jc}/less/core.less"
               contents = String(contents)
               contents = contents.replace /@\{prefix}/g, 'jscalc'
@@ -249,7 +270,10 @@ module.exports = (grunt) ->
               contents = contents.replace /@\{prefix}/g, 'vatcalc'
             if file.arePathsEquivalent srcPath, "#{vc}/coffee/vat-calc.coffee"
               contents = String(contents)
-              contents = contents.replace /Handlebars.templates\['vat-calc']/g, '''Handlebars.templates['tools/vat-calc']'''
+              contents = contents.replace(
+                /Handlebars.templates\['vat-calc']/g,
+                '''Handlebars.templates['tools/vat-calc']'''
+              )
 
             contents
       test:
@@ -369,6 +393,16 @@ module.exports = (grunt) ->
               '<%= dirs.src.stylesheets %>/document.less'
         options:
           path: '<%= dirs.src.stylesheets %>/'
+    lessToSass:
+      publish:
+        files: [
+          cwd: '<%= dirs.src.stylesheets %>/'
+          dest: '<%= dirs.src.stylesheets %>/'
+          expand: true
+          ext: '.scss'
+          src: ['bootstrap/datepicker.less']
+        ]
+
     pkg: grunt.file.readJSON 'package.json'
     resolveAssets:
       test:
@@ -396,7 +430,7 @@ module.exports = (grunt) ->
         tasks: ['copy:test']
 
   grunt.registerTask 'default', [
-    'clean:publish', 'copy:publish', 'concat:publish'
+    'clean:publish', 'copy:publish', 'concat:publish', 'lessToSass:publish'
   ]
   grunt.registerTask 'test', [
     'clean:test', 'less:test', 'coffee:test', 'handlebars:test', 'copy:test',

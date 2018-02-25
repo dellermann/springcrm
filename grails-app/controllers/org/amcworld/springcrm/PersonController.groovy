@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import static org.springframework.http.HttpStatus.*
+import static org.springframework.http.HttpStatus.NOT_FOUND
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
@@ -43,6 +43,16 @@ import org.bson.types.ObjectId
  */
 @Secured(['ROLE_ADMIN', 'ROLE_CONTACT'])
 class PersonController extends GeneralController<Person> {
+
+    //-- Class fields ---------------------------
+
+    /*
+     * Implementation notes: we have to use method POST for action update
+     * because of multipart requests.  See this for a disussion:
+     * https://softwareengineering.stackexchange.com/questions/319427/is-it-correct-to-use-put-with-multipart-content
+     */
+    static allowedMethods = [save: 'POST', update: 'POST', delete: 'DELETE']
+
 
     //-- Fields ---------------------------------
 
@@ -272,13 +282,13 @@ class PersonController extends GeneralController<Person> {
             return
         }
 
-        byte [] picture = person.picture
-        bindData person, params, [exclude: 'picture']
+        byte [] oldPicture = person.picture
+        bindData person, params
 
         if (params.pictureRemove == '1') {
             person.picture = null
-        } else if (params.picture?.isEmpty()) {
-            person.picture = picture
+        } else if (!person.picture?.length) {
+            person.picture = oldPicture
         }
 
         try {

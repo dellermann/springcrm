@@ -1,7 +1,7 @@
 #
 # ticket-frontend.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,17 +27,20 @@
 # Class `HelpdeskFrontend` represents handling of the helpdesk frontend.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class HelpdeskFrontend
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jq = jQuery
+  $ = __jq = jQuery
 
   # @nodoc
-  $LANG = $L
+  $L = __$L = window.modules.require '$L'
+
+  # @nodoc
+  FileinputBuilder = window.modules.require 'FileinputBuilder'
 
 
   #-- Constructor -------------------------------
@@ -47,7 +50,7 @@ class HelpdeskFrontend
   # @param [jQuery, Element, String] element  a jQuery object, an element or a jQuery selector representing the base element containing the whole show view
   #
   constructor: (element) ->
-    $L = $LANG
+    $L = __$L
 
     $elem = $(element)
       .on('click', '.send-message-link', => @_onClickSendMessageLink())
@@ -58,7 +61,7 @@ class HelpdeskFrontend
 
     tmpl = Handlebars.templates['widgets/file-upload-document']
 
-    builder = new SPRINGCRM.FileinputBuilder
+    builder = new FileinputBuilder
       browseIcon: '<i class="fa fa-file-o"></i> '
       browseLabel: $L('ticket.attachment.select')
       layoutTemplates:

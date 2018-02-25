@@ -1,7 +1,7 @@
 #
 # addr-fields.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,9 +30,15 @@ $ = jQuery
 # copying to each other or loading an address from the associated organization.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 #
 class AddrFields
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
+
 
   #-- Class variables ---------------------------
 

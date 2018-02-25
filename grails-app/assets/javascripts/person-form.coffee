@@ -23,9 +23,6 @@
 #= require templates/widgets/file-upload-image
 
 
-$ = jQuery
-
-
 # Class `PictureFileinput` represents a file input widget for setting the
 # picture of a person.
 #
@@ -39,6 +36,12 @@ class PictureFileinput
   # @nodoc
   $ = __jq = jQuery
 
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
+
+  # @nodoc
+  FileinputBuilder = window.modules.require 'FileinputBuilder'
+
 
   #-- Constructor -------------------------------
 
@@ -50,7 +53,7 @@ class PictureFileinput
   constructor: (element) ->
     $ = __jq
 
-    @$element = $(element)
+    @$element = $element = $(element)
     @$pictureRemove = $('#pictureRemove')
     @url = $element.data 'picture'
     @newPicture = false
@@ -69,17 +72,11 @@ class PictureFileinput
   _initBuilder: ->
     tmpl = Handlebars.templates['widgets/file-upload-image']
 
-    builder = new SPRINGCRM.FileinputBuilder
-      browseIcon: '<i class="fa fa-picture-o"></i> '
+    builder = new FileinputBuilder
       browseLabel: $L('person.picture.selectButton')
       layoutTemplates:
-        preview: tmpl section: 'preview'
+        preview: tmpl()
       maxFileSize: 1024
-      previewFileType: 'image'
-      previewTemplates:
-        generic: tmpl section: 'preview-generic'
-        image: tmpl section: 'preview-image'
-        other: tmpl section: 'preview-other'
     builder.addOptions @_initPreviewOptions()
 
     builder.build @$element
@@ -98,11 +95,16 @@ class PictureFileinput
 
     url = @url
     if url
+      $element = @$element
       previewOptions.initialPreview = [
           """
 <img src="#{url}" class="file-preview-image img-responsive" alt=""/>
 """
         ]
+      previewOptions.initialPreviewConfig = [
+        caption: $element.data 'caption'
+        size: $element.data 'size'
+      ]
 
     @previewOptions = previewOptions
 
@@ -165,7 +167,7 @@ class PersonFormPage
   $ = __jq = jQuery
 
   # @nodoc
-  $LANG = $L
+  $L == __$L = window.modules.require '$L'
 
 
   #-- Constructor -------------------------------
@@ -174,7 +176,7 @@ class PersonFormPage
   #
   constructor: ->
     $ = __jq
-    $L = $LANG
+    $L = __$L
 
     $('#picture').each -> new PictureFileinput(this)
 

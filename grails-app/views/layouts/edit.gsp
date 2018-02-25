@@ -8,7 +8,7 @@
   <div class="caption"><h2>${instance}</h2></div>
 </content>
 
-<g:form resource="${instance}" method="put" name="${formName}"
+<g:form resource="${instance}" method="${method ?: 'put'}" name="${formName}"
   class="form-horizontal data-form form-view"
   enctype="${enctype ?: 'application/x-www-form-urlencoded'}">
   <g:hiddenField name="close" id="close-form"
@@ -23,5 +23,4 @@
   <footer class="buttons buttons-bottom">
     <g:render template="/layouts/toolbarForm"/>
   </footer>
-%{--</form>--}%
 </g:form>

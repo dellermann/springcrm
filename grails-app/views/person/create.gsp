@@ -9,6 +9,8 @@
       ]"/>
 
     <content tag="scripts">
+      <asset:javascript src="modules"/>
+      <asset:javascript src="lang/bootstrap-fileinput/${lang}.js"/>
       <asset:javascript src="person-form"/>
     </content>
   </body>

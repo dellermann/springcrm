@@ -61,11 +61,10 @@ class Page
   $ = __jq = jQuery
 
   # @nodoc
-  __$I = $I
+  $I = __$I = window.modules.require '$I'
 
   # @nodoc
-  #noinspection JSUnresolvedVariable
-  __$L = $L
+  $L = __$L = window.modules.require '$L'
 
 
   #-- Constructor -------------------------------
@@ -395,6 +394,7 @@ class Page
   #
   _onClickAddBoilerplate: (event) ->
     $ = __jq
+    $L = __$L
     $container = $(event.currentTarget).closest '.textarea-container'
     $textarea = $container.find 'textarea'
 
@@ -461,7 +461,6 @@ class Page
   #
   _onClickDeleteBtn: (event) ->
     $ = __jq
-    #noinspection JSUnresolvedVariable
     $L = __$L
 
     $target = $(event.currentTarget)
@@ -662,6 +661,4 @@ unless HTMLFormElement::reportValidity
     valid
 
 
-#== Main ========================================
-
-window.SPRINGCRM.page = new Page()
+window.modules.register 'page', new Page()

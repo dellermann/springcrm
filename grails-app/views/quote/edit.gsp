@@ -2,7 +2,7 @@
   <head>
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[message(code: 'quote.label'), fullNumber]"/> -
+        args="[message(code: 'quote.label'), fullNumber(bean: quote)]"/> -
       <g:message code="quote.plural"/>
     </title>
     <meta name="stylesheet" content="invoicing-transaction"/>

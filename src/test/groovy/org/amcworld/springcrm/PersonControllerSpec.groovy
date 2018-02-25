@@ -1087,7 +1087,7 @@ class PersonControllerSpec extends Specification
 
         when: 'the action is called for a null instance'
         request.contentType = FORM_CONTENT_TYPE
-        request.method = 'PUT'
+        request.method = 'POST'
         webRequest.actionName = 'update'
         controller.update null
 
@@ -1177,6 +1177,68 @@ class PersonControllerSpec extends Specification
         1 * service.save(person) >> person
         '/invoice/show/12345' == response.redirectedUrl
         null != controller.flash.message
+    }
+
+    void 'The update action correctly handles the picture'() {
+        given: 'some demo images'
+        byte[] picture = 'JPEG/1.1 demo image'.bytes
+        byte[] newPicture = 'JPEG/1.1 new demo image'.bytes
+
+        and: 'an instance'
+        Person person = instance
+        person.id = new ObjectId()
+        person.picture = picture
+
+        and: 'a service instance'
+        PersonService service = Mock()
+        controller.personService = service
+
+        when: 'the action is called with no picture'
+        request.contentType = FORM_CONTENT_TYPE
+        request.method = 'POST'
+        webRequest.actionName = 'update'
+        controller.update person.id.toString()
+
+        then: 'the former picture remains unchanged'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({ it.is(person) && picture == it.picture }) >> person
+
+        when: 'the action is called with an empty picture'
+        response.reset()
+        params.picture = [] as byte[]
+        controller.update person.id.toString()
+
+        then: 'the former picture remains unchanged'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({ it.is(person) && picture == it.picture }) >> person
+
+        when: 'the action is called with a picture'
+        response.reset()
+        params.picture = newPicture
+        controller.update person.id.toString()
+
+        then: 'the former picture is replaced'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({ it.is(person) && newPicture == it.picture }) >>
+            person
+
+        when: 'the action is called with a picture remove flag'
+        response.reset()
+        params.picture = newPicture
+        params.pictureRemove = '1'
+        controller.update person.id.toString()
+
+        then: 'the former picture is removed'
+        //noinspection GroovyAssignabilityCheck
+        1 * service.get(person.id) >> person
+        //noinspection GroovyAssignabilityCheck
+        1 * service.save({ it.is(person) && null == it.picture }) >> person
     }
 
 

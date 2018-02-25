@@ -38,6 +38,7 @@
     "grunt-contrib-handlebars": "~1.0.0",
     "grunt-contrib-less": "~1.4.1",
     "grunt-contrib-watch": "~1.0.0",
+    "grunt-less-to-sass": "~0.0.10",
     "load-grunt-config": "~0.19.2",
     "load-grunt-tasks": "~3.5.2"
   },

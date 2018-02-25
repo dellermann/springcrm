@@ -68,8 +68,7 @@ $fa-sass-asset-helper: true;
 @import "font-awesome/icons";
 
 // Bootstrap extensions
-//@import "bootstrap/datepicker";
-//@import "bootstrap/fileinput.css";
+@import "bootstrap/datepicker";
 
 // Selectize
 @import "selectize/selectize.bootstrap3";
@@ -315,56 +314,6 @@ h2 {
 .modal-body header {
   background: transparent;    // reset background in data-forms
   font-weight: normal;
-}
-
-// Bootstrap file input redefinitions
-.file-preview {
-  padding: ($grid-gutter-width / 2);
-}
-.file-preview-thumbnails {
-  @include clearfix();
-}
-.file-preview-frame:not(.file-preview-error):hover {
-  box-shadow: none;
-}
-.file-preview-frame-image {
-  @include box-shadow(none);
-  border: none;
-  display: block;
-  float: none;
-  height: auto;
-  margin: 0;
-  padding: 0;
-}
-.file-caption-name {
-  .file-preview & {
-    display: block;
-    padding-right: 0;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .kv-fileinput-caption & {
-    word-break: break-all;
-    word-wrap: break-word;
-  }
-}
-.file-preview-status, .file-error-message {
-  word-break: break-all;
-  word-wrap: break-word;
-}
-.file-actions {
-  display: none;
-  margin-top: 0;
-}
-.file-other-error {
-  text-align: inherit;
-}
-.fileinput-remove {
-  margin-top: 10px;
-}
-.file-loading, .file-thumb-loading {
-  background-image: none;
 }
 
 // tools

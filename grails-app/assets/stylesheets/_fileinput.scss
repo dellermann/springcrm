@@ -1,0 +1,88 @@
+/*!
+ * _fileinput.scss
+ *
+ * Copyright (c) 2011-2018, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "variables";
+@import "bootstrap/fileinput";
+
+
+.file-input {
+  .file-preview {
+    border: none;
+    border-radius: 0;
+    padding: 30px 0 0;
+
+    .fileinput-remove {
+      line-height: $line-height-base;
+      top: 0;
+      right: 0;
+    }
+  }
+  .file-preview-frame {
+    border: none;
+    box-shadow: none;
+    float: none;
+    margin: 0;
+    padding: 0;
+
+    &:hover {
+      box-shadow: none !important;
+    }
+    .kv-file-content {
+      height: auto;
+      width: auto;
+    }
+  }
+  .file-thumbnail-footer {
+    position: static;
+  }
+  .file-footer-caption {
+    font-size: $font-size-base;
+    margin-bottom: 0;
+  }
+  .file-caption-info, .file-size-info {
+    height: $line-height-computed;
+    margin: 0 $grid-gutter-width;
+    width: auto;
+
+    > samp {
+      font-family: $font-family-base;
+    }
+  }
+  .file-upload-indicator {
+    display: none;
+  }
+  .file-actions {
+    bottom: 80px;
+    position: absolute;
+    right: 10px;
+  }
+  .btn-kv {
+    border-radius: $btn-border-radius-base;
+    font-size: 120%;
+    height: inherit;
+  }
+  .file-caption-icon {
+    margin-top: -0.5em;
+    top: 50%;
+  }
+  .file-drag-handle {
+    display: none;
+  }
+}

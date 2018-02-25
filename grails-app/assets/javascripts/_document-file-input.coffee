@@ -27,7 +27,7 @@
 # Class `DocumentFileInput` represents a file input widget to set a document.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 # @since    2.2
 #
 class DocumentFileInput
@@ -38,7 +38,10 @@ class DocumentFileInput
   $ = __jq = jQuery
 
   # @nodoc
-  __$L = $L
+  $L = __$L = window.modules.require '$L'
+
+  # @nodoc
+  FileinputBuilder = window.modules.require 'FileinputBuilder'
 
 
   #-- Constructor -------------------------------
@@ -67,7 +70,7 @@ class DocumentFileInput
       ,
         options.builderOptions
 
-    builder = new SPRINGCRM.FileinputBuilder builderOptions
+    builder = new FileinputBuilder(builderOptions)
 
     previewOptions = {}
     url = $element.data 'initial-file'
@@ -82,6 +85,4 @@ class DocumentFileInput
       .on('fileloaded', => $fileRemove.val '0')
 
 
-#== Main ========================================
-
-SPRINGCRM.DocumentFileInput = DocumentFileInput
+window.modules.register 'DocumentFileInput', DocumentFileInput

@@ -1,7 +1,7 @@
 #
 # handlebars-ext.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require handlebars
+
+
+$L = window.modules.require '$L'
 
 
 Handlebars.registerHelper 'section', (name, options) ->

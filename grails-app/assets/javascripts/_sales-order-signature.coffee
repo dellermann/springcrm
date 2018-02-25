@@ -26,7 +26,7 @@
 # orders.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 #
 class SalesOrderSignature
 
@@ -213,7 +213,4 @@ class SalesOrderSignature
 
     return
 
-
-#== Main ========================================
-
-SPRINGCRM.SalesOrderSignature = SalesOrderSignature
+window.modules.register 'SalesOrderSignature', SalesOrderSignature

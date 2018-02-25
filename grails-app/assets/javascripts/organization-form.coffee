@@ -35,7 +35,7 @@ class OrganizationFormPage
   $ = __jq = jQuery
 
   # @nodoc
-  $LANG = $L
+  $L = __$L = window.modules.require '$L'
 
 
   #-- Constructor -------------------------------
@@ -44,7 +44,7 @@ class OrganizationFormPage
   #
   constructor: ->
     $ = __jq
-    $L = $LANG
+    $L = __$L
     @$recType = $('#recType')
 
     $('.addresses').addrfields

@@ -1,7 +1,7 @@
 #
 # _invoicing-items.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,16 +21,25 @@
 #= require _typeahead
 
 
-$ = jQuery
-
-
 # Class `InvoicingItems` defines a widget which handles the items in an
 # invoicing transaction such as quotes, invoices, dunnings etc.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class InvoicingItems
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = __jq = jQuery
+
+  # @nodoc
+  $I = __$I = window.modules.require '$I'
+
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
+
 
   #-- Class variables ---------------------------
 
@@ -62,7 +71,7 @@ class InvoicingItems
   # @param [Object] options   any options
   #
   constructor: ($element, options) ->
-    $ = jQuery
+    $ = __jq
     @$element = $element
     @options = options = $.extend {}, InvoicingItems.DEFAULTS, options
 
@@ -112,7 +121,7 @@ class InvoicingItems
   # @private
   #
   _addItem: (jumpToNewRow) ->
-    $ = jQuery
+    $ = __jq
 
     # prepare Handlebars template
     template = @addItemTemplate
@@ -161,7 +170,7 @@ class InvoicingItems
   # @private
   #
   _computeFooterValues: ->
-    $ = jQuery
+    $ = __jq
 
     subtotalNet = 0
     @$element.find('.items .col-total-price input').each ->
@@ -192,7 +201,7 @@ class InvoicingItems
   # @private
   #
   _computeTaxValues: ->
-    $ = jQuery
+    $ = __jq
 
     # compute a map of tax rates
     taxRates = []
@@ -223,7 +232,6 @@ class InvoicingItems
       @taxRateSumTemplate = template
 
     # display the tax rates
-    currency = @options.currency
     taxTotal = 0
     s = ""
     for tr, i in taxRates
@@ -447,7 +455,7 @@ class InvoicingItems
   # @private
   #
   _onLoadedSalesItemSelector: ($modal, type, pos) ->
-    $ = jQuery
+    $ = __jq
 
     getData = ->
       search = $modal.find('[name=search]').val()
@@ -455,7 +463,7 @@ class InvoicingItems
 
     $modal
       .off('click')
-      .on('click', '.modal-header .close', (event) -> $modal.modal 'hide')
+      .on('click', '.modal-header .close', -> $modal.modal 'hide')
       .on('click', '.modal-body a.select-link', (event) =>
         @_retrieveSalesItem $modal, pos, $(event.currentTarget).attr('href')
         false
@@ -480,7 +488,7 @@ class InvoicingItems
   # @private
   #
   _prepareTaxes: (taxes) ->
-    $ = jQuery
+    $ = __jq
 
     if taxes
       (tax * 100).format() for tax in taxes when $.isNumeric tax
@@ -493,7 +501,7 @@ class InvoicingItems
   # @private
   #
   _removeRow: ($tr) ->
-    $ = jQuery
+    $ = __jq
     fieldPrefix = @options.fieldNamePrefix
     re = @inputRegExp
 
@@ -533,6 +541,7 @@ class InvoicingItems
         url: url
       )
       .done (data) =>
+        $ = __jq
         prefix = @_getInputName pos
         els = @form.elements
 
@@ -599,4 +608,4 @@ class InvoicingItems
 
     return
 
-SPRINGCRM.InvoicingItems = InvoicingItems
+window.modules.register 'InvoicingItems', InvoicingItems

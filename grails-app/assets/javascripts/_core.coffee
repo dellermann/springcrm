@@ -1,7 +1,7 @@
 #
 # _core.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require jquery/jquery
+#= require modules
 
 
 $ = jQuery
-
-window.SPRINGCRM ?= {}
 
 
 # Contains variables with default values for i18n and computing.  The object
@@ -32,10 +31,12 @@ window.SPRINGCRM ?= {}
 # * `numFractions`. the number of fraction digits for numbers and prices that are used internally
 # * `numFractionsExt`. the number of fraction digits for prices that are used externally
 #
-window.$I = do ->
+$I = do ->
   $html = $('html')
+  lang = $html.attr('lang') or 'en'
 
-  lang: $html.attr('lang') or 'en'
+  country: lang.replace /^(\w+).*$/, '$1'
+  lang: lang
   currencySymbol: $html.data('currency-symbol') or '€'
   decimalSeparator: $html.data('decimal-separator') or ','
   groupingSeparator: $html.data('grouping-separator') or '.'
@@ -47,6 +48,9 @@ window.$I = do ->
 
     s = taxRates.split ','
     parseFloat r for r in s
+
+window.modules.register '$I', $I
+
 
 # Removes the given element from the array.
 #
@@ -536,4 +540,4 @@ class HttpUrl
 
     res
 
-window.HttpUrl = HttpUrl
+window.modules.register 'HttpUrl', HttpUrl

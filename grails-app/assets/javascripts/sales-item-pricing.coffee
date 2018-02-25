@@ -1,7 +1,7 @@
 #
 # sales-item-pricing.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,8 +29,15 @@ $ = jQuery
 class SalesItemPricing
 
   #-- Internal variables ------------------------
-  
-  $ = jq = jQuery
+
+  # @nodoc
+  $ = __jq = jQuery
+
+  # @nodoc
+  $L = __$L = window.modules.require '$L'
+
+  # @nodoc
+  page = window.modules.require 'page'
 
 
   #-- Class variables ---------------------------
@@ -55,15 +62,14 @@ class SalesItemPricing
   # @param [Object] options     any options
   #
   constructor: ($element, options) ->
-    $ = jq
+    $ = __jq
 
-    @page = SPRINGCRM.page
     @$element = $element
     @options = options = $.extend {}, SalesItemPricing.DEFAULTS, options
     @_inputRegExp = new RegExp '^' +
       RegExp.escape(options.fieldNamePrefix) + '\\[(\\d+)\\]\\.(\\w+)$'
 
-    @$step1Table = $step1Table = $element.find '#step1-pricing-items'
+    @$step1Table = $element.find '#step1-pricing-items'
     @$pricingEnabled = $pricingEnabled = $element.find '#pricing-enabled'
 
     updateColumns = ['quantity', 'unit-percent', 'unit-price']
@@ -124,7 +130,7 @@ class SalesItemPricing
       zero: (0).formatCurrencyValue()
 
     $row = $(s)
-    @page.initSelect @_getField $row, 'type'
+    page.initSelect @_getField $row, 'type'
     @_initItemCtrls $row
     @$step1Table.find('> .items')
       .append $row
@@ -228,7 +234,7 @@ class SalesItemPricing
   # @private
   #
   _getCurrentSum: (idx) ->
-    $ = jq
+    $ = __jq
     $trs = @_getRows()
     idx ?= $trs.length - 1
 
@@ -295,7 +301,7 @@ class SalesItemPricing
   # @private
   #
   _getLastSumIndex: (idx) ->
-    $ = jq
+    $ = __jq
     $trs = @_getRows()
     idx ?= $trs.length - 1
 
@@ -329,7 +335,7 @@ class SalesItemPricing
   # @private
   #
   _getReferrers: (idx) ->
-    $ = jq
+    $ = __jq
 
     res = []
     @_getRows().each (i, tr) =>
@@ -517,7 +523,7 @@ class SalesItemPricing
   # @private
   #
   _onClickRemoveItem: (event) ->
-    $ = jq
+    $ = __jq
 
     $target = $(event.currentTarget)
     $tr = $target.closest 'tr'
@@ -845,7 +851,7 @@ class SalesItemPricing
   # @private
   #
   _updateItems: ->
-    $ = jq
+    $ = __jq
 
     sum = @_getCurrentSum()
     @_getRows().each (_, elem) => @_updateItem $(elem)
@@ -879,7 +885,8 @@ class SalesItemPricing
   # @private
   #
   _updateReferenceClasses: ->
-    $ = jq
+    $ = __jq
+    $L = __$L
 
     @_getRows().each (i, tr) =>
       $tr = $(tr)
@@ -900,7 +907,7 @@ class SalesItemPricing
   # @private
   #
   _updateSalesPricing: ->
-    $ = jq
+    $ = __jq
 
     discountPercent = $('#step2-discount-percent').val().parseNumber()
     step2TotalPrice = $('#step2-total-price').val().parseNumber()

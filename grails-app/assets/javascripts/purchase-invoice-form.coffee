@@ -36,6 +36,12 @@ class PurchaseInvoice
   # @nodoc
   $ = __jq = jQuery
 
+  # @nodoc
+  DocumentFileInput = window.modules.require 'DocumentFileInput'
+
+  # @nodoc
+  InvoicingTransaction = window.modules.require 'InvoicingTransaction'
+
 
   #-- Constructor -------------------------------
 
@@ -51,10 +57,12 @@ class PurchaseInvoice
     @$element = $element
 
     @_initVendorTypeahead()
-    $('#file').each -> new SPRINGCRM.DocumentFileInput $(this),
+    $('#file').each -> new DocumentFileInput(
+      $(this),
       removeLabelKey: 'purchaseInvoice.documentFile.delete'
+    )
 
-    new SPRINGCRM.InvoicingTransaction $element, options
+    new InvoicingTransaction $element, options
 
 
   #-- Non-public methods ------------------------
@@ -96,4 +104,4 @@ class PurchaseInvoice
     return
 
 
-SPRINGCRM.PurchaseInvoice = PurchaseInvoice
+window.modules.register 'PurchaseInvoice', PurchaseInvoice
