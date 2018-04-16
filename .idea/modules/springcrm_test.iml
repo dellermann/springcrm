@@ -16,8 +16,6 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/groovy" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/../../src/test/js" />
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
@@ -182,8 +180,8 @@
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-templates:2.4.13" level="project" />
     <orderEntry type="library" name="Gradle: javax.transaction:jta:1.1" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-databinding:3.3.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.seleniumhq.selenium:selenium-remote-driver:2.53.1" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-url-mappings:3.3.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.seleniumhq.selenium:selenium-remote-driver:2.53.1" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-mvc:3.3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: net.bytebuddy:byte-buddy:1.7.5" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-gsp:3.3.0" level="project" />
@@ -260,8 +258,8 @@
     <orderEntry type="library" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: cglib:cglib-nodep:2.1_3" level="project" />
     <orderEntry type="library" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.apache.httpcomponents:httpmime:4.5.3" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.apache.httpcomponents:httpmime:4.5.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: net.sourceforge.htmlunit:htmlunit-core-js:2.17" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-test:2.4.12" level="project" />
     <orderEntry type="library" name="Gradle: org.objenesis:objenesis:1.4" level="project" />
