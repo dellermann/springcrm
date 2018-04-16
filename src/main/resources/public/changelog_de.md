@@ -1,6 +1,7 @@
 ## 2.1.8
 
-* Aktualisierung auf Grails 3.2.8, Groovy 2.4.10 und Gradle 3.5
+* Aktualisierung auf Grails 3.2.11, Groovy 2.4.15 und Gradle 3.5
+* Fehlerbehebung: Suchfunktion war für Nicht-Administratoren nicht verfügbar
 
 ## 2.1.7
 

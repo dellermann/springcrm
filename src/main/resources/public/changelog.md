@@ -1,6 +1,7 @@
 ## 2.1.8
 
-* Upgrade to Grails 3.2.8, Groovy 2.4.10 and Gradle 3.5
+* Upgrade to Grails 3.2.11, Groovy 2.4.15 and Gradle 3.5
+* Issue: search feature not available for non-administrators
 
 ## 2.1.7
 
