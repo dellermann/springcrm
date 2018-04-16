@@ -238,6 +238,130 @@ class NoteSpec extends Specification implements DomainUnitTest<Note> {
         n2.hashCode() != n3.hashCode()
     }
 
+    def 'Equals is null-safe'() {
+        given: 'a note'
+        def group = new RoleGroup()
+
+        expect:
+        null != group
+        group != null
+        //noinspection ChangeToOperator
+        !group.equals(null)
+    }
+
+    def 'Instances of other types are always unequal'() {
+        given: 'a note'
+        def group = new RoleGroup()
+
+        expect:
+        group != 'foo'
+        group != 45
+        group != 45.3
+        group != new Date()
+    }
+
+    def 'Instances are equal if they have the same name'() {
+        given: 'three instances with the same name'
+        def group1 = new RoleGroup(name: 'Group 1')
+        group1.id = new ObjectId()
+        def group2 = new RoleGroup(name: 'Group 1')
+        group2.id = new ObjectId()
+        def group3 = new RoleGroup(name: 'Group 1')
+        group3.id = new ObjectId()
+
+        expect: 'equals() is reflexive'
+        group1 == group1
+        group2 == group2
+        group3 == group3
+
+        and: 'all instances are equal and equals() is symmetric'
+        group1 == group2
+        group2 == group1
+        group2 == group3
+        group3 == group2
+
+        and: 'equals() is transitive'
+        group1 == group3
+        group3 == group1
+    }
+
+    def 'Instances are unequal if they have the different names'() {
+        given: 'three instances with different names'
+        def id = new ObjectId()
+        def group1 = new RoleGroup(name: 'Group 1')
+        group1.id = id
+        def group2 = new RoleGroup(name: 'Group 2')
+        group2.id = id
+        def group3 = new RoleGroup(name: 'Group 3')
+        group3.id = id
+
+        expect: 'equals() is reflexive'
+        group1 == group1
+        group2 == group2
+        group3 == group3
+
+        and: 'all instances are unequal and equals() is symmetric'
+        group1 != group2
+        group2 != group1
+        group2 != group3
+        group3 != group2
+
+        and: 'equals() is transitive'
+        group1 != group3
+        group3 != group1
+    }
+
+    def 'Can compute hash code of an empty instance'() {
+        given: 'an empty instance'
+        def group = new RoleGroup()
+
+        expect:
+        3937i == group.hashCode()
+    }
+
+    def 'Hash codes are consistent'() {
+        given: 'an instance with ID'
+        def group = new RoleGroup(name: 'Administrators')
+
+        when: 'the hash code is computed'
+        int h = group.hashCode()
+
+        then: 'the hash code remains consistent'
+        for (int j = 0; j < 500; j++) {
+            group = new RoleGroup(name: 'Administrators')
+            h == group.hashCode()
+        }
+    }
+
+    def 'Equal instances produce the same hash code'() {
+        given: 'three instances with the same name'
+        def group1 = new RoleGroup(name: 'Group 1')
+        group1.id = new ObjectId()
+        def group2 = new RoleGroup(name: 'Group 1')
+        group2.id = new ObjectId()
+        def group3 = new RoleGroup(name: 'Group 1')
+        group3.id = new ObjectId()
+
+        expect:
+        group1.hashCode() == group2.hashCode()
+        group2.hashCode() == group3.hashCode()
+    }
+
+    def 'Different instances produce different hash codes'() {
+        given: 'three instances with different names'
+        def id = new ObjectId()
+        def group1 = new RoleGroup(name: 'Group 1')
+        group1.id = id
+        def group2 = new RoleGroup(name: 'Group 2')
+        group2.id = id
+        def group3 = new RoleGroup(name: 'Group 3')
+        group3.id = id
+
+        expect:
+        group1.hashCode() != group2.hashCode()
+        group2.hashCode() != group3.hashCode()
+    }
+
     def 'Can convert to string'(String title) {
         given: 'an empty item'
         def note = new Note()
