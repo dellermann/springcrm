@@ -16,7 +16,7 @@
     <g:each in="${salesOrderInstanceList}" status="i" var="salesOrderInstance">
       <tr data-item-id="${salesOrderInstance.id}">
         <td class="col-type-row-selector"><input type="checkbox" id="sales-order-row-selector-${salesOrderInstance.id}" data-id="${salesOrderInstance.id}" /></td>
-        <td class="col-type-id sales-order-number"><a href="#"><g:fieldValue bean="${salesOrderInstance}" field="fullNumber" /></a></td>
+        <td class="col-type-id sales-order-number"><a href="#"><g:fullNumber bean="${salesOrderInstance}"/></a></td>
         <td class="col-type-string sales-order-subject"><a href="#"><g:nl2br value="${salesOrderInstance.subject}" /></a></td>
         <td class="col-type-ref sales-order-organization"><g:fieldValue bean="${salesOrderInstance}" field="organization" /></td>
         <td class="col-type-status sales-order-stage"><g:fieldValue bean="${salesOrderInstance}" field="stage" /></td>

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXML.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,7 @@ import grails.converters.XML
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.TypeCheckingMode
-import org.amcworld.springcrm.Client
-import org.amcworld.springcrm.InvoicingItem
-import org.amcworld.springcrm.InvoicingTransaction
-import org.amcworld.springcrm.User
+import org.amcworld.springcrm.*
 import org.apache.commons.io.output.StringBuilderWriter
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -69,28 +66,17 @@ class InvoicingTransactionXML extends XML {
     /**
      * The internal data structure which is transformed to XML.
      */
-    final Map<String, Object> data
+    private Map<String, Object> data
 
     /**
      * The service used to convert Markdown text to HTML.
      */
-    MarkdownService markdownService
-
-
-    //-- Constructors ---------------------------
+    private MarkdownService markdownService
 
     /**
-     * Creates a new invoicing transaction XML converter instance from the
-     * given invoicing transaction, the client, and the given currently logged
-     * in user.
-     *
-     * @param transaction   the given invoicing transaction
-     * @param user          the currently logged in user
+     * The service used to obtain sequence numbers.
      */
-    @PackageScope
-    InvoicingTransactionXML(InvoicingTransaction transaction, User user) {
-        data = collectData(transaction, user)
-    }
+    private SeqNumberService seqNumberService
 
 
     //-- Properties -----------------------------
@@ -208,16 +194,15 @@ class InvoicingTransactionXML extends XML {
      * @param user          the currently logged in user
      * @return              the collected data
      */
-    private static Map<String, Object> collectData(
-        InvoicingTransaction transaction, User user
-    ) {
-        [
+    @PackageScope
+    void collectData(InvoicingTransaction transaction, User user) {
+        data = [
             transaction: transaction,
             items: transaction.items,
             organization: transaction.organization,
             person: transaction.person,
             user: new User(user),
-            fullNumber: transaction.fullNumber,
+            fullNumber: seqNumberService.getFullNumber(transaction),
             taxRates: transaction.taxRateSums,
             values: [
                 subtotalNet: transaction.subtotalNet,

@@ -2,6 +2,7 @@
 
 * Upgrade to Grails 3.2.11, Groovy 2.4.15 and Gradle 3.5
 * Issue: search feature not available for non-administrators
+* Issue: error when computing sequence numbers
 
 ## 2.1.7
 

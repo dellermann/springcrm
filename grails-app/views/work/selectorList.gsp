@@ -19,7 +19,7 @@
     <tbody>
     <g:each in="${workInstanceList}" status="i" var="workInstance">
       <tr>
-        <td class="col-type-id work-number"><g:link action="get" id="${workInstance.id}" class="select-link"><g:fieldValue bean="${workInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id work-number"><g:link action="get" id="${workInstance.id}" class="select-link"><g:fullNumber bean="${workInstance}"/></g:link></td>
         <td class="col-type-string work-name"><g:link action="get" id="${workInstance.id}" class="select-link"><g:fieldValue bean="${workInstance}" field="name" /></g:link></td>
         <td class="col-type-string work-category"><g:fieldValue bean="${workInstance}" field="category" /></td>
         <td class="col-type-number work-quantity"><g:fieldValue bean="${workInstance}" field="quantity" /></td>

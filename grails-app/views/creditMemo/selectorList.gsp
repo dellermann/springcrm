@@ -16,7 +16,7 @@
     <g:each in="${creditMemoInstanceList}" status="i" var="creditMemoInstance">
       <tr data-item-id="${creditMemoInstance.id}">
         <td class="col-type-row-selector"><input type="checkbox" id="credit-memo-row-selector-${creditMemoInstance.id}" data-id="${creditMemoInstance.id}" /></td>
-        <td class="col-type-id credit-memo-number"><a href="#">${fieldValue(bean: creditMemoInstance, field: "fullNumber")}</a></td>
+        <td class="col-type-id credit-memo-number"><a href="#"><g:fullNumber bean="${creditMemoInstance}"/></a></td>
         <td class="col-type-string credit-memo-subject"><a href="#"><g:nl2br value="${creditMemoInstance.subject}" /></a></td>
         <td class="col-type-ref credit-memo-organization">${fieldValue(bean: creditMemoInstance, field: "organization")}</td>
         <td class="col-type-status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}">${fieldValue(bean: creditMemoInstance, field: "stage")}</td>

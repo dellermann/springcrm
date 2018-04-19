@@ -41,7 +41,7 @@
             <tr>
               <td class="col-type-id work-number">
                 <g:link action="show" id="${workInstance.id}">
-                  <g:fieldValue bean="${workInstance}" field="fullNumber"/>
+                  <g:fullNumber bean="${workInstance}"/>
                 </g:link>
               </td>
               <td class="col-type-string work-name">

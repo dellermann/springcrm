@@ -136,7 +136,7 @@
           <g:each in="${invoiceInstanceList}" var="invoiceInstance">
           <tr>
             <td class="col-type-date turnover-report-doc-date"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
-            <td class="col-type-id turnover-report-number"><g:link controller="invoice" action="show" id="${invoiceInstance.id}"><g:fieldValue bean="${invoiceInstance}" field="fullNumber" /></g:link></td>
+            <td class="col-type-id turnover-report-number"><g:link controller="invoice" action="show" id="${invoiceInstance.id}"><g:fullNumber bean="${invoiceInstance}"/></g:link></td>
             <td class="col-type-string turnover-report-subject"><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link></td>
             <td class="col-type-currency turnover-report-turnover"><g:formatCurrency number="${invoiceInstance.turnover}" displayZero="true" external="true" /></td>
             <td class="col-type-currency turnover-report-turnover-products"><g:formatCurrency number="${invoiceInstance.turnoverProducts}" displayZero="true" external="true" /></td>

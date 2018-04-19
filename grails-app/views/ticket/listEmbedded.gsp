@@ -23,8 +23,7 @@
       <tr>
         <td class="col-type-string ticket-number">
           <g:link controller="ticket" action="show" id="${ticketInstance.id}"
-            ><g:fieldValue bean="${ticketInstance}" field="fullNumber"
-          /></g:link>
+            ><g:fullNumber bean="${ticketInstance}"/></g:link>
         </td>
         <td class="col-type-string ticket-subject">
           <g:link controller="ticket" action="show" id="${ticketInstance.id}"

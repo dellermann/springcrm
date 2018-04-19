@@ -38,6 +38,11 @@ class OrganizationController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
+    //-- Fields ---------------------------------
+
+    SeqNumberService seqNumberService
+
+
     //-- Public methods -------------------------
 
     def index(Byte listType) {

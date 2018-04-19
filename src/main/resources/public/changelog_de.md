@@ -2,6 +2,7 @@
 
 * Aktualisierung auf Grails 3.2.11, Groovy 2.4.15 und Gradle 3.5
 * Fehlerbehebung: Suchfunktion war für Nicht-Administratoren nicht verfügbar
+* Fehlerbehebung: Laufende Nummern wurden nicht korrekt berechnet
 
 ## 2.1.7
 

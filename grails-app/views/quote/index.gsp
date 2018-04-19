@@ -32,7 +32,7 @@
             <tr data-item-id="${quoteInstance.id}">
               <td class="col-type-id quote-number">
                 <g:link action="show" id="${quoteInstance.id}">
-                  <g:fieldValue bean="${quoteInstance}" field="fullNumber"/>
+                  <g:fullNumber bean="${quoteInstance}"/>
                 </g:link>
               </td>
               <td class="col-type-string quote-subject">

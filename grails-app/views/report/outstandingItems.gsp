@@ -97,7 +97,7 @@
               ><g:set var="group" value="${invoicingTransactionInstance.type}"
             /></g:if>
             <td class="col-type-date outstanding-items-doc-date"><g:formatDate date="${invoicingTransactionInstance?.docDate}" formatName="default.format.date" /></td>
-            <td class="col-type-id outstanding-items-number"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : 'dunning'}" action="show" id="${invoicingTransactionInstance.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="fullNumber" /></g:link></td>
+            <td class="col-type-id outstanding-items-number"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : 'dunning'}" action="show" id="${invoicingTransactionInstance.id}"><g:fullNumber bean="${invoicingTransactionInstance}"/></g:link></td>
             <td class="col-type-string outstanding-items-subject"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : 'dunning'}" action="show" id="${invoicingTransactionInstance.id}">${invoicingTransactionInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link></td>
             <td class="col-type-date outstanding-items-due-date-payment"><g:formatDate date="${invoicingTransactionInstance?.dueDatePayment}" formatName="default.format.date" /></td>
             <td class="col-type-currency outstanding-items-payable"><g:formatCurrency number="${invoicingTransactionInstance?.payable}" displayZero="true" external="true" /></td>

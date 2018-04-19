@@ -51,8 +51,7 @@
                 <g:link controller="ticket" action="frontendShow"
                   id="${ticketInstance.id}"
                   params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-                  ><g:fieldValue bean="${ticketInstance}"
-                  field="fullNumber" /></g:link>
+                  ><g:fullNumber bean="${ticketInstance}"/></g:link>
               </td>
               <td class="col-type-string ticket-subject">
                 <g:link controller="ticket" action="frontendShow"
@@ -111,8 +110,7 @@
                 <g:link controller="ticket" action="frontendShow"
                   id="${ticketInstance.id}"
                   params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-                  ><g:fieldValue bean="${ticketInstance}" field="fullNumber"
-                  /></g:link>
+                  ><g:fullNumber bean="${ticketInstance}"/></g:link>
               </td>
               <td class="col-type-string ticket-subject">
                 <g:link controller="ticket" action="frontendShow"

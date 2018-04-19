@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXMLFactory.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm.xml
 
 import com.naleid.grails.MarkdownService
 import org.amcworld.springcrm.InvoicingTransaction
+import org.amcworld.springcrm.SeqNumberService
 import org.amcworld.springcrm.User
 
 
@@ -39,6 +40,8 @@ class InvoicingTransactionXMLFactory {
 
     MarkdownService markdownService
 
+    SeqNumberService seqNumberService
+
 
     //-- Public methods -------------------------
 
@@ -52,8 +55,10 @@ class InvoicingTransactionXMLFactory {
     InvoicingTransactionXML newConverter(InvoicingTransaction transaction,
                                          User user)
     {
-        def inst = new InvoicingTransactionXML(transaction, user)
+        InvoicingTransactionXML inst = new InvoicingTransactionXML()
         inst.markdownService = markdownService
+        inst.seqNumberService = seqNumberService
+        inst.collectData transaction, user
 
         inst
     }

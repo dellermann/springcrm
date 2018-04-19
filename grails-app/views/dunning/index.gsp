@@ -38,7 +38,7 @@
             <tr>
               <td class="col-type-id dunning-number">
                 <g:link action="show" id="${dunningInstance.id}">
-                  <g:fieldValue bean="${dunningInstance}" field="fullNumber"/>
+                  <g:fullNumber bean="${dunningInstance}"/>
                 </g:link>
               </td>
               <td class="col-type-string dunning-subject">

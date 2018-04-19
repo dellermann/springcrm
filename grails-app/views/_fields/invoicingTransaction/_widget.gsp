@@ -5,7 +5,7 @@
   data-find-url="${createLink(controller: property, action: 'find')}"
   data-filter-organization="#organization-select"
   data-value="${value ? [
-      id: value.id, number: value.fullNumber, name: value.subject,
-      fullName: value.fullName
+      id: value.id, number: fullNumber(bean: value), name: value.subject,
+      fullName: fullName(bean: value)
     ].encodeAsJSON() : ''}">
 </select>

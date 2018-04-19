@@ -16,7 +16,7 @@
     <tbody>
     <g:each in="${dunningInstanceList}" status="i" var="dunningInstance">
       <tr>
-        <td class="col-type-id dunning-number"><g:link controller="dunning" action="show" id="${dunningInstance.id}"><g:fieldValue bean="${dunningInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id dunning-number"><g:link controller="dunning" action="show" id="${dunningInstance.id}"><g:fullNumber bean="${dunningInstance}"/></g:link></td>
         <td class="col-type-string dunning-subject"><g:link controller="dunning" action="show" id="${dunningInstance.id}"><g:nl2br value="${dunningInstance.subject}" /></g:link></td>
         <td class="col-type-status dunning-stage payment-state payment-state-${dunningInstance?.paymentStateColor}"><g:fieldValue bean="${dunningInstance}" field="stage" /></td>
         <td class="col-type-date dunning-doc-date"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>

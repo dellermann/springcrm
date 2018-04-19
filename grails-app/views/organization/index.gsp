@@ -67,8 +67,7 @@
               <td class="col-type-id organization-number">
                 <g:link action="show" id="${organizationInstance.id}"
                   params="[listType: params.listType]">
-                  <g:fieldValue bean="${organizationInstance}"
-                    field="fullNumber"/>
+                  <g:fullNumber bean="${organizationInstance}"/>
                 </g:link>
               </td>
               <td class="col-type-string organization-name">

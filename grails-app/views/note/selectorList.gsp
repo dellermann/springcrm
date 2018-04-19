@@ -14,7 +14,7 @@
     <g:each in="${noteInstanceList}" status="i" var="noteInstance">
       <tr data-item-id="${noteInstance.id}">
         <td class="col-type-row-selector"><input type="checkbox" id="note-row-selector-${noteInstance.id}" data-id="${noteInstance.id}" /></td>
-        <td class="col-type-id note-number"><a href="#"><g:fieldValue bean="${noteInstance}" field="fullNumber" /></a></td>
+        <td class="col-type-id note-number"><a href="#"><g:fullNumber bean="${noteInstance}"/></a></td>
         <td class="col-type-string note-title"><a href="#"><g:fieldValue bean="${noteInstance}" field="title" /></a></td>
         <g:ifModuleAllowed modules="CONTACT"><td class="col-type-ref note-organization"><g:fieldValue bean="${noteInstance}" field="organization" /></td></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="CONTACT"><td class="col-type-ref note-person"><g:fieldValue bean="${noteInstance}" field="person" /></td></g:ifModuleAllowed>

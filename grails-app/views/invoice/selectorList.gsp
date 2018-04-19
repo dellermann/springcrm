@@ -16,7 +16,7 @@
     <g:each in="${invoiceInstanceList}" status="i" var="invoiceInstance">
       <tr data-item-id="${invoiceInstance.id}">
         <td class="col-type-row-selector"><input type="checkbox" id="invoice-row-selector-${invoiceInstance.id}" data-id="${invoiceInstance.id}" /></td>
-        <td class="col-type-id invoice-number"><a href="#"><g:fieldValue bean="${invoiceInstance}" field="fullNumber" /></a></td>
+        <td class="col-type-id invoice-number"><a href="#"><g:fullNumber bean="${invoiceInstance}"/></a></td>
         <td class="col-type-string invoice-subject"><a href="#"><g:nl2br value="${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}" /></a></td>
         <td class="col-type-ref invoice-organization"><g:fieldValue bean="${invoiceInstance}" field="organization" /></td>
         <td class="col-type-status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}"><g:fieldValue bean="${invoiceInstance}" field="stage" /></td>

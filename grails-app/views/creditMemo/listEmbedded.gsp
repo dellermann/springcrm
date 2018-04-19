@@ -16,7 +16,7 @@
     <tbody>
     <g:each in="${creditMemoInstanceList}" status="i" var="creditMemoInstance">
       <tr>
-        <td class="col-type-id credit-memo-number"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fieldValue bean="${creditMemoInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id credit-memo-number"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fullNumber bean="${creditMemoInstance}"/></g:link></td>
         <td class="col-type-string credit-memo-subject"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:nl2br value="${creditMemoInstance.subject}" /></g:link></td>
         <td class="col-type-status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}"><g:fieldValue bean="${creditMemoInstance}" field="stage" /></td>
         <td class="col-type-date credit-memo-doc-date"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>

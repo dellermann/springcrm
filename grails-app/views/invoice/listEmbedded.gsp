@@ -16,7 +16,7 @@
     <tbody>
     <g:each in="${invoiceInstanceList}" status="i" var="invoiceInstance">
       <tr>
-        <td class="col-type-id invoice-number"><g:link controller="invoice" action="show" id="${invoiceInstance.id}"><g:fieldValue bean="${invoiceInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id invoice-number"><g:link controller="invoice" action="show" id="${invoiceInstance.id}"><g:fullNumber bean="${invoiceInstance}"/></g:link></td>
         <td class="col-type-string invoice-subject"><g:link controller="invoice" action="show" id="${invoiceInstance.id}"><g:nl2br value="${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}" /></g:link></td>
         <td class="col-type-status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}"><g:fieldValue bean="${invoiceInstance}" field="stage" /></td>
         <td class="col-type-date invoice-doc-date"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>

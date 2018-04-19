@@ -68,7 +68,7 @@
         <div class="column-group">
           <div class="column">
             <f:display bean="${ticketInstance}" property="number">
-              <g:fieldValue bean="${ticketInstance}" field="fullNumber"/>
+              <g:fullNumber bean="${ticketInstance}"/>
             </f:display>
             <f:display bean="${ticketInstance}" property="subject"/>
             <f:display bean="${ticketInstance}" property="stage"/>

@@ -3,10 +3,8 @@
     <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.show.label"
-        args="[
-            message(code: 'creditMemo.label'), creditMemoInstance.fullNumber
-          ]" />
-      - <g:message code="creditMemo.plural" />
+        args="[message(code: 'creditMemo.label'), fullNumber]" /> -
+      <g:message code="creditMemo.plural" />
     </title>
     <meta name="stylesheet" content="invoicing-transaction" />
   </head>

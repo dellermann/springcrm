@@ -2,14 +2,14 @@
   args="[ticketInstance.fullName]" />
 
 <g:message code="email.ticket.sendMessage.customer.text1"
-  args="[ticketInstance.fullNumber, ticketInstance.subject]" />
+  args="[fullNumber(bean: ticketInstance), ticketInstance.subject]" />
 
 > [<g:message code="email.ticket.link.show" />](${showLink})
 > [<g:message code="email.ticket.link.list" />](${overviewLink})
 
 * * *
 
-# ${ticketInstance.fullNumber} – ${ticketInstance.subject}
+# <g:fullNumber bean="${ticketInstance}"/> – ${ticketInstance.subject}
 
 ## <g:message code="email.ticket.messageData" />
 

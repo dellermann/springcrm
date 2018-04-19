@@ -14,7 +14,7 @@
     <tbody>
     <g:each in="${noteInstanceList}" status="i" var="noteInstance">
       <tr>
-        <td class="col-type-id note-number"><g:link controller="note" action="show" id="${noteInstance.id}"><g:fieldValue bean="${noteInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id note-number"><g:link controller="note" action="show" id="${noteInstance.id}"><g:fullNumber bean="${noteInstance}"/></g:link></td>
         <td class="col-type-string note-title"><g:link controller="note" action="show" id="${noteInstance.id}"><g:fieldValue bean="${noteInstance}" field="title" /></g:link></td>
         <g:ifModuleAllowed modules="CONTACT">
         <td class="col-type-ref note-person"><g:link controller="person" action="show" id="${noteInstance.person?.id}"><g:fieldValue bean="${noteInstance}" field="person" /></g:link></td>

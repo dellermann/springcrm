@@ -15,7 +15,7 @@
     <tbody>
     <g:each in="${quoteInstanceList}" status="i" var="quoteInstance">
       <tr>
-        <td class="col-type-id quote-number"><g:link controller="quote" action="show" id="${quoteInstance.id}"><g:fieldValue bean="${quoteInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id quote-number"><g:link controller="quote" action="show" id="${quoteInstance.id}"><g:fullNumber bean="${quoteInstance}"/></g:link></td>
         <td class="col-type-string quote-subject"><g:link controller="quote" action="show" id="${quoteInstance.id}"><g:nl2br value="${quoteInstance.subject}" /></g:link></td>
         <td class="col-type-status quote-stage"><g:fieldValue bean="${quoteInstance}" field="stage" /></td>
         <td class="col-type-date quote-doc-date"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>

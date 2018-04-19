@@ -14,7 +14,7 @@
     <tbody>
       <g:each in="${personInstanceList}" status="i" var="personInstance">
       <tr>
-        <td class="col-type-id person-number"><g:link controller="person" action="show" id="${personInstance.id}"><g:fieldValue bean="${personInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id person-number"><g:link controller="person" action="show" id="${personInstance.id}"><g:fullNumber bean="${personInstance}"/></g:link></td>
         <td class="col-type-string person-last-name"><g:link controller="person" action="show" id="${personInstance.id}"><g:fieldValue bean="${personInstance}" field="lastName" /></g:link></td>
         <td class="col-type-string person-first-name"><g:fieldValue bean="${personInstance}" field="firstName" /></td>
         <td class="col-type-string person-phone"><a href="tel:${fieldValue(bean: personInstance, field: "phone")}"><g:fieldValue bean="${personInstance}" field="phone" /></a></td>

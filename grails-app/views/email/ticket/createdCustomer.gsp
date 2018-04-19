@@ -10,6 +10,6 @@
 
 * * *
 
-# ${ticketInstance.fullNumber} – ${ticketInstance.subject}
+# <g:fullNumber bean="${ticketInstance}"/> – ${ticketInstance.subject}
 
 <g:applyLayout name="emailTicketData" />

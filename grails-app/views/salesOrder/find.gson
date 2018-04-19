@@ -1,12 +1,14 @@
 import org.amcworld.springcrm.SalesOrder
+import org.amcworld.springcrm.SeqNumberService
 
 model {
     List<SalesOrder> salesOrderInstanceList
+    SeqNumberService seqNumberService
 }
 
 json(salesOrderInstanceList) { SalesOrder so ->
     id so.id
-    number so.fullNumber
+    number seqNumberService.getFullNumber(so)
     name so.subject
-    fullName so.fullName
+    fullName seqNumberService.getFullName(so)
 }

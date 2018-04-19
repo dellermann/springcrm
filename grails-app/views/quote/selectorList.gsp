@@ -16,7 +16,7 @@
     <g:each in="${quoteInstanceList}" status="i" var="quoteInstance">
       <tr data-item-id="${quoteInstance.id}">
         <td class="col-type-row-selector"><input type="checkbox" id="quote-row-selector-${quoteInstance.id}" data-id="${quoteInstance.id}" /></td>
-        <td class="col-type-id quote-number"><a href="#"><g:fieldValue bean="${quoteInstance}" field="fullNumber" /></a></td>
+        <td class="col-type-id quote-number"><a href="#"><g:fullNumber bean="${quoteInstance}"/></a></td>
         <td class="col-type-string quote-subject"><a href="#"><g:nl2br value="${quoteInstance.subject}" /></a></td>
         <td class="col-type-ref quote-organization"><g:fieldValue bean="${quoteInstance}" field="organization" /></td>
         <td class="col-type-status quote-stage"><g:fieldValue bean="${quoteInstance}" field="stage" /></td>

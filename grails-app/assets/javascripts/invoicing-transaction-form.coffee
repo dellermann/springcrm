@@ -404,7 +404,7 @@ class InvoicingTransaction
         termOfPayment = data.termOfPayment
         unless termOfPayment is null
           d = new Date(Date.now() + termOfPayment * 86400000)
-          $dueDate.val d.format 'date' if $dueDate.val() is ''
+          $dueDate.datepicker('setDate', d) if $dueDate.val() is ''
 
         return
       )
@@ -412,5 +412,3 @@ class InvoicingTransaction
     return
 
 SPRINGCRM.InvoicingTransaction = InvoicingTransaction
-
-# vim:set ts=2 sw=2 sts=2:

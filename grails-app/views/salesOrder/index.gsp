@@ -33,8 +33,7 @@
               <tr>
                 <td class="col-type-id sales-order-number">
                   <g:link action="show" id="${salesOrderInstance.id}">
-                    <g:fieldValue bean="${salesOrderInstance}"
-                      field="fullNumber"/>
+                    <g:fullNumber bean="${salesOrderInstance}"/>
                   </g:link>
                 </td>
                 <td class="col-type-string sales-order-subject">

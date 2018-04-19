@@ -1,11 +1,11 @@
 <g:message code="email.ticket.salutation.users" />
 
 <g:message code="email.ticket.sendMessage.user.text1"
-  args="[ticketInstance.fullNumber, ticketInstance.subject]" />
+  args="[fullNumber(bean: ticketInstance), ticketInstance.subject]" />
 
 * * *
 
-# ${ticketInstance.fullNumber} – ${ticketInstance.subject}
+# <g:fullNumber bean="${ticketInstance}"/> – ${ticketInstance.subject}
 
 ## <g:message code="email.ticket.messageData" />
 

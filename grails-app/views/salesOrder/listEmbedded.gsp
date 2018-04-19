@@ -15,7 +15,7 @@
     <tbody>
     <g:each in="${salesOrderInstanceList}" status="i" var="salesOrderInstance">
       <tr>
-        <td class="col-type-id sales-order-number"><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}"><g:fieldValue bean="${salesOrderInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-id sales-order-number"><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}"><g:fullNumber bean="${salesOrderInstance}"/></g:link></td>
         <td class="col-type-string sales-order-subject"><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}"><g:nl2br value="${salesOrderInstance.subject}" /></g:link></td>
         <td class="col-type-status sales-order-stage"><g:fieldValue bean="${salesOrderInstance}" field="stage" /></td>
         <td class="col-type-date sales-order-doc-date"><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></td>

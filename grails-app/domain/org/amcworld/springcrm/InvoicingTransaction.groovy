@@ -40,7 +40,7 @@ class InvoicingTransaction
 
     //-- Constants ------------------------------
 
-    private static final BigInteger HUNDRED = new BigDecimal(100i)
+    private static final BigDecimal HUNDRED = new BigDecimal(100i)
 
 
     //-- Class fields ---------------------------
@@ -81,8 +81,8 @@ class InvoicingTransaction
         order 'desc'
     }
     static transients = [
-        'discountPercentAmount', 'fullName', 'fullNumber',
-        'shippingCostsGross', 'subtotalGross', 'subtotalNet', 'taxRateSums'
+        'discountPercentAmount', 'shippingCostsGross', 'subtotalGross',
+        'subtotalNet', 'taxRateSums'
     ]
 
 
@@ -299,35 +299,6 @@ class InvoicingTransaction
     }
 
     /**
-     * Gets the full name of this invoicing transaction, that is, the full
-     * number from property {@code fullNumber} and the subject.
-     *
-     * @return  the full name
-     * @see     #getFullNumber()
-     */
-    String getFullName() {
-        "${fullNumber} ${subject}"
-    }
-
-    /**
-     * Gets the full number of this invoicing transaction, that is, the type
-     * prefix, the sequence number, the type suffix and the organization number.
-     *
-     * @return  the full number
-     */
-    String getFullNumber() {
-        StringBuilder buf = new StringBuilder()
-        if (seqNumberService) {
-            buf << seqNumberService.formatWithPrefix(getClass(), number)
-        }
-        if (organization) {
-            buf << '-' << organization.number
-        }
-
-        buf.toString()
-    }
-
-    /**
      * Sets the shipping costs of this customer account.
      *
      * @param shippingCosts the shipping costs that should be set; if
@@ -435,16 +406,6 @@ class InvoicingTransaction
     //-- Public methods -------------------------
 
     /**
-     * Called before this customer account is created in the underlying data
-     * store.  The method obtains the next available sequence number and
-     * computes the total value.
-     */
-    def beforeInsert() {
-        NumberedDomain.super.beforeInsert()
-        total = computeTotal()
-    }
-
-    /**
      * Called before this customer account is updated in the underlying data
      * store.  The method computes the total value.
      */
@@ -458,6 +419,35 @@ class InvoicingTransaction
      */
     def beforeValidate() {
         total = computeTotal()
+    }
+
+    String computeFullName(SeqNumber seqNumber) {
+        computeFullNumber(seqNumber) + ' ' + subject
+    }
+
+    /**
+     * Computes the sequence number in the instance.  The method works like the
+     * method in {@code NumberedDomain} but adds the number of the organization
+     * to the result.
+     *
+     * @param seqNumber the given sequence number which specifies prefix and
+     *                  suffix; may be {@code null}
+     * @return          the formatted sequence number
+     * @since 3.0
+     */
+    @Override
+    String computeFullNumber(SeqNumber seqNumber) {
+        StringBuilder buf = new StringBuilder(
+            NumberedDomain.super.computeFullNumber(seqNumber, withSuffix: false)
+        )
+        if (organization != null) {
+            buf << '-' << organization.number
+        }
+        if (seqNumber.suffix) {
+            buf << '-' << seqNumber.suffix
+        }
+
+        buf.toString()
     }
 
     /**
@@ -522,6 +512,13 @@ class InvoicingTransaction
 
     //-- Non-public methods ---------------------
 
+    /**
+     * Adds the given tax rate to the given map.
+     *
+     * @param map       the given map
+     * @param taxRate   the given tax rate
+     * @param value     the price value for the given tax rate
+     */
     private static void addTaxRateSum(Map<Double, BigDecimal> map,
                                       BigDecimal taxRate, BigDecimal value)
     {

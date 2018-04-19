@@ -1,7 +1,7 @@
 /*
  * NumberedDomain.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,33 +34,72 @@ trait NumberedDomain {
     //-- Fields ---------------------------------
 
     /**
-     * The service to obtain sequence numbers.
-     */
-    def seqNumberService        // must be "def" to prevent DB field generation
-
-    /**
      * The sequence number.
      */
     int number
 
 
-    //-- Properties -----------------------------
-
-    /**
-     * Gets the formatted full number of this domain model instance.
-     *
-     * @return  the formatted full number with prefix and suffix
-     */
-    String getFullNumber() {
-        seqNumberService.format getClass(), number
-    }
-
-
     //-- Public methods -------------------------
 
-    def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
+    /**
+     * Computes the full name the instance.  The default implementation returns
+     * the full number.
+     *
+     * @param seqNumber the given sequence number which specifies prefix and
+     *                  suffix; may be {@code null}
+     * @return          the formatted full name
+     * @since 2.1
+     */
+    String computeFullName(SeqNumber seqNumber) {
+        computeFullNumber seqNumber
+    }
+
+    /**
+     * Computes the sequence number in the instance.
+     *
+     * @param seqNumber the given sequence number which specifies prefix and
+     *                  suffix; may be {@code null}
+     * @return          the formatted sequence number
+     * @since 2.1
+     */
+    String computeFullNumber(SeqNumber seqNumber) {
+        computeFullNumber null, seqNumber
+    }
+
+    /**
+     * Computes the sequence number in the instance as specified in the given
+     * arguments.  The given argument map may contain the following keys:
+     * <ul>
+     *   <li>{@code withPrefix}.  If {@code true} or not specified the prefix
+     *   is added to the returned string.</li>
+     *   <li>{@code withSuffix}. If {@code true} or not specified the suffix is
+     *   added to the returned string.</li>
+     * </ul>
+     *
+     * @param args      any arguments as described above
+     * @param seqNumber the given sequence number which specifies prefix and
+     *                  suffix; may be {@code null}
+     * @return          the formatted sequence number
+     * @since 2.1
+     */
+    String computeFullNumber(Map args, SeqNumber seqNumber) {
+        boolean withPrefix = (args?.withPrefix == null) ? true
+            : (boolean) args.withPrefix
+        boolean withSuffix = (args?.withSuffix == null) ? true
+            : (boolean) args.withSuffix
+
+        if (seqNumber) {
+            StringBuilder s = new StringBuilder()
+            if (withPrefix && seqNumber.prefix) {
+                s << seqNumber.prefix << '-'
+            }
+            s << number
+            if (withSuffix && seqNumber.suffix) {
+                s << '-' << seqNumber.suffix
+            }
+            s.toString()
+        } else {
+            number.toString()
         }
     }
 }

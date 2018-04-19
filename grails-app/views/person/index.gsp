@@ -84,7 +84,7 @@
             <tr>
               <td class="col-type-id person-number">
                 <g:link action="show" id="${personInstance.id}">
-                  <g:fieldValue bean="${personInstance}" field="fullNumber" />
+                  <g:fullNumber bean="${personInstance}"/>
                 </g:link>
               </td>
               <td class="col-type-string person-last-name">

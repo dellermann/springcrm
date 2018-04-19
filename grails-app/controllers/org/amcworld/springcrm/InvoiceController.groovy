@@ -43,6 +43,7 @@ class InvoiceController {
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
+    SeqNumberService seqNumberService
     UserService userService
 
 
@@ -368,7 +369,7 @@ class InvoiceController {
             params.boolean('duplicate') ?: false
         )
         GString fileName =
-            "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
+            "${message(code: 'invoice.label')} ${seqNumberService.getFullNumber(invoiceInstance)}"
         if (params.duplicate) {
             fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
         }

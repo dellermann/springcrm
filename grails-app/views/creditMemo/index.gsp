@@ -35,8 +35,7 @@
             <tr>
               <td class="col-type-id credit-memo-number">
                 <g:link action="show" id="${creditMemoInstance.id}">
-                  <g:fieldValue bean="${creditMemoInstance}"
-                    field="fullNumber"/>
+                  <g:fullNumber bean="${creditMemoInstance}"/>
                 </g:link>
               </td>
               <td class="col-type-string credit-memo-subject">

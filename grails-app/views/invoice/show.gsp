@@ -3,7 +3,7 @@
     <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.show.label"
-        args="[message(code: 'invoice.label'), invoiceInstance.fullNumber]" />
+        args="[message(code: 'invoice.label'), fullNumber]" />
       - <g:message code="invoice.plural" />
     </title>
     <meta name="stylesheet" content="invoicing-transaction" />

@@ -10,7 +10,7 @@
     aria-labelledby="unpaid-bill-${invoiceInstance.id}-title">
     <g:link controller="invoice" action="show" id="${invoiceInstance.id}"
       elementId="unpaid-bill-${invoiceInstance.id}-title">
-      ${invoiceInstance.fullNumber}
+      <g:fullNumber bean="${invoiceInstance}"/>
       ${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}
     </g:link>
     <div class="text">

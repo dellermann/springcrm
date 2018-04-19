@@ -31,15 +31,11 @@
           <element id="library" level="project" name="Gradle: com.google.apis:google-api-services-calendar:v3-rev157-1.21.0" />
           <element id="library" level="project" name="Gradle: com.google.gdata:core:1.47.1" />
           <element id="library" level="project" name="Gradle: commons-fileupload:commons-fileupload:1.3.1" />
-          <element id="library" level="project" name="Gradle: commons-io:commons-io:2.4" />
-          <element id="library" level="project" name="Gradle: jmimemagic:jmimemagic:0.1.2" />
           <element id="library" level="project" name="Gradle: org.apache.commons:commons-vfs2:2.0" />
           <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.3.2" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:fop:1.0" />
           <element id="library" level="project" name="Gradle: org.grails.plugins:cache:3.0.3" />
           <element id="library" level="project" name="Gradle: org.grails.plugins:fields:2.1.3" />
           <element id="library" level="project" name="Gradle: org.grails.plugins:grails-markdown:3.0.0" />
-          <element id="library" level="project" name="Gradle: org.grails.plugins:hibernate5:6.0.12" />
           <element id="library" level="project" name="Gradle: org.grails.plugins:mail:2.0.0.RC6" />
           <element id="library" level="project" name="Gradle: org.grails.plugins:scaffolding:3.3.3" />
           <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.4.6.RELEASE" />
@@ -61,9 +57,7 @@
           <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.4.6.RELEASE" />
           <element id="library" level="project" name="Gradle: net.sf.barcode4j:barcode4j-fop-ext-complete:2.0" />
           <element id="library" level="project" name="Gradle: xalan:serializer:2.7.2" />
-          <element id="library" level="project" name="Gradle: net.sf.offo:fop-hyph:1.2" />
           <element id="library" level="project" name="Gradle: org.codehaus.groovy:groovy:2.4.11" />
-          <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.25" />
           <element id="library" level="project" name="Gradle: org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final" />
           <element id="library" level="project" name="Gradle: com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.4.2" />
           <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.3.9.RELEASE" />
@@ -85,47 +79,29 @@
           <element id="library" level="project" name="Gradle: org.grails:views-core:1.1.2" />
           <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.1.Final" />
           <element id="library" level="project" name="Gradle: org.javassist:javassist:3.20.0-GA" />
-          <element id="library" level="project" name="Gradle: antlr:antlr:2.7.7" />
           <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1" />
           <element id="library" level="project" name="Gradle: org.jboss:jandex:2.0.0.Final" />
           <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.3.3" />
-          <element id="library" level="project" name="Gradle: dom4j:dom4j:1.6.1" />
           <element id="library" level="project" name="Gradle: org.hibernate.common:hibernate-commons-annotations:5.0.1.Final" />
           <element id="library" level="project" name="Gradle: net.sf.ehcache:ehcache:2.10.3" />
           <element id="library" level="project" name="Gradle: org.yaml:snakeyaml:1.17" />
           <element id="library" level="project" name="Gradle: com.google.api-client:google-api-client:1.21.0" />
           <element id="library" level="project" name="Gradle: com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta" />
           <element id="library" level="project" name="Gradle: javax.mail:mail:1.4" />
-          <element id="library" level="project" name="Gradle: oro:oro:2.0.8" />
-          <element id="library" level="project" name="Gradle: xerces:xerces:2.4.0" />
-          <element id="library" level="project" name="Gradle: xerces:xercesImpl:2.7.1" />
           <element id="library" level="project" name="Gradle: xml-apis:xml-apis:1.4.01" />
-          <element id="library" level="project" name="Gradle: xml-apis:xmlParserAPIs:2.0.2" />
           <element id="library" level="project" name="Gradle: org.apache.maven.scm:maven-scm-api:1.4" />
           <element id="library" level="project" name="Gradle: org.apache.maven.scm:maven-scm-provider-svnexe:1.4" />
           <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.6" />
           <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.10" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:xmlgraphics-commons:1.4" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svg-dom:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-bridge:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-awt-util:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-gvt:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-transcoder:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-extension:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-ext:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.avalon.framework:avalon-framework-api:4.3.1" />
-          <element id="library" level="project" name="Gradle: org.apache.avalon.framework:avalon-framework-impl:4.3.1" />
           <element id="library" level="project" name="Gradle: org.jsoup:jsoup:1.8.3" />
           <element id="library" level="project" name="Gradle: org.pegdown:pegdown:1.5.0" />
           <element id="library" level="project" name="Gradle: com.overzealous:remark:1.0.0" />
           <element id="library" level="project" name="Gradle: org.grails:grails-datastore-web:6.0.12.RELEASE" />
           <element id="library" level="project" name="Gradle: org.grails:grails-datastore-simple:6.0.12.RELEASE" />
           <element id="library" level="project" name="Gradle: org.grails:grails-datastore-gorm-support:6.0.12.RELEASE" />
-          <element id="library" level="project" name="Gradle: org.grails:grails-datastore-gorm-hibernate5:6.0.12.RELEASE" />
           <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.3.9.RELEASE" />
           <element id="library" level="project" name="Gradle: javax.mail:javax.mail-api:1.5.6" />
           <element id="library" level="project" name="Gradle: com.sun.mail:javax.mail:1.5.6" />
-          <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
           <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.8.8" />
           <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.8.8" />
           <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.3.9.RELEASE" />
@@ -137,7 +113,6 @@
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-controllers:3.2.11" />
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-datasource:3.2.11" />
           <element id="library" level="project" name="Gradle: com.bertramlabs.plugins:asset-pipeline-core:2.13.0" />
-          <element id="library" level="project" name="Gradle: org.mozilla:rhino:1.7R4" />
           <element id="library" level="project" name="Gradle: commons-lang:commons-lang:2.6" />
           <element id="library" level="project" name="Gradle: com.github.sommeri:less4j:1.17.2" />
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-codecs:3.2.11" />
@@ -158,20 +133,9 @@
           <element id="library" level="project" name="Gradle: com.google.guava:guava-jdk5:17.0" />
           <element id="library" level="project" name="Gradle: com.google.oauth-client:google-oauth-client-java6:1.11.0-beta" />
           <element id="library" level="project" name="Gradle: org.mortbay.jetty:jetty:6.1.26" />
-          <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
-          <element id="library" level="project" name="Gradle: org.codehaus.plexus:plexus-utils:1.5.6" />
           <element id="library" level="project" name="Gradle: org.apache.maven.scm:maven-scm-provider-svn-commons:1.4" />
           <element id="library" level="project" name="Gradle: regexp:regexp:1.3" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-anim:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-css:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-dom:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-parser:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-util:1.7" />
-          <element id="library" level="project" name="Gradle: xml-apis:xml-apis-ext:1.3.04" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-script:1.7" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-xml:1.7" />
           <element id="library" level="project" name="Gradle: xalan:xalan:2.6.0" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-svggen:1.7" />
           <element id="library" level="project" name="Gradle: org.parboiled:parboiled-java:1.1.7" />
           <element id="library" level="project" name="Gradle: org.grails:grails-datastore-core:6.0.12.RELEASE" />
           <element id="library" level="project" name="Gradle: org.grails:grails-datastore-gorm:6.0.12.RELEASE" />
@@ -193,23 +157,21 @@
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-domain-class:3.2.11" />
           <element id="library" level="project" name="Gradle: org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.2" />
           <element id="library" level="project" name="Gradle: org.codehaus.groovy:groovy-sql:2.4.11" />
-          <element id="library" level="project" name="Gradle: org.apache.tomcat:tomcat-jdbc:8.5.13" />
           <element id="library" level="project" name="Gradle: com.google.javascript:closure-compiler-unshaded:v20160713" />
-          <element id="library" level="project" name="Gradle: org.grails:grails-codecs:3.2.11" />
+          <element id="library" level="project" name="Gradle: org.apache.tomcat:tomcat-jdbc:8.5.13" />
           <element id="library" level="project" name="Gradle: org.antlr:antlr-runtime:3.5.2" />
+          <element id="library" level="project" name="Gradle: org.grails:grails-codecs:3.2.11" />
           <element id="library" level="project" name="Gradle: io.projectreactor.spring:reactor-spring-context:2.0.7.RELEASE" />
           <element id="library" level="project" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" />
           <element id="library" level="project" name="Gradle: com.google.protobuf:protobuf-java:2.5.0" />
           <element id="library" level="project" name="Gradle: io.projectreactor:reactor-bus:2.0.8.RELEASE" />
-          <element id="library" level="project" name="Gradle: junit:junit:4.12" />
           <element id="library" level="project" name="Gradle: commons-validator:commons-validator:1.5.1" />
+          <element id="library" level="project" name="Gradle: junit:junit:4.12" />
           <element id="library" level="project" name="Gradle: ro.isdc.wro4j:rhino:1.7R5-20130223-1" />
           <element id="library" level="project" name="Gradle: org.codehaus.groovy:groovy-json:2.4.11" />
           <element id="library" level="project" name="Gradle: org.grails:grails-taglib:3.2.11" />
           <element id="library" level="project" name="Gradle: com.google.http-client:google-http-client:1.21.0" />
           <element id="library" level="project" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" />
-          <element id="library" level="project" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" />
-          <element id="library" level="project" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" />
           <element id="library" level="project" name="Gradle: org.parboiled:parboiled-core:1.1.7" />
           <element id="library" level="project" name="Gradle: org.ow2.asm:asm:5.0.3" />
           <element id="library" level="project" name="Gradle: org.ow2.asm:asm-tree:5.0.3" />
@@ -226,23 +188,60 @@
           <element id="library" level="project" name="Gradle: org.apache.tomcat:tomcat-juli:8.5.13" />
           <element id="library" level="project" name="Gradle: io.projectreactor.spring:reactor-spring-core:2.0.7.RELEASE" />
           <element id="library" level="project" name="Gradle: com.goldmansachs:gs-collections:5.1.0" />
-          <element id="library" level="project" name="Gradle: commons-collections:commons-collections:3.2.2" />
           <element id="library" level="project" name="Gradle: org.codehaus.jsr166-mirror:jsr166y:1.7.0" />
           <element id="library" level="project" name="Gradle: org.reactivestreams:reactive-streams:1.0.0" />
           <element id="library" level="project" name="Gradle: com.goldmansachs:gs-collections-api:5.1.0" />
           <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
-          <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.4" />
-          <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
           <element id="library" level="project" name="Gradle: com.google.javascript:closure-compiler-externs:v20160713" />
           <element id="library" level="project" name="Gradle: args4j:args4j:2.0.26" />
           <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
           <element id="library" level="project" name="Gradle: log4j:log4j:1.2.17" />
           <element id="library" level="project" name="Gradle: org.grails.plugins:asset-pipeline:3.1.0" />
           <element id="library" level="project" name="Gradle: com.google.guava:guava:19.0" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/commons-io/commons-io/2.4/commons-io-2.4.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/jmimemagic/jmimemagic/0.1.2/jmimemagic-0.1.2.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/fop/1.0/fop-1.0.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.grails.plugins/hibernate5/6.0.12/4912a6445fbc726d9ce699dbe5d91af54036279e/hibernate5-6.0.12.jar" />
           <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-tomcat/1.4.6.RELEASE/1c819251f7cf2122c0d9847368c401b9b382469f/spring-boot-starter-tomcat-1.4.6.RELEASE.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/net/sf/offo/fop-hyph/1.2/fop-hyph-1.2.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/xerces/xercesImpl/2.7.1/xercesImpl-2.7.1.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/xml-apis/xmlParserAPIs/2.0.2/xmlParserAPIs-2.0.2.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/xmlgraphics-commons/1.4/xmlgraphics-commons-1.4.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-svg-dom/1.7/batik-svg-dom-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-bridge/1.7/batik-bridge-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-awt-util/1.7/batik-awt-util-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-gvt/1.7/batik-gvt-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-transcoder/1.7/batik-transcoder-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-extension/1.7/batik-extension-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-ext/1.7/batik-ext-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/avalon/framework/avalon-framework-api/4.3.1/avalon-framework-api-4.3.1.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/avalon/framework/avalon-framework-impl/4.3.1/avalon-framework-impl-4.3.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.grails/grails-datastore-gorm-hibernate5/6.0.12.RELEASE/8e0a1552c92b1f4898343f10beb622b50eb34109/grails-datastore-gorm-hibernate5-6.0.12.RELEASE.jar" />
           <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-core/8.5.13/cc9fa046979d0b1ac5537d51b7a31ab1ec4bfac1/tomcat-embed-core-8.5.13.jar" />
           <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-el/8.5.13/ae5f3728961c2b9aa0bdbe013a87b40f344fef34/tomcat-embed-el-8.5.13.jar" />
           <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-websocket/8.5.13/8ab13c0928c1ff6230e1851efb7372f19361d82/tomcat-embed-websocket-8.5.13.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/mozilla/rhino/1.7R4/rhino-1.7R4.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/javax/validation/validation-api/1.1.0.Final/validation-api-1.1.0.Final.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/codehaus/plexus/plexus-utils/1.5.6/plexus-utils-1.5.6.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-anim/1.7/batik-anim-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-css/1.7/batik-css-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-dom/1.7/batik-dom-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-parser/1.7/batik-parser-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-util/1.7/batik-util-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-script/1.7/batik-script-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-xml/1.7/batik-xml-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-svggen/1.7/batik-svggen-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/mortbay/jetty/servlet-api/2.5-20081211/servlet-api-2.5-20081211.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-js/1.7/batik-js-1.7.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar" />
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar" />
         </element>
       </element>
     </root>
