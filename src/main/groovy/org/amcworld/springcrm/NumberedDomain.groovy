@@ -42,6 +42,19 @@ trait NumberedDomain {
     //-- Public methods -------------------------
 
     /**
+     * Computes the full name of the instance.  The default implementation
+     * simply returns the full number.
+     *
+     * @param seqNumber the given sequence number which specifies prefix and
+     *                  suffix; may be {@code null}
+     * @return          the formatted full name
+     * @since 2.1
+     */
+    String computeFullName(SeqNumber seqNumber) {
+        computeFullNumber seqNumber
+    }
+
+    /**
      * Computes the sequence number in the instance.
      *
      * @param seqNumber the given sequence number which specifies prefix and

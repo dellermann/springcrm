@@ -10,5 +10,5 @@ json(salesOrderList) { SalesOrder salesOrder ->
     id salesOrder.id
     number seqNumberService.getFullNumber(salesOrder)
     name salesOrder.subject
-    fullName salesOrder.fullName
+    fullName seqNumberService.getFullName(salesOrder)
 }

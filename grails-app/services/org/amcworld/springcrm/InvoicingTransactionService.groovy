@@ -23,7 +23,6 @@ package org.amcworld.springcrm
 import static java.util.Calendar.YEAR
 
 import grails.core.GrailsApplication
-import grails.gorm.services.Service
 import grails.util.GrailsNameUtils
 import org.amcworld.springcrm.xml.InvoicingTransactionXML
 import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
@@ -253,7 +252,8 @@ class InvoicingTransactionService {
                        boolean duplicate = false, Map additionalData = null)
     {
         InvoicingTransactionXML xml =
-            invoicingTransactionXMLFactory.newConverter(transaction, user)
+            invoicingTransactionXMLFactory.newConverter()
+        xml.start transaction, user
         xml.duplicate = duplicate
         if (additionalData) {
             xml << additionalData

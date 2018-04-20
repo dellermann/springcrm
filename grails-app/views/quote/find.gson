@@ -10,5 +10,5 @@ json(quoteList) { Quote quote ->
     id quote.id
     number seqNumberService.getFullNumber(quote)
     name quote.subject
-    fullName quote.fullName
+    fullName seqNumberService.getFullName(quote)
 }

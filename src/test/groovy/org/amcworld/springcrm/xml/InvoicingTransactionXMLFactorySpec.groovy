@@ -21,35 +21,36 @@
 package org.amcworld.springcrm.xml
 
 import com.naleid.grails.MarkdownService
+import org.amcworld.springcrm.ConfigService
 import org.amcworld.springcrm.Invoice
+import org.amcworld.springcrm.SeqNumberService
 import org.amcworld.springcrm.User
 import spock.lang.Specification
 
 
-//@TestMixin([GrailsUnitTestMixin, DomainClassUnitTestMixin])
-//@Mock([Invoice, User])
 class InvoicingTransactionXMLFactorySpec extends Specification {
 
     //-- Feature methods ------------------------
 
-    def 'Create a new converter'() {
-        given: 'a converter factory with a MarkdownService instance'
-        def markdownService = new MarkdownService()
-        def factory = new InvoicingTransactionXMLFactory(
-            markdownService: markdownService
-        )
+    void 'Create a new converter'() {
+        given: 'some service instances'
+        ConfigService configService = Mock()
+        MarkdownService markdownService = Mock()
+        SeqNumberService seqNumberService = Mock()
 
-        and: 'an invoice and a user'
-        def invoice = new Invoice(subject: 'My invoice')
-        def user = new User(username: 'jsmith')
+        and: 'a converter factory'
+        def factory = new InvoicingTransactionXMLFactory()
+        factory.configService = configService
+        factory.markdownService = markdownService
+        factory.seqNumberService = seqNumberService
 
-        when: 'I create new converter'
-        InvoicingTransactionXML conv = factory.newConverter(invoice, user)
+        when: 'a new converter is created'
+        InvoicingTransactionXML converter = factory.newConverter()
 
-        then: 'I get a valid converter'
-        null != conv
-        markdownService == conv.markdownService
-        invoice == conv.data.transaction
-        user == conv.data.user
+        then: 'a valid converter is returned'
+        null != converter
+        configService == converter.configService
+        markdownService == converter.markdownService
+        seqNumberService == converter.seqNumberService
     }
 }

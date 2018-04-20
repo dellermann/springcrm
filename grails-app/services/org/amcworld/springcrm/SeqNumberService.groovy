@@ -94,9 +94,11 @@ abstract class SeqNumberService implements ISeqNumberService {
      * @since 2.1
      */
     private static final List<Class<? extends InvoicingTransaction>> \
-        CONTROLLERS_TO_CHECK = [
-            Quote, SalesOrder, Invoice, Dunning, CreditMemo
-        ].asImmutable()
+        CONTROLLERS_TO_CHECK = Collections.unmodifiableList(
+            new ArrayList<Class<? extends InvoicingTransaction>>([
+                Quote, SalesOrder, Invoice, Dunning, CreditMemo
+            ])
+        )
 
 
     //-- Fields ---------------------------------
@@ -178,6 +180,17 @@ abstract class SeqNumberService implements ISeqNumberService {
         Integer year = userSettingService.getInteger(user, 'seqNumberHintYear')
 
         !year || new Date().format('YYYY').toInteger() > year
+    }
+
+    /**
+     * Computes the full name of the given domain model instance.
+     *
+     * @param domain    the given domain model
+     * @return          the computed number
+     * @since 2.1
+     */
+    String getFullName(NumberedDomain domain) {
+        domain.computeFullName loadSeqNumber(domain.getClass())
     }
 
     /**

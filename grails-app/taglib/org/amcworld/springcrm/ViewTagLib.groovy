@@ -403,6 +403,16 @@ class ViewTagLib implements TagLibrary {
     }
 
     /**
+     * Renders the full name of the given numbered domain model instance.
+     *
+     * @attr bean REQUIRED  the given instance
+     * @since 2.1
+     */
+    def fullName = { attrs ->
+        out << seqNumberService.getFullName(attrs.bean as NumberedDomain)
+    }
+
+    /**
      * Renders the full number of the given numbered domain model instance.
      *
      * @attr bean REQUIRED  the given instance

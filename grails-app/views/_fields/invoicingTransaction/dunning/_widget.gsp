@@ -6,7 +6,7 @@
   data-filter-organization="#organization-select"
   data-value="${value ? [
       id: value.id, number: fullNumber(bean: value), name: value.subject,
-      fullName: value.fullName
+      fullName(bean: value)
     ].encodeAsJSON() : ''}"
   data-get-closing-balance-url="${createLink(
       controller: GrailsNameUtils.getPropertyName(type),

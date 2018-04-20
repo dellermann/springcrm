@@ -22,14 +22,9 @@ package org.amcworld.springcrm.xml
 
 import com.naleid.grails.MarkdownService
 import grails.converters.XML
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.PackageScope
-import groovy.transform.TypeCheckingMode
-import org.amcworld.springcrm.ConfigService
-import org.amcworld.springcrm.InvoicingItem
-import org.amcworld.springcrm.InvoicingTransaction
-import org.amcworld.springcrm.SeqNumberService
-import org.amcworld.springcrm.User
+import org.amcworld.springcrm.*
 import org.apache.commons.io.output.StringBuilderWriter
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -67,35 +62,30 @@ class InvoicingTransactionXML extends XML {
 
     //-- Fields ---------------------------------
 
-    ConfigService configService
-
     /**
-     * The internal data structure which is transformed to XML.
+     * The service containing the configuration data of the application.
      */
-    final Map<String, Object> data
+    ConfigService configService
 
     /**
      * The service used to convert Markdown text to HTML.
      */
     MarkdownService markdownService
 
+    /**
+     * The service to compute the sequence numbers.
+     */
     SeqNumberService seqNumberService
 
-
-    //-- Constructors ---------------------------
+    /**
+     * The internal data structure which is transformed to XML.
+     */
+    private Map<String, Object> data = [watermark: (Object) '']
 
     /**
-     * Creates a new invoicing transaction XML converter instance from the
-     * given invoicing transaction, the client, and the given currently logged
-     * in user.
-     *
-     * @param transaction   the given invoicing transaction
-     * @param user          the currently logged in user
+     * The invoicing transaction which is transformed to XML.
      */
-    @PackageScope
-    InvoicingTransactionXML(InvoicingTransaction transaction, User user) {
-        data = collectData(transaction, user)
-    }
+    private InvoicingTransaction invoicingTransaction
 
 
     //-- Properties -----------------------------
@@ -116,6 +106,7 @@ class InvoicingTransactionXML extends XML {
      *          {@code false} otherwise
      */
     boolean isDuplicate() {
+        //noinspection GroovyDoubleNegation
         !!data.watermark
     }
 
@@ -150,7 +141,39 @@ class InvoicingTransactionXML extends XML {
      * @return      this object
      */
     InvoicingTransactionXML leftShift(Map<String, Object> data) {
-        this.data << data
+        add data
+
+        this
+    }
+
+    /**
+     * Starts adding data of the given invoicing transaction and user to the
+     * internal structure.
+     *
+     * @param transaction   the given invoicing transaction
+     * @param user          the currently logged in user
+     * @return              the XML converter
+     */
+    InvoicingTransactionXML start(InvoicingTransaction transaction,
+                                  User user)
+    {
+        invoicingTransaction = transaction
+        data += [
+            transaction: transaction,
+            items: transaction.items,
+            organization: transaction.organization,
+            person: transaction.person,
+            user: new User(user),       // used to mask password
+            fullNumber: seqNumberService.getFullNumber(transaction),
+            taxRates: transaction.taxRateSums,
+            values: [
+                subtotalNet: transaction.subtotalNet,
+                subtotalGross: transaction.subtotalGross,
+                discountPercentAmount: transaction.discountPercentAmount,
+                total: transaction.total
+            ],
+            client: configService.loadTenantAsMap()
+        ]
 
         this
     }
@@ -161,40 +184,46 @@ class InvoicingTransactionXML extends XML {
     }
 
     /**
-     * Converts this invoicing transaction to XML.
+     * Converts to XML.
      *
      * @return the converted XML
      */
     String toXML() {
-        InvoicingTransaction transaction =
-            (InvoicingTransaction) data.transaction
+        if (invoicingTransaction == null) {
+            throw new IllegalStateException(
+                'Please call start() before using this method.'
+            )
+        }
         if (log.debugEnabled) {
-            log.debug "Data structure, type ${transaction.type}: ${data}"
+            log.debug(
+                "Data structure, type ${invoicingTransaction.type}: ${data}"
+            )
         }
 
         /* generate XML from data structure */
-        def xml = new XML(data)
-        def w = new StringBuilderWriter()
-        xml.render w
+        XML xml = new XML(data)
+        Writer writer = new StringBuilderWriter()
+        xml.render writer
 
         /* inject DOCTYPE after XML prologue */
-        StringBuilder buf = w.builder
+        StringBuilder buf = writer.builder
         writeDocType buf, xml.getElementName(data)
 
         /* inject converted Markdown HTML before root end tag */
-        writeAdditionalXML buf, transaction
+        writeAdditionalXML buf, invoicingTransaction
 
         String res = buf.toString()
         if (log.debugEnabled) {
-            log.debug "XML data structure, type ${transaction.type}: ${res}"
+            log.debug(
+                "XML data structure, type ${invoicingTransaction.type}: ${res}"
+            )
         }
 
         res
     }
 
     /**
-     * Converts this invoicing transaction to XML and writes it to the given
-     * writer.
+     * Converts to XML and writes it to the given writer.
      *
      * @param out   the given writer
      */
@@ -204,36 +233,6 @@ class InvoicingTransactionXML extends XML {
 
 
     //-- Non-public methods ---------------------
-
-    /**
-     * Collects all necessary data about the given invoicing transaction, the
-     * client, and the currently logged in user in a map.
-     *
-     * @param transaction   the given invoicing transaction
-     * @param user          the currently logged in user
-     * @return              the collected data
-     */
-    private Map<String, Object> collectData(
-        InvoicingTransaction transaction, User user
-    ) {
-        [
-            transaction: transaction,
-            items: transaction.items,
-            organization: transaction.organization,
-            person: transaction.person,
-            user: new User(user),
-            fullNumber: seqNumberService.getFullNumber(transaction),
-            taxRates: transaction.taxRateSums,
-            values: [
-                subtotalNet: transaction.subtotalNet,
-                subtotalGross: transaction.subtotalGross,
-                discountPercentAmount: transaction.discountPercentAmount,
-                total: transaction.total
-            ],
-            watermark: '',
-            client: configService.loadTenantAsMap()
-        ]
-    }
 
     /**
      * Writes the description texts of the given invoicing items to the given
@@ -264,8 +263,10 @@ class InvoicingTransactionXML extends XML {
     private String markdownHTML(String text) {
         String html = markdownService.markdown(text ?: '')
 
-        String s = "<html xmlns='http://www.w3.org/1999/xhtml'><head/><body>${html}</body></html>"
-        println s
+        String s = "<html xmlns='http://www.w3.org/1999/xhtml'><head/>" +
+            "<body>${html}</body></html>"
+        log.debug(s)
+
         s
     }
 
@@ -320,7 +321,7 @@ class InvoicingTransactionXML extends XML {
      *                  is unset or has no value
      * @since           1.2
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     private static String getBeanProperty(def bean, String propName) {
         bean."${propName}"?.toString()
     }
@@ -353,7 +354,7 @@ class InvoicingTransactionXML extends XML {
     }
 
     /**
-     * Writes the {@code DOCTYPE} declaration behind the XML prolog to the
+     * Writes the {@code DOCTYPE} declaration behind the XML prologue to the
      * given string builder.
      *
      * @param buf       the given string builder

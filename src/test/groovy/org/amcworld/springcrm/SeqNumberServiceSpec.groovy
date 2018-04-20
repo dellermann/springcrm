@@ -109,6 +109,7 @@ class SeqNumberServiceSpec extends Specification
         !service.checkNumberScheme()
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     def 'Do not show again hint for this year'(int year, boolean res) {
         given: 'a user with mocked settings'
         User user = makeUser()
@@ -325,6 +326,25 @@ class SeqNumberServiceSpec extends Specification
 //        14001 == service.nextNumber(InvoiceController)
     }
 
+    def 'Get the full name for classes which do not support full names'() {
+        given: 'an organization'
+        Organization org = createOrganization()
+
+        expect:
+        'O-39999' == service.getFullName(org)
+    }
+
+    def 'Get the full name for classes which support full names'() {
+        given: 'an organization'
+        Organization org = createOrganization()
+
+        and: 'an invoice'
+        Invoice invoice = createInvoice(org)
+
+        expect:
+        'R-14000-39999-M Foo' == service.getFullName(invoice)
+    }
+
     def 'Get the full number'() {
         given: 'an organization'
         Organization org = createOrganization()
@@ -345,7 +365,9 @@ class SeqNumberServiceSpec extends Specification
      * know why.
      */
     void mockDataService(Class<?> serviceClass) {
-        Service service = (Service) dataStore.getService(serviceClass)
+        Service service = (Service) dataStore.getService(
+            (Class<Service>) serviceClass
+        )
         String name = Introspector.decapitalize(serviceClass.simpleName)
         if (!applicationContext.containsBean(name)) {
             applicationContext.beanFactory.autowireBean service

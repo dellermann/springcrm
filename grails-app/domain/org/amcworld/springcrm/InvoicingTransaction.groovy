@@ -421,6 +421,10 @@ class InvoicingTransaction implements NumberedDomain {
         computeDynamicValues()
     }
 
+    String computeFullName(SeqNumber seqNumber) {
+        NumberedDomain.super.computeFullName(seqNumber) + ' ' + subject
+    }
+
     /**
      * Computes the sequence number in the instance.  The method works like the
      * method in {@code NumberedDomain} but adds the number of the organization

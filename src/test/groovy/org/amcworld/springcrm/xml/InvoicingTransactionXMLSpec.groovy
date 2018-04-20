@@ -21,20 +21,20 @@
 package org.amcworld.springcrm.xml
 
 import com.naleid.grails.MarkdownService
+import grails.testing.gorm.DataTest
 import groovy.util.slurpersupport.GPathResult
 import org.amcworld.springcrm.*
+import org.bson.types.ObjectId
+import org.grails.testing.GrailsUnitTest
 import org.grails.web.converters.configuration.ConvertersConfigurationInitializer
 import org.xml.sax.EntityResolver
 import org.xml.sax.InputSource
 import spock.lang.Specification
 
 
-//@TestMixin([GrailsUnitTestMixin, DomainClassUnitTestMixin])
-//@Mock([
-//    Invoice, InvoiceStage, InvoicingItem, Organization, Person,
-//    TermsAndConditions, User
-//])
-class InvoicingTransactionXMLSpec extends Specification {
+class InvoicingTransactionXMLSpec extends Specification
+    implements GrailsUnitTest, DataTest
+{
 
     //-- Fields ---------------------------------
 
@@ -44,174 +44,245 @@ class InvoicingTransactionXMLSpec extends Specification {
     //-- Fixture methods ------------------------
 
     def setup() {
-        registerDefaultConverters()
-        makeClientFixture()
+        mockDomain Address
+        mockDomain Invoice
+        mockDomain InvoiceStage
+        mockDomain InvoicingItem
+        mockDomain Organization
+        mockDomain Person
+        mockDomain TermsAndConditions
+        mockDomain User
+
         initXmlSlurper()
     }
 
 
     //-- Feature methods ------------------------
 
-    def 'Cannot modify internal data structure from outside'() {
-        given: 'an invoice'
-        def invoice = new Invoice()
+    void 'Object is initialized'() {
+        given: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
 
-        and: 'a user'
-        def user = new User()
+        expect:
+        null != converter.data
+        1 == converter.data.size()
+        '' == converter.data.watermark
+        !converter.duplicate
+    }
 
-        and: 'an XML converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
+    void 'Cannot modify internal data structure from outside'() {
+        given: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
 
-        when: 'I obtain the data structure and modify it'
-        Map d = conv.data
+        when: 'the data structure is obtained and then modified'
+        Map d = converter.data
         d.foo = 'bar'
 
-        then: 'the internal data structure must not be modified'
-        !('foo' in conv.data)
+        then: 'the internal data structure has not been modified'
+        !('foo' in converter.data)
     }
 
-    def 'Cannot set internal data structure from outside'() {
-        given: 'an invoice'
-        def invoice = new Invoice()
+    void 'Can get and set duplicate property'() {
+        given: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
 
-        and: 'a user'
-        def user = new User()
+        when: 'the duplicate property is set to false'
+        converter.duplicate = false
 
-        and: 'an XML converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
+        then: 'the duplicate property and the watermark have the correct values'
+        '' == converter.data.watermark
+        !converter.duplicate
 
-        when: 'I set the data structure from outside'
-        conv.data = [foo: 'bar']
+        when: 'the duplicate property is set to true'
+        converter.duplicate = true
 
-        then: 'I get an exception'
-        thrown ReadOnlyPropertyException
-
-        and: 'the internal data structure is unmodified'
-        !('foo' in conv.data)
-        invoice == conv.data.transaction
-        user == conv.data.user
+        then: 'the duplicate property and the watermark have the correct values'
+        'duplicate' == converter.data.watermark
+        converter.duplicate
     }
 
-    def 'Can get and set duplicate property'() {
-        given: 'an invoice'
-        def invoice = new Invoice()
+    void 'Can add additional data via add method'() {
+        given: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
 
-        and: 'a user'
-        def user = new User()
-
-        when: 'I create an XML converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
-
-        then: 'the duplicate property is set to false'
-        '' == conv.data.watermark
-        !conv.duplicate
-
-        when: 'I set the duplicate property to false'
-        conv.duplicate = false
-
-        then: 'the duplicate property is set to false'
-        '' == conv.data.watermark
-        !conv.duplicate
-
-        when: 'I set the duplicate property to true'
-        conv.duplicate = true
-
-        then: 'the duplicate property is set to true'
-        'duplicate' == conv.data.watermark
-        conv.duplicate
-    }
-
-    def 'Can add additional data via add method'() {
-        given: 'an invoice'
-        def invoice = new Invoice()
-
-        and: 'a user'
-        def user = new User()
-
-        and: 'an XML converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
-
-        when: 'I add additional data'
-        conv.add foo: 'bar', whee: 5.78
+        when: 'additional data are added'
+        converter.add foo: 'bar', whee: 5.78
 
         then: 'these values are in the internal data structure'
-        Map d1 = conv.data
+        Map d1 = converter.data
         'bar' == d1.foo
         5.78 == d1.whee
         '' == d1.watermark
 
-        when: 'I overwrite existing values'
-        conv.add foo: 'bizz', watermark: 'bar'
+        when: 'existing values are overwritten'
+        converter.add foo: 'bizz', watermark: 'bar'
 
         then: 'these values have been overwritten'
-        Map d2 = conv.data
+        Map d2 = converter.data
         'bizz' == d2.foo
         5.78 == d2.whee
         'bar' == d2.watermark
     }
 
-    def 'Can add additional data via left shift operator'() {
-        given: 'an invoice'
-        def invoice = new Invoice()
+    void 'Can add additional data via left shift operator'() {
+        given: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
 
-        and: 'a user'
-        def user = new User()
-
-        and: 'an XML converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
-
-        when: 'I add additional data'
-        conv << [foo: 'bar'] << [whee: 5.78]
+        when: 'additional data are added'
+        converter << [foo: 'bar'] << [whee: 5.78]
 
         then: 'these values are in the internal data structure'
-        Map d1 = conv.data
+        Map d1 = converter.data
         'bar' == d1.foo
         5.78 == d1.whee
         '' == d1.watermark
 
-        when: 'I overwrite existing values'
-        conv << [foo: 'bizz'] << [watermark: 'bar']
+        when: 'existing values are overwritten'
+        converter << [foo: 'bizz'] << [watermark: 'bar']
 
         then: 'these values have been overwritten'
-        Map d2 = conv.data
+        Map d2 = converter.data
         'bizz' == d2.foo
         5.78 == d2.whee
         'bar' == d2.watermark
     }
 
-    def 'Convert to XML without writer'() {
+    void 'Populate with data from invoicing transaction'() {
         given: 'an invoice'
         def invoice = makeInvoiceFixture()
 
         and: 'a user'
         def user = makeUserFixture()
 
-        and: 'the converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
-        conv.markdownService = makeMarkdownService()
+        and: 'tenant data'
+        def tenant = makeTenantFixture()
 
-        when: 'I generate XML from this invoice'
-        String xml = conv.toXML()
+        and: 'some service instances'
+        SeqNumberService seqNumberService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.getFullNumber(invoice) >> 'R-10004-18000'
+        ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * configService.loadTenantAsMap() >> tenant
 
-        then: 'I get valid XML'
+        and: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
+        converter.seqNumberService = seqNumberService
+        converter.configService = configService
+
+        when: 'the converter is populated'
+        converter.start invoice, user
+
+        then: 'the internal data structure contains correct values'
+        Map data = converter.data
+        invoice.is data.transaction
+        invoice.items.is data.items
+        invoice.organization.is data.organization
+        invoice.person.is data.person
+        user == data.user
+        'R-10004-18000' == data.fullNumber
+        invoice.taxRateSums == data.taxRates
+        null != data.values
+        invoice.subtotalNet == data.values.subtotalNet
+        invoice.subtotalGross == data.values.subtotalGross
+        invoice.discountPercentAmount == data.values.discountPercentAmount
+        invoice.total == data.values.total
+        '' == data.watermark
+        tenant.is data.client
+    }
+
+    void 'Cannot convert to XML without calling start()'() {
+        given: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
+
+        when: 'conversion to XML is attempted'
+        converter.toXML()
+
+        then: 'an exception is thrown'
+        thrown IllegalStateException
+
+        when: 'conversion to string is attempted'
+        converter.toXML()
+
+        then: 'an exception is thrown'
+        thrown IllegalStateException
+
+        when: 'writing to a writer is attempted'
+        converter.toXML new StringWriter()
+
+        then: 'an exception is thrown'
+        thrown IllegalStateException
+    }
+
+    void 'Convert to XML without writer'() {
+        given: 'an invoice'
+        def invoice = makeInvoiceFixture()
+
+        and: 'a user'
+        def user = makeUserFixture()
+
+        and: 'tenant data'
+        def tenant = makeTenantFixture()
+
+        and: 'registered data converters'
+        registerDefaultConverters()
+
+        and: 'some service instances'
+        SeqNumberService seqNumberService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.getFullNumber(invoice) >> 'R-39999-10000'
+        ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * configService.loadTenantAsMap() >> tenant
+        MarkdownService markdownService = makeMarkdownService()
+
+        and: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
+        converter.seqNumberService = seqNumberService
+        converter.configService = configService
+        converter.markdownService = markdownService
+        converter.start invoice, user
+
+        when: 'XML is generated from this invoice'
+        String xml = converter.toXML()
+
+        then: 'valid XML is returned'
         matchValidXML xml
     }
 
-    def 'Convert to XML with toString'() {
+    def 'Convert to XML using toString'() {
         given: 'an invoice'
         def invoice = makeInvoiceFixture()
 
         and: 'a user'
         def user = makeUserFixture()
 
-        and: 'the converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
-        conv.markdownService = makeMarkdownService()
+        and: 'tenant data'
+        def tenant = makeTenantFixture()
 
-        when: 'I generate XML from this invoice'
-        String xml = conv.toString()
+        and: 'registered data converters'
+        registerDefaultConverters()
 
-        then: 'I get valid XML'
+        and: 'some service instances'
+        SeqNumberService seqNumberService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.getFullNumber(invoice) >> 'R-39999-10000'
+        ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * configService.loadTenantAsMap() >> tenant
+        MarkdownService markdownService = makeMarkdownService()
+
+        and: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
+        converter.seqNumberService = seqNumberService
+        converter.configService = configService
+        converter.markdownService = markdownService
+        converter.start invoice, user
+
+        when: 'XML is generated from this invoice'
+        String xml = converter.toString()
+
+        then: 'valid XML is returned'
         matchValidXML xml
     }
 
@@ -222,32 +293,50 @@ class InvoicingTransactionXMLSpec extends Specification {
         and: 'a user'
         def user = makeUserFixture()
 
+        and: 'tenant data'
+        def tenant = makeTenantFixture()
+
+        and: 'registered data converters'
+        registerDefaultConverters()
+
+        and: 'some service instances'
+        SeqNumberService seqNumberService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.getFullNumber(invoice) >> 'R-39999-10000'
+        ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * configService.loadTenantAsMap() >> tenant
+        MarkdownService markdownService = makeMarkdownService()
+
+        and: 'an XML converter'
+        def converter = new InvoicingTransactionXML()
+        converter.seqNumberService = seqNumberService
+        converter.configService = configService
+        converter.markdownService = markdownService
+        converter.start invoice, user
+
         and: 'a writer'
         def out = new StringWriter()
 
-        and: 'the converter'
-        def conv = new InvoicingTransactionXML(invoice, user)
-        conv.markdownService = makeMarkdownService()
-
-        when: 'I generate XML from this invoice'
-        conv.toXML(out)
+        when: 'XML is generated from this invoice'
+        converter.toXML(out)
 
         then: 'the XML is the same as in the writer'
         String xml = out.toString()
-        conv.toString() == xml
+        converter.toString() == xml
 
-        and: 'I get valid XML'
+        and: 'valid XML is returned'
         matchValidXML xml
     }
 
 
     //-- Non-public methods ---------------------
 
-    private GPathResult getEntry(GPathResult parent, String name) {
-        parent.entry.find { it.@key == name }
+    private static GPathResult getEntry(GPathResult parent, String name) {
+        parent.entry.find { it.@key == name } as GPathResult
     }
 
-    private String getEntryText(GPathResult parent, String name) {
+    private static String getEntryText(GPathResult parent, String name) {
         getEntry(parent, name)?.text()
     }
 
@@ -266,28 +355,13 @@ class InvoicingTransactionXMLSpec extends Specification {
         } as EntityResolver
     }
 
-    private void makeClientFixture() {
-        mockDomain Config, [
-            [name: 'clientName', value: 'MyOrganization Ltd.'],
-            [name: 'clientStreet', value: '45, Park Ave.'],
-            [name: 'clientPostalCode', value: 'NY-39344'],
-            [name: 'clientLocation', value: 'Santa Barbara'],
-            [name: 'clientPhone', value: '+1 21 20404044'],
-            [name: 'clientEmail', value: 'info@myorganization.example'],
-            [name: 'clientWebsite', value: 'www.myorganization.example'],
-            [name: 'clientBankName', value: 'YourBank'],
-            [name: 'clientBankCode', value: '123456789'],
-            [name: 'clientAccountNumber', value: '987654321'],
-        ]
-    }
-
     private Invoice makeInvoiceFixture() {
         def org = new Organization(
             number: 10000, recType: 1, name: 'AMC World Technologies GmbH',
             legalForm: 'GmbH', billingAddr: new Address(),
             shippingAddr: new Address(), phone: '987654321'
         )
-        mockDomain Organization, [org]
+        org.id = new ObjectId()
 
         def invoice = new Invoice(
             adjustment: 0.54,
@@ -330,12 +404,11 @@ class InvoicingTransactionXMLSpec extends Specification {
             quantity: 4.25, unit: 'h', name: 'repairing', unitPrice: 39,
             tax: 19
         )
+        invoice.id = new ObjectId()
 
-        SeqNumberService seqNumberService = Mock()
-        seqNumberService.formatWithPrefix(_, _) >> 'R-39999'
-        invoice.seqNumberService = seqNumberService
-
-        mockDomain Invoice, [invoice]
+        UserService userService = Mock()
+        userService.getNumFractionDigitsExt() >> 2
+        invoice.userService = userService
 
         invoice
     }
@@ -343,10 +416,10 @@ class InvoicingTransactionXMLSpec extends Specification {
     private MarkdownService makeMarkdownService() {
         MarkdownService markdownService = Mock()
         markdownService.markdown(_) >> {
+            //noinspection GroovyAssignabilityCheck
             String s = it[0].toString()
                 .replace('&', '&amp;')
                 .replace('<', '&lt;')
-            println "converted XML: $s"
 
             "<p>${s}</p>".toString()
         }
@@ -354,7 +427,22 @@ class InvoicingTransactionXMLSpec extends Specification {
         markdownService
     }
 
-    private User makeUserFixture() {
+    private static Map<String, String> makeTenantFixture() {
+        [
+            name: 'MyOrganization Ltd.',
+            street: '45, Park Ave.',
+            postalCode: 'NY-39344',
+            location: 'Santa Barbara',
+            phone: '+1 21 20404044',
+            email: 'info@myorganization.example',
+            website: 'www.myorganization.example',
+            bankName: 'YourBank',
+            bankCode: '123456789',
+            accountNumber: '987654321'
+        ]
+    }
+
+    private static User makeUserFixture() {
         new User(
             username: 'jsmith', password: 'secret', firstName: 'John',
             lastName: 'Smith', email: 'j.smith@example.com',
@@ -362,7 +450,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         )
     }
 
-    private void matchHtmlValues(GPathResult entry) {
+    private static void matchHtmlValues(GPathResult entry) {
         assert '12, Leonardo Rd.' == entry.billingAddrStreetHtml.'html:html'.'html:body'.'html:p'.text()
         assert !entry.shippingAddrStreetHtml.'html:html'.'html:body'.text()
         def el = entry.subjectHtml
@@ -375,7 +463,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         assert 3 == el.size()
     }
 
-    private void matchInvoicingTransaction(GPathResult entry) {
+    private static void matchInvoicingTransaction(GPathResult entry) {
         def addr = entry.billingAddr
         assert '12, Leonardo Rd.' == addr.street.text()
         assert 'NY-39830' == addr.postalCode.text()
@@ -385,14 +473,15 @@ class InvoicingTransactionXMLSpec extends Specification {
         assert 'my footer text... & more' == entry.footerText.text()
         assert 'my header text' == entry.headerText.text()
         assert '39999' == entry.number.text()
-        assert '1' == entry.organization.@id.text()
+        assert null != entry.organization.@id.text()
         assert entry.organization.empty
         assert '' == entry.organization.text()
         assert 'Test invoice\nand more' == entry.subject.text()
     }
 
-    private void matchItems(GPathResult entry) {
+    private static void matchItems(GPathResult entry) {
         assert 3 == entry.invoicingItem.size()
+        //noinspection GroovyAssignabilityCheck
         def item = entry.invoicingItem[0]
         assert 4.0 == item.quantity.toBigDecimal()
         assert 'pcs.' == item.unit.text()
@@ -401,19 +490,19 @@ class InvoicingTransactionXMLSpec extends Specification {
         assert 19.0 == item.tax.toBigDecimal()
     }
 
-    private void matchOrganization(GPathResult entry) {
-        assert '1' == entry.@id.text()
-        assert 'AMC World Technologies GmbH' == entry.name.text()
+    private static void matchOrganization(GPathResult entry) {
+        assert null != entry.@id.text()
+        assert 'AMC World Technologies GmbH' == entry['name'].text()
         assert '10000' == entry.number.text()
     }
 
-    private void matchTaxRates(GPathResult entry) {
+    private static void matchTaxRates(GPathResult entry) {
         assert 2 == entry.entry.size()
-        assert '65.68490000000000' == getEntryText(entry, '19.0')
-        assert '0.96915000000000' == getEntryText(entry, '7.0')
+        assert '65.6849' == getEntryText(entry, '19.0')
+        assert '0.96915' == getEntryText(entry, '7.0')
     }
 
-    private void matchUser(GPathResult entry) {
+    private static void matchUser(GPathResult entry) {
         assert 'John' == entry.firstName.text()
         assert 'Smith' == entry.lastName.text()
         assert '+49 1 8984466' == entry.phone.text()
@@ -443,12 +532,12 @@ class InvoicingTransactionXMLSpec extends Specification {
         matchHtmlValues map
     }
 
-    private void matchValues(GPathResult entry) {
+    private static void matchValues(GPathResult entry) {
         assert 359.555 == getEntry(entry, 'subtotalNet').toBigDecimal()
         assert 426.20905 == getEntry(entry, 'subtotalGross').toBigDecimal()
         assert 8.524181 == getEntry(entry, 'discountPercentAmount')
             .toBigDecimal()
-        assert 413.224869 == getEntry(entry, 'totalNet').toBigDecimal()
+        assert 413.224869 == getEntry(entry, 'total').toBigDecimal()
     }
 
     private void registerDefaultConverters() {

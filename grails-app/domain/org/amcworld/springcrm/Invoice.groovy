@@ -169,7 +169,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        int n = userService.numFractionDigitsExt
+        int n = userService.getNumFractionDigitsExt()
         RoundingMode rm = RoundingMode.HALF_UP
 
         paymentAmount.setScale(n, rm) - total.setScale(n, rm)

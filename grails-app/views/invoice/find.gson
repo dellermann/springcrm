@@ -10,5 +10,5 @@ json(invoiceList) { Invoice invoice ->
     id invoice.id
     number seqNumberService.getFullNumber(invoice)
     name invoice.subject
-    fullName invoice.fullName
+    fullName seqNumberService.getFullName(invoice)
 }

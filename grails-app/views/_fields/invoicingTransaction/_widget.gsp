@@ -6,6 +6,6 @@
   data-filter-organization="#organization-select"
   data-value="${value ? [
       id: value.id, number: fullNumber(bean: value), name: value.subject,
-      fullName: value.fullName
+      fullName: fullName(bean: value)
     ].encodeAsJSON() : ''}">
 </select>

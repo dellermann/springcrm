@@ -10,5 +10,5 @@ json(dunningList) { Dunning dunning ->
     id dunning.id
     number seqNumberService.getFullNumber(dunning)
     name dunning.subject
-    fullName dunning.fullName
+    fullName seqNumberService.getFullName(dunning)
 }

@@ -25,7 +25,6 @@ import org.amcworld.springcrm.google.GoogleCalendarSync
 import org.amcworld.springcrm.google.GoogleContactSync
 import org.amcworld.springcrm.google.GoogleContactSyncTask
 import org.amcworld.springcrm.ldap.LdapFactory
-import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
 import org.amcworld.springcrm.xml.LogErrorListener
 import org.amcworld.springcrm.xml.XHTMLEntityResolver
 import org.apache.fop.apps.FopFactory
@@ -55,11 +54,7 @@ beans = {
         b.factoryMethod = 'newInstance'
         b.singleton = false     // must not be singleton! See FopService.
     }
-    invoicingTransactionXMLFactory(InvoicingTransactionXMLFactory) {
-        markdownService = ref('markdownService')
-    }
-    transformerFactory(TransformerFactory)
-    { DefaultBeanConfiguration b ->
+    transformerFactory(TransformerFactory) { DefaultBeanConfiguration b ->
         b.factoryMethod = 'newInstance'
         b.singleton = false     // must not be singleton! See FopService.
         errorListener = ref('xsltLogErrorListener')

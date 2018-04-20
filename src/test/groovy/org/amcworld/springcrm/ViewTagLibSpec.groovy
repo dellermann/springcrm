@@ -569,6 +569,7 @@ class ViewTagLibSpec extends Specification
 
         and: 'a configuration service instance'
         ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getString('currency') >> currency
         tagLib.configService = configService
 
@@ -596,6 +597,7 @@ class ViewTagLibSpec extends Specification
 
         and: 'a configuration service instance'
         ConfigService configService = Mock()
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getString('currency') >> currency
         tagLib.configService = configService
 
@@ -1127,6 +1129,7 @@ class ViewTagLibSpec extends Specification
         given: 'a user service instance'
         UserService userService = Mock()
         userService.getCurrentLocale() >> Locale.GERMANY
+        //noinspection GroovyAssignabilityCheck
         userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0]
         tagLib.userService = userService
 
@@ -1145,7 +1148,9 @@ class ViewTagLibSpec extends Specification
         given: 'a user service instance'
         UserService userService = Mock()
         userService.getCurrentLocale() >> Locale.GERMANY
+        //noinspection GroovyAssignabilityCheck
         userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0] * 3
+        //noinspection GroovyAssignabilityCheck
         userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1] * 3
         tagLib.userService = userService
 
@@ -1257,7 +1262,9 @@ class ViewTagLibSpec extends Specification
         given: 'a user service instance'
         UserService userService = Mock()
         userService.getCurrentLocale() >> Locale.GERMANY
+        //noinspection GroovyAssignabilityCheck
         userService.getNumFractionDigits() >>> [2, 3, 4, 1, 0] * 5
+        //noinspection GroovyAssignabilityCheck
         userService.getNumFractionDigitsExt() >>> [3, 4, 5, 2, 1] * 5
         tagLib.userService = userService
 
@@ -1501,6 +1508,23 @@ class ViewTagLibSpec extends Specification
         2_670_054_036_891   ||     '2.43 T'
     }
 
+    void 'Tag fullName renders correct output'() {
+        given: 'a sequence number service instance'
+        SeqNumberService seqNumberService = Mock()
+        tagLib.seqNumberService = seqNumberService
+
+        and: 'an instance'
+        def invoice = new Invoice()
+
+        when: 'the tag is used'
+        String s = tagLib.fullName([bean: invoice])
+
+        then: 'the output is correctly rendered'
+        //noinspection GroovyAssignabilityCheck
+        1 * seqNumberService.getFullNumber(invoice) >> 'I-16012-45037 FooBar'
+        'I-16012-45037 FooBar' == s
+    }
+
     void 'Tag fullNumber renders correct output'() {
         given: 'a sequence number service instance'
         SeqNumberService seqNumberService = Mock()
@@ -1513,6 +1537,7 @@ class ViewTagLibSpec extends Specification
         String s = tagLib.fullNumber([bean: invoice])
 
         then: 'the output is correctly rendered'
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.getFullNumber(invoice) >> 'I-16012-45037'
         'I-16012-45037' == s
     }

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXMLFactory.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,11 @@
 package org.amcworld.springcrm.xml
 
 import com.naleid.grails.MarkdownService
-import org.amcworld.springcrm.InvoicingTransaction
-import org.amcworld.springcrm.User
+import groovy.transform.CompileStatic
+import org.amcworld.springcrm.ConfigService
+import org.amcworld.springcrm.SeqNumberService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
 
 /**
@@ -30,14 +33,23 @@ import org.amcworld.springcrm.User
  * create XML converters for invoicing transactions.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.4
  */
+@Component
+@CompileStatic
 class InvoicingTransactionXMLFactory {
 
     //-- Fields ---------------------------------
 
+    @Autowired
+    ConfigService configService
+
+    @Autowired
     MarkdownService markdownService
+
+    @Autowired
+    SeqNumberService seqNumberService
 
 
     //-- Public methods -------------------------
@@ -49,11 +61,11 @@ class InvoicingTransactionXMLFactory {
      * @param user          the currently logged in user
      * @return              the XML converter
      */
-    InvoicingTransactionXML newConverter(InvoicingTransaction transaction,
-                                         User user)
-    {
-        def inst = new InvoicingTransactionXML(transaction, user)
+    InvoicingTransactionXML newConverter() {
+        InvoicingTransactionXML inst = new InvoicingTransactionXML()
+        inst.configService = configService
         inst.markdownService = markdownService
+        inst.seqNumberService = seqNumberService
 
         inst
     }

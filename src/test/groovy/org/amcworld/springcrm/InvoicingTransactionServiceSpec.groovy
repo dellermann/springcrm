@@ -32,7 +32,7 @@ class InvoicingTransactionServiceSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Generate XML for an invoice'() {
+    void 'Generate XML for an invoice'() {
         given: 'an invoice'
         def invoice = new Invoice()
 
@@ -43,19 +43,24 @@ class InvoicingTransactionServiceSpec extends Specification
         String xml = '<? example XML ?>'
 
         and: 'a mocked XML converter'
-        InvoicingTransactionXML conv = Mock()
-        1 * conv.setDuplicate(false)
-        1 * conv.toString() >> xml
+        InvoicingTransactionXML converter = Mock()
+        1 * converter.setDuplicate(false)
+        //noinspection GroovyAssignabilityCheck
+        1 * converter.toString() >> xml
 
         and: 'a mocked XML converter factory'
-        InvoicingTransactionXMLFactory invoicingTransactionXMLFactory = Mock()
-        1 * invoicingTransactionXMLFactory.newConverter(invoice, user) >> conv
-        service.invoicingTransactionXMLFactory = invoicingTransactionXMLFactory
+        InvoicingTransactionXMLFactory factory = Mock()
+        //noinspection GroovyAssignabilityCheck
+        1 * factory.newConverter() >> converter
+        service.invoicingTransactionXMLFactory = factory
 
-        when: 'I generate XML from this invoice'
+        when: 'XML is generated from this invoice'
         String res = service.generateXML(invoice, user)
 
-        then: 'I get valid XML'
+        then: 'the converter has been populated'
+        1 * converter.start(invoice, user)
+
+        and: 'valid XML is returned'
         xml == res
     }
 
