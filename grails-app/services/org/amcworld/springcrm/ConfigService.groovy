@@ -161,7 +161,10 @@ abstract class ConfigService implements IConfigService {
      *                  has been specified
      */
     Integer getInteger(String id, Integer defValue = null) {
-        Integer res = get(id)?.value?.asType(Integer)
+        Integer res = null
+        try {
+            res = get(id)?.value?.asType(Integer)
+        } catch (NumberFormatException ignored) {}
 
         res == null ? defValue : res
     }
@@ -177,7 +180,10 @@ abstract class ConfigService implements IConfigService {
      *                  has been specified
      */
     Long getLong(String id, Long defValue = null) {
-        Long res = get(id)?.value?.asType(Long)
+        Long res = null
+        try {
+            res = get(id)?.value?.asType(Long)
+        } catch (NumberFormatException ignored) {}
 
         res == null ? defValue : res
     }

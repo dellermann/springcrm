@@ -53,6 +53,7 @@ class ConfigControllerSpec extends Specification
         controller.currency()
 
         then: 'the currencies are ordered by currency ID'
+        //noinspection GroovyAssignabilityCheck
         [EUR: 'EUR (€)', USD: 'USD'] as LinkedHashMap == model.currencies
 
         and: 'the remaining model is correct'
@@ -72,6 +73,7 @@ class ConfigControllerSpec extends Specification
 
         and: 'a sequence number service instance'
         SeqNumberService seqNumberService = Mock()
+        //noinspection GroovyAssignabilityCheck
         2 * seqNumberService.getFixedSeqNumbers() >> seqNumbers
         controller.seqNumberService = seqNumberService
 
@@ -92,8 +94,11 @@ class ConfigControllerSpec extends Specification
         controller.fixSeqNumbers()
 
         then: 'the work items are loaded'
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDunningCharge') >> id
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDefaultInterest') >> id
+        //noinspection GroovyAssignabilityCheck
         2 * workService.get(id) >> work
 
         and: 'the view is correctly set'
@@ -101,6 +106,7 @@ class ConfigControllerSpec extends Specification
         null != flash.message
 
         and: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         seqNumbers == model.seqNumberList
         work == model.workDunningCharge
         work == model.workDefaultInterest
@@ -110,7 +116,9 @@ class ConfigControllerSpec extends Specification
         controller.fixSeqNumbers()
 
         then: 'the work items are loaded'
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDunningCharge') >> null
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDefaultInterest') >> null
         0 * workService.get(id)
 
@@ -119,6 +127,7 @@ class ConfigControllerSpec extends Specification
         null != flash.message
 
         and: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         seqNumbers == model.seqNumberList
         null == model.workDunningCharge
         null == model.workDefaultInterest
@@ -142,6 +151,7 @@ class ConfigControllerSpec extends Specification
         controller.loadSelValues()
 
         then: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findAllByClass(Industry) >> []
         model.selValueList.empty
 
@@ -151,7 +161,9 @@ class ConfigControllerSpec extends Specification
         controller.loadSelValues()
 
         then: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findAllByClass(Industry) >> list
+        //noinspection GroovyAssignabilityCheck
         list == model.selValueList
     }
 
@@ -184,15 +196,20 @@ class ConfigControllerSpec extends Specification
         controller.loadSeqNumbers()
 
         then: 'the work items are loaded'
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.list(null) >> seqNumbers
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDunningCharge') >> id
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDefaultInterest') >> id
+        //noinspection GroovyAssignabilityCheck
         2 * workService.get(id) >> work
 
         and: 'the view is correctly set'
         'seqNumbers' == view
 
         and: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         seqNumbers == model.seqNumberList
         work == model.workDunningCharge
         work == model.workDefaultInterest
@@ -215,8 +232,11 @@ class ConfigControllerSpec extends Specification
         controller.loadSeqNumbers()
 
         then: 'the work items are loaded'
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.list(null) >> []
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDunningCharge') >> null
+        //noinspection GroovyAssignabilityCheck
         1 * configService.getObjectId('workIdDefaultInterest') >> null
         2 * workService.get(null)
 
@@ -246,6 +266,7 @@ class ConfigControllerSpec extends Specification
         controller.loadTaxRates()
 
         then: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findAllByClass(TaxRate) >> []
         null == model.taxRateList
 
@@ -254,7 +275,9 @@ class ConfigControllerSpec extends Specification
         controller.loadTaxRates()
 
         then: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findAllByClass(TaxRate) >> list
+        //noinspection GroovyAssignabilityCheck
         list == model.taxRateList
     }
 
@@ -270,6 +293,7 @@ class ConfigControllerSpec extends Specification
         controller.loadTenant()
 
         then: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * configService.loadTenant() >> tenant
         tenant == model.tenant
     }
@@ -283,6 +307,7 @@ class ConfigControllerSpec extends Specification
         controller.save()
 
         then: 'a redirect is issued'
+        //noinspection GroovyAssignabilityCheck
         0 * configService.store(_, _)
         null != flash.message
         '/config/index' == response.redirectedUrl
@@ -425,23 +450,31 @@ class ConfigControllerSpec extends Specification
         controller.saveSelValues()
 
         then: 'the values are correctly stored'
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findByClassAndId(Salutation, 2L) >> salutation2
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.save(
             { it == salutation2 && it.name == 'Mrs.' && it.orderId == 10i }
         )
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.save({ it.name == 'Ms.' && it.orderId == 20i })
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findByClassAndId(Salutation, 1L) >> salutation1
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.save(
             { it == salutation1 && it.name == 'Mr.' && it.orderId == 30i }
         )
         1 * selValueService.delete(3L)
 
         and: 'some names are not changed'
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findByClassAndId(QuoteStage, 601L) >> stage1
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.save({ it == stage1 && it.orderId == 10i })
         0 * selValueService.delete(603L)
 
         and: 'some types are not considered'
+        //noinspection GroovyAssignabilityCheck
         0 * selValueService.findByClassAndId(Industry, _)
         0 * selValueService.findByClassAndId(Rating, _)
     }
@@ -473,12 +506,16 @@ class ConfigControllerSpec extends Specification
         controller.saveSeqNumbers()
 
         then: 'the sequence numbers are correctly stored'
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.get('invoice') >> seq1
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.save({
             it.id == 'invoice' && it.prefix == 'I' &&
                 it.startValue == 40000 && it.endValue == 89999
         }) >> seq1
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.get('quote') >> seq2
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.save({
             it.id == 'quote' && it.prefix == 'Q' &&
                 it.startValue == 30000 && it.endValue == 49999
@@ -506,12 +543,16 @@ class ConfigControllerSpec extends Specification
         controller.saveSeqNumbers()
 
         then: 'the sequence numbers are correctly stored'
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.get('invoice') >> seq1
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.save({
             it.id == 'invoice' && it.prefix == 'I' &&
                 it.startValue == 40000
         }) >> null
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.get('quote') >> seq2
+        //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.save({
             it.id == 'quote' && it.prefix == 'Q' &&
                 it.startValue == 30000
@@ -522,6 +563,7 @@ class ConfigControllerSpec extends Specification
         1 * configService.store('workIdDefaultInterest', id2.toString())
 
         and: 'the sequence number view is used again'
+        //noinspection GroovyAssignabilityCheck
         [seq2, seq1] == model.seqNumberList
         'seqNumbers' == view
     }
@@ -543,7 +585,9 @@ class ConfigControllerSpec extends Specification
         controller.saveTaxRates()
 
         then: 'only the redirect is issued'
+        //noinspection GroovyAssignabilityCheck
         0 * selValueService.delete(_)
+        //noinspection GroovyAssignabilityCheck
         0 * selValueService.save(_)
         '/config/index' == response.redirectedUrl
 
@@ -558,15 +602,21 @@ class ConfigControllerSpec extends Specification
         controller.saveTaxRates()
 
         then: 'the tax rates are correctly stored'
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findByClassAndId(TaxRate, tr2.id) >> tr2
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.save({
             it.name == '19 %' && it.taxValue == 0.19 && it.orderId == 10i
         })
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.findByClassAndId(TaxRate, tr1.id) >> tr1
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.save({
             it.name == '7 %' && it.taxValue == 0.07 && it.orderId == 20i
         })
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.delete(702L)
+        //noinspection GroovyAssignabilityCheck
         1 * selValueService.save({
             it.name == '22 %' && it.taxValue == 0.22 && it.orderId == 30i
         })
@@ -608,6 +658,7 @@ class ConfigControllerSpec extends Specification
         controller.saveTenant tenant
 
         then: 'the tenant data is not stored'
+        //noinspection GroovyAssignabilityCheck
         0 * configService.storeTenant(_)
         tenant == model.tenant
         'loadTenant' == view
@@ -630,6 +681,7 @@ class ConfigControllerSpec extends Specification
         controller.show()
 
         then: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * configService.list() >> []
         '/config/page1' == view
         model.configData.isEmpty()
@@ -640,6 +692,7 @@ class ConfigControllerSpec extends Specification
         controller.show()
 
         then: 'the model is correctly set'
+        //noinspection GroovyAssignabilityCheck
         1 * configService.list() >> list
         '/config/taxRates' == view
         list.size() == model.configData.size()

@@ -35,6 +35,7 @@ class ConfigServiceSpec extends Specification
 
     //-- Fixture methods ------------------------
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Can get boolean value'(String value, Boolean b) {
         given:
         def config = new Config(value: value)
@@ -50,7 +51,7 @@ class ConfigServiceSpec extends Specification
         where:
         value   || b
         null    || null
-        ''      || null
+        ''      || false
         'false' || false
         'False' || false
         'true'  || true
@@ -194,7 +195,7 @@ class ConfigServiceSpec extends Specification
         where:
         value   || s
         null    || null
-        ''      || null
+        ''      || ''
         '0'     || '0'
         'a'     || 'a'
         'abc'   || 'abc'
@@ -231,6 +232,7 @@ class ConfigServiceSpec extends Specification
         tenantData == service.loadTenantAsMap()
     }
 
+    @SuppressWarnings(["GroovyPointlessBoolean", "SpellCheckingInspection"])
     @Ignore('Does not work due to config.insert() in service method')
     void 'Can store configuration value'(Object value, String e) {
         when: 'the configuration is stored'
@@ -298,6 +300,7 @@ class ConfigServiceSpec extends Specification
      *
      * @return  the tenant data
      */
+    @SuppressWarnings("SpellCheckingInspection")
     private static Map<String, String> makeTenantFixture() {
         [
             name: 'MyOrganization Ltd.',
@@ -323,7 +326,9 @@ class ConfigServiceSpec extends Specification
      * know why.
      */
     void mockDataService(Class<?> serviceClass) {
-        Service service = (Service) dataStore.getService(serviceClass)
+        Service service = (Service) dataStore.getService(
+            (Class<Service>) serviceClass
+        )
         String name = Introspector.decapitalize(serviceClass.simpleName)
         if (!applicationContext.containsBean(name)) {
             applicationContext.beanFactory.autowireBean service

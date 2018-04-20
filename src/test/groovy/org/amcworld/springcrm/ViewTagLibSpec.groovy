@@ -1521,7 +1521,7 @@ class ViewTagLibSpec extends Specification
 
         then: 'the output is correctly rendered'
         //noinspection GroovyAssignabilityCheck
-        1 * seqNumberService.getFullNumber(invoice) >> 'I-16012-45037 FooBar'
+        1 * seqNumberService.getFullName(invoice) >> 'I-16012-45037 FooBar'
         'I-16012-45037 FooBar' == s
     }
 
