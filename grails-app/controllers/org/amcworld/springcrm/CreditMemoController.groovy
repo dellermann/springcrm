@@ -1,7 +1,7 @@
 /*
  * CreditMemoController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ class CreditMemoController {
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
+    SeqNumberService seqNumberService
 
 
     //-- Public methods -------------------------
@@ -386,25 +387,34 @@ class CreditMemoController {
             return
         }
 
+        Invoice invoiceInstance = creditMemoInstance.invoice
+        Dunning dunningInstance = creditMemoInstance.dunning
         String xml = invoicingTransactionService.generateXML(
             creditMemoInstance,
             creditMemoInstance.createUser ?: session.credential.loadUser(),
             params.boolean('duplicate') ?: false,
             [
                 invoice: creditMemoInstance.invoice,
-                invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
+                invoiceFullNumber: invoiceInstance == null ? null
+                    : seqNumberService.getFullNumber(invoiceInstance),
                 dunning: creditMemoInstance.dunning,
-                dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
+                dunningFullNumber: dunningInstance == null ? null
+                    : seqNumberService.getFullNumber(dunningInstance),
                 paymentMethod: creditMemoInstance.paymentMethod?.name
             ]
         )
-        GString fileName =
-            "${message(code: 'creditMemo.label')} ${creditMemoInstance.fullNumber}"
+        StringBuilder buf = new StringBuilder()
+        buf << (message(code: 'creditMemo.label') as String)
+        buf << ' ' << seqNumberService.getFullNumber(creditMemoInstance)
         if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+            buf << ' ('
+            buf << (message(code: 'invoicingTransaction.duplicate') as String)
+            buf << ')'
         }
-        fileName += '.pdf'
+        buf << '.pdf'
 
-        fopService.outputPdf xml, 'credit-memo', template, response, fileName
+        fopService.outputPdf(
+            xml, 'credit-memo', template, response, buf.toString()
+        )
     }
 }

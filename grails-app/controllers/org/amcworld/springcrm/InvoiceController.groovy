@@ -1,7 +1,7 @@
 /*
  * InvoiceController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -368,14 +368,17 @@ class InvoiceController {
             invoiceInstance.createUser ?: session.credential.loadUser(),
             params.boolean('duplicate') ?: false
         )
-        GString fileName =
-            "${message(code: 'invoice.label')} ${seqNumberService.getFullNumber(invoiceInstance)}"
+        StringBuilder buf = new StringBuilder()
+        buf << (message(code: 'invoice.label') as String)
+        buf << ' ' << seqNumberService.getFullNumber(invoiceInstance)
         if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+            buf << ' ('
+            buf << (message(code: 'invoicingTransaction.duplicate') as String)
+            buf << ')'
         }
-        fileName += ".pdf"
+        buf << '.pdf'
 
-        fopService.outputPdf xml, 'invoice', template, response, fileName
+        fopService.outputPdf xml, 'invoice', template, response, buf.toString()
     }
 
     /**

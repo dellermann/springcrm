@@ -1,7 +1,7 @@
 /*
  * Organization.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
         notes type: 'text'
         recType index: 'rec_type'
     }
-    static transients = ['fullNumber', 'shortName', 'customer', 'vendor']
+    static transients = ['shortName', 'customer', 'vendor']
 
 
     //-- Fields ---------------------------------

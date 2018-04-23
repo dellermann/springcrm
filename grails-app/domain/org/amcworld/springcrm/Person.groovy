@@ -1,7 +1,7 @@
 /*
  * Person.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ class Person implements GormEntity<Person>, NumberedDomain {
         notes type: 'text'
         sort 'lastName'
     }
-    static transients = ['fullNumber', 'fullName']
+    static transients = ['fullName']
 
 
     //-- Fields ---------------------------------

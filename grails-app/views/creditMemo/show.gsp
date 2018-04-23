@@ -3,7 +3,10 @@
     <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.show.label"
-        args="[message(code: 'creditMemo.label'), fullNumber]" /> -
+        args="[
+          message(code: 'creditMemo.label'),
+          fullNumber(bean: creditMemoInstance)
+      ]" /> -
       <g:message code="creditMemo.plural" />
     </title>
     <meta name="stylesheet" content="invoicing-transaction" />

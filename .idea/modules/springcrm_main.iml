@@ -4,12 +4,25 @@
     <facet type="Spring" name="Spring">
       <configuration />
     </facet>
-    <facet type="web" name="Web Gradle : springcrm-2.1.8.war">
+    <facet type="web" name="Web Gradle : springcrm-3.0.0.war">
       <configuration>
         <webroots>
           <root url="file://$MODULE_DIR$/../../src/main/webapp" relative="/" />
-          <root url="file://$MODULE_DIR$/../../build/assetCompile/assets" relative="/assets" />
+          <root url="file://$MODULE_DIR$/../../build/assets" relative="/assets" />
         </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/../../grails-app/controllers" />
+          <root url="file://$MODULE_DIR$/../../grails-app/domain" />
+          <root url="file://$MODULE_DIR$/../../grails-app/init" />
+          <root url="file://$MODULE_DIR$/../../grails-app/services" />
+          <root url="file://$MODULE_DIR$/../../grails-app/taglib" />
+          <root url="file://$MODULE_DIR$/../../grails-app/utils" />
+          <root url="file://$MODULE_DIR$/../../grails-app/conf" />
+          <root url="file://$MODULE_DIR$/../../grails-app/i18n" />
+          <root url="file://$MODULE_DIR$/../../grails-app/views" />
+          <root url="file://$MODULE_DIR$/../../src/main/groovy" />
+          <root url="file://$MODULE_DIR$/../../src/main/resources" />
+        </sourceRoots>
       </configuration>
     </facet>
   </component>

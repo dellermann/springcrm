@@ -1,7 +1,7 @@
 /*
  * QuoteController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ class QuoteController {
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
+    SeqNumberService seqNumberService
 
 
     //-- Public methods -------------------------
@@ -264,13 +265,16 @@ class QuoteController {
                 ((Credential) session.credential).loadUser(),
             params.boolean('duplicate') ?: false
         )
-        GString fileName =
-            "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
+        StringBuilder buf = new StringBuilder()
+        buf << (message(code: 'quote.label') as String)
+        buf << ' ' << seqNumberService.getFullNumber(quoteInstance)
         if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+            buf << ' ('
+            buf << (message(code: 'invoicingTransaction.duplicate') as String)
+            buf << ')'
         }
-        fileName += ".pdf"
+        buf << '.pdf'
 
-        fopService.outputPdf xml, 'quote', template, response, fileName
+        fopService.outputPdf xml, 'quote', template, response, buf.toString()
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DunningController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ class DunningController {
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
+    SeqNumberService seqNumberService
 
 
     //-- Public methods -------------------------
@@ -380,17 +381,21 @@ class DunningController {
             params.boolean('duplicate') ?: false,
             [
                 invoice: dunningInstance.invoice,
-                invoiceFullNumber: dunningInstance.invoice.fullNumber,
+                invoiceFullNumber:
+                    seqNumberService.getFullNumber(dunningInstance.invoice)
             ]
         )
-        GString fileName =
-            "${message(code: 'dunning.label')} ${dunningInstance.fullNumber}"
+        StringBuilder buf = new StringBuilder()
+        buf << (message(code: 'dunning.label') as String)
+        buf << ' ' << seqNumberService.getFullNumber(dunningInstance)
         if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+            buf << ' ('
+            buf << (message(code: 'invoicingTransaction.duplicate') as String)
+            buf << ')'
         }
-        fileName += ".pdf"
+        buf << '.pdf'
 
-        fopService.outputPdf xml, 'dunning', template, response, fileName
+        fopService.outputPdf xml, 'dunning', template, response, buf.toString()
     }
 
     def getClosingBalance(Long id) {
@@ -402,7 +407,7 @@ class DunningController {
 
     private InvoicingItem workToItem(Work w) {
         new InvoicingItem(
-            number: w.fullNumber, quantity: w.quantity,
+            number: seqNumberService.getFullNumber(w), quantity: w.quantity,
             unit: w.unit.toString(), name: w.name, description: w.description,
             unitPrice: w.unitPrice, tax: w.taxRate.taxValue * 100
         )

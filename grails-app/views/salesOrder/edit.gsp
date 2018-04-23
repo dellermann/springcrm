@@ -3,7 +3,10 @@
     <meta name="layout" content="main" />
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[message(code: 'salesOrder.label'), fullNumber]" /> -
+        args="[
+          message(code: 'salesOrder.label'),
+          fullNumber(bean: salesOrderInstance)
+        ]"/> -
       <g:message code="salesOrder.plural" />
     </title>
     <meta name="stylesheet" content="invoicing-transaction" />
