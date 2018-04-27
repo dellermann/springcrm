@@ -423,7 +423,9 @@ class ViewTagLib {
      * @since 2.1
      */
     def fullName = { attrs ->
-        out << seqNumberService.getFullName(attrs.bean as NumberedDomain)
+        if (attrs.bean != null) {
+            out << seqNumberService.getFullName(attrs.bean as NumberedDomain)
+        }
     }
 
     /**
@@ -433,7 +435,9 @@ class ViewTagLib {
      * @since 2.1
      */
     def fullNumber = { attrs ->
-        out << seqNumberService.getFullNumber(attrs.bean as NumberedDomain)
+        if (attrs.bean != null) {
+            out << seqNumberService.getFullNumber(attrs.bean as NumberedDomain)
+        }
     }
 
     /**

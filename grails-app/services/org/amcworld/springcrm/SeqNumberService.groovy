@@ -1,7 +1,7 @@
 /*
  * SeqNumberService.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -268,6 +268,16 @@ class SeqNumberService {
      */
     private String classToDomainName(Class cls) {
         ArtefactHandler handler = grailsApplication.getArtefactType(cls)
+        if (handler == null) {
+
+            /*
+             * This occurs in some cases where subclasses of a domain class
+             * have been meta programed.  E. g. class "Quote_$$_jvst322_51"
+             * will be used instead of "Quote".
+             */
+            cls = cls.superclass
+            handler = grailsApplication.getArtefactType(cls)
+        }
         GrailsClass gc = grailsApplication.getArtefact(handler.type, cls.name)
 
         gc?.logicalPropertyName
