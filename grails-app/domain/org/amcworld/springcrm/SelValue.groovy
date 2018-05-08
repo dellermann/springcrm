@@ -55,7 +55,7 @@ class SelValue {
     Long id
 
     /**
-     * The name of this selection value.
+     * The name of the selection value.
      */
     String name
 

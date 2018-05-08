@@ -28,8 +28,8 @@ class QuoteSpec extends Specification implements DomainUnitTest<Quote> {
 
     //-- Feature methods ------------------------
 
-    def 'Creating an empty instance initializes the properties'() {
-        when: 'I create an empty quote'
+    void 'Creating an empty instance initializes the properties'() {
+        when: 'an empty quote is created'
         def q = new Quote()
 
         then: 'the properties are initialized properly'
@@ -62,11 +62,11 @@ class QuoteSpec extends Specification implements DomainUnitTest<Quote> {
         null == q.validUntil
     }
 
-    def 'Copy an empty instance using constructor'() {
+    void 'Copy an empty instance using constructor'() {
         given: 'an empty quote'
         def q1 = new Quote()
 
-        when: 'I copy the quote using the constructor'
+        when: 'the quote is copied using the constructor'
         def q2 = new Quote(q1)
 
         then: 'the properties are set properly'
@@ -97,7 +97,7 @@ class QuoteSpec extends Specification implements DomainUnitTest<Quote> {
         null == q2.validUntil
     }
 
-    def 'Copy a quote using constructor'() {
+    void 'Copy a quote using constructor'() {
         given: 'some dates'
         Date docDate = new Date()
         Date shippingDate = docDate + 7
@@ -158,7 +158,7 @@ class QuoteSpec extends Specification implements DomainUnitTest<Quote> {
             validUntil: validUntilDate
         )
 
-        when: 'I copy the quote using the constructor'
+        when: 'the quote is copied using the constructor'
         def q2 = new Quote(q1)
 
         then: 'some properties are the equal'
@@ -203,7 +203,7 @@ class QuoteSpec extends Specification implements DomainUnitTest<Quote> {
         null == q2.validUntil
     }
 
-    def 'Stage must not be null'() {
+    void 'Stage must not be null'() {
         given: 'a quite valid quote'
         def q = new Quote(
             number: 39999,
@@ -216,13 +216,13 @@ class QuoteSpec extends Specification implements DomainUnitTest<Quote> {
             items: [new InvoicingItem(unit: 'm', name: 'cable')]
         )
 
-        when: 'I set the stage'
+        when: 'the stage is set'
         q.stage = new QuoteStage()
 
         then: 'the instance is valid'
         q.validate()
 
-        when: 'I unset the stage'
+        when: 'the stage is unset'
         q.stage = null
 
         then: 'the instance is not valid'

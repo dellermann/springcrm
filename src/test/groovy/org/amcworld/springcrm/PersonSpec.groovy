@@ -130,6 +130,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         expect:
         null != person
         person != null
+        //noinspection ChangeToOperator
         !person.equals(null)
     }
 
@@ -306,6 +307,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'John'      | 'Doe'     || 'Doe, John'
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'First name must not be blank'(String firstName, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -337,6 +339,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'abc' * 1000	|| true
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'The last name must not be blank'(String lastName, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -368,6 +371,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'abc'*1000		|| true
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Phone must have a maximum length'(String phone, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -396,6 +400,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'x' * 41        || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Mobile must have a maximum length'(String phone, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -424,6 +429,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'x' * 41        || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Fax must have a maximum length'(String phone, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -452,6 +458,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'x' * 41        || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Assistant phone must have a maximum length'(String phone,
                                                       boolean valid)
     {
@@ -482,6 +489,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'x' * 41        || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Other phone must have a maximum length'(String phone, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -510,6 +518,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'x' * 41        || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'E-mail 1 must be valid e-mail address'(String email, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -542,6 +551,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'user@härbört.com'  || true
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'E-mail 2 must be valid e-mail address'(String email, boolean valid) {
         given: 'an instance'
         def person = new Person(

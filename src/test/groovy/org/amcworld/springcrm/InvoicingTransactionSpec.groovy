@@ -31,8 +31,8 @@ class InvoicingTransactionSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Creating an empty instance initializes the properties'() {
-        when: 'I create an empty invoicing transaction'
+    void 'Creating an empty instance initializes the properties'() {
+        when: 'an empty instance is created'
         def i = new InvoicingTransaction()
 
         then: 'the properties are initialized properly'
@@ -61,11 +61,11 @@ class InvoicingTransactionSpec extends Specification
         null == i.lastUpdated
     }
 
-    def 'Copy an empty instance using constructor'() {
-        given: 'an empty invoicing transaction'
+    void 'Copy an empty instance using constructor'() {
+        given: 'an empty instance'
         def i1 = new InvoicingTransaction()
 
-        when: 'I copy the invoicing transaction using the constructor'
+        when: 'the instance is copied using the constructor'
         def i2 = new InvoicingTransaction(i1)
 
         then: 'the properties are set properly'
@@ -92,7 +92,7 @@ class InvoicingTransactionSpec extends Specification
         null == i2.lastUpdated
     }
 
-    def 'Copy an invoicing transaction using constructor'() {
+    void 'Copy an invoicing transaction using constructor'() {
         given: 'some dates'
         Date docDate = new Date()
         Date shippingDate = docDate + 7
@@ -105,7 +105,7 @@ class InvoicingTransactionSpec extends Specification
             organization: organization, firstName: 'Peter', lastName: 'Miller'
         )
 
-        and: 'an invoicing transaction with various properties'
+        and: 'an instance with various properties'
         def i1 = new InvoicingTransaction(
             number: 39999,
             type: 'X',
@@ -149,7 +149,7 @@ class InvoicingTransactionSpec extends Specification
             lastUpdated: lastUpdated
         )
 
-        when: 'I copy the invoicing transaction using the constructor'
+        when: 'the instance is copied using the constructor'
         def i2 = new InvoicingTransaction(i1)
 
         then: 'some properties are the equal'
@@ -191,11 +191,11 @@ class InvoicingTransactionSpec extends Specification
         null == i2.lastUpdated
     }
 
-    def 'Set decimal values to null converts them to zero'() {
-        given: 'an empty invoicing transaction'
+    void 'Set decimal values to null converts them to zero'() {
+        given: 'an empty instance'
         def i = new InvoicingTransaction()
 
-        when: 'I set the decimal values to null'
+        when: 'the decimal values are set to null'
         i.adjustment = null
         i.discountAmount = null
         i.discountPercent = null
@@ -210,7 +210,7 @@ class InvoicingTransactionSpec extends Specification
         0.0 == i.shippingTax
         0.0 == i.total
 
-        when: 'I create an invoicing transaction with null values'
+        when: 'an invoicing transaction with null values is created'
         i = new InvoicingTransaction(
             adjustment: null, discountAmount: null, discountPercent: null,
             shippingCosts: null, shippingTax: null, total: null
@@ -225,7 +225,7 @@ class InvoicingTransactionSpec extends Specification
         0.0 == i.total
     }
 
-    def 'Compute discount percent amount'() {
+    void 'Compute discount percent amount'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction(
             items: [
@@ -237,10 +237,10 @@ class InvoicingTransactionSpec extends Specification
             shippingTax: 5
         ) // subtotalGross == 426.11095
 
-        when: 'I set a discrete percentage value'
+        when: 'a discrete percentage value is set'
         i.discountPercent = d
 
-        then: 'I get the correct discount amount'
+        then: 'the correct discount amount is returned'
         e == i.discountPercentAmount
 
         where:
@@ -253,7 +253,30 @@ class InvoicingTransactionSpec extends Specification
           25.78 || 109.85349109
     }
 
-    def 'Get the full number without organization'() {
+    void 'Get the full name'(String subject, String fn) {
+        given: 'a sequence number'
+        SeqNumber seqNumber = new SeqNumber(
+            prefix: 'R', startValue: 10000i, suffix: 'S'
+        )
+
+        and: 'an instance'
+        def i = new InvoicingTransaction(number: 39999i, subject: subject)
+
+        and: 'an organization'
+        i.organization = new Organization(number: 17473)
+
+        expect:
+        fn == i.computeFullName(seqNumber)
+
+        where:
+        subject     || fn
+        'a'         || 'R-39999-17473-S a'
+        'abc'       || 'R-39999-17473-S abc'
+        'Foo bar'   || 'R-39999-17473-S Foo bar'
+        'A test'    || 'R-39999-17473-S A test'
+    }
+
+    void 'Get the full number without organization'() {
         given: 'a sequence number'
         SeqNumber seqNumber = new SeqNumber(
             prefix: 'R', startValue: 10000i, suffix: 'S'
@@ -269,7 +292,7 @@ class InvoicingTransactionSpec extends Specification
         'R-39999-S' == i.computeFullNumber(seqNumber)
     }
 
-    def 'Get the full number with organization'(int n, String fn) {
+    void 'Get the full number with organization'(int n, String fn) {
         given: 'a sequence number'
         SeqNumber seqNumber = new SeqNumber(
             prefix: 'R', startValue: 10000i, suffix: 'S'
@@ -296,8 +319,8 @@ class InvoicingTransactionSpec extends Specification
         5749053 || 'R-39999-5749053-S'
     }
 
-    def 'Get the shipping costs gross'() {
-        given:
+    void 'Get the shipping costs gross'() {
+        given: 'an instance'
         def i = new InvoicingTransaction(shippingCosts: s, shippingTax: t)
 
         expect:
@@ -337,51 +360,51 @@ class InvoicingTransactionSpec extends Specification
         1749.36 | 19        || 2081.7384
     }
 
-    def 'Get the subtotal gross without items'() {
-        when: 'I create an empty invoicing transaction'
+    void 'Get the subtotal gross without items'() {
+        when: 'an empty invoicing transaction is created'
         def i = new InvoicingTransaction()
 
-        then: 'I get a subtotal gross as zero'
+        then: 'the subtotal gross is returned as zero'
         0.0 == i.subtotalGross
 
-        when: 'I set the items to an empty list'
+        when: 'the items are set to an empty list'
         i.items = []
 
-        then: 'I get a subtotal gross as zero'
+        then: 'the subtotal gross is returned as zero'
         0.0 == i.subtotalGross
     }
 
-    def 'Get the subtotal gross with items'() {
+    void 'Get the subtotal gross with items'() {
         given: 'an empty invoicing transaction'
         def i = new InvoicingTransaction(items: [])
 
-        when: 'I add an item'
+        when: 'an item is added'
         i.items << new InvoicingItem(quantity: q, unitPrice: up, tax: t)
 
-        then: 'I get the correct subtotal gross'
+        then: 'the correct subtotal gross is returned'
         s == i.subtotalGross
 
-        when: 'I add another item with double quantity'
+        when: 'another item with double quantity is added'
         i.items << new InvoicingItem(
             quantity: (q ?: 0) * 2, unitPrice: up, tax: t
         )
 
-        then: 'I get the correct subtotal gross'
+        then: 'the correct subtotal gross is returned'
         (3 * s) == i.subtotalGross
 
-        when: 'I add another item with triple unit price'
+        when: 'another item with triple unit price is returned'
         i.items << new InvoicingItem(
             quantity: q, unitPrice: (up ?: 0) * 3, tax: t
         )
 
-        then: 'I get the correct subtotal gross'
+        then: 'the correct subtotal gross is returned'
         (6 * s) == i.subtotalGross
 
-        when: 'I set shipping costs'
+        when: 'shipping costs are set'
         i.shippingCosts = 4.5
         i.shippingTax = 7
 
-        then: 'I get the correct subtotal gross'
+        then: 'the correct subtotal gross is returned'
         (6 * s + 4.815) == i.subtotalGross
 
         where:
@@ -436,51 +459,51 @@ class InvoicingTransactionSpec extends Specification
         0.45    | 174.4572  | 14.5749   || 89.94787309926
     }
 
-    def 'Get the subtotal net without items'() {
-        when: 'I use an empty invoicing transaction'
+    void 'Get the subtotal net without items'() {
+        when: 'an empty invoicing transaction is used'
         def i = new InvoicingTransaction()
 
-        then: 'I get zero as subtotal net'
+        then: 'zero is returned as subtotal net'
         0.0 == i.subtotalNet
 
-        when: 'I set the items to an empty list'
+        when: 'the items are set to an empty list'
         i.items = []
 
-        then: 'I get zero as subtotal net'
+        then: 'zero is returned as subtotal net'
         0.0 == i.subtotalNet
     }
 
-    def 'Get the subtotal net with items'() {
+    void 'Get the subtotal net with items'() {
         given: 'an empty invoicing transaction'
         def i = new InvoicingTransaction(items: [])
 
-        when: 'I add an item'
+        when: 'an item is added'
         i.items << new InvoicingItem(quantity: q, unitPrice: up, tax: t)
 
-        then: 'I get the correct subtotal net'
+        then: 'the correct subtotal net is returned'
         s == i.subtotalNet
 
-        when: 'I add another item with double quantity'
+        when: 'another item with double quantity is added'
         i.items << new InvoicingItem(
             quantity: (q ?: 0) * 2, unitPrice: up, tax: t
         )
 
-        then: 'I get the correct subtotal net'
+        then: 'the correct subtotal net is returned'
         (3 * s) == i.subtotalNet
 
-        when: 'I add another item with triple unit price'
+        when: 'another item with triple unit price is added'
         i.items << new InvoicingItem(
             quantity: q, unitPrice: (up ?: 0) * 3, tax: t
         )
 
-        then: 'I get the correct subtotal net'
+        then: 'the correct subtotal net is returned'
         (6 * s) == i.subtotalNet
 
-        when: 'I set shipping costs'
+        when: 'shipping costs are set'
         i.shippingCosts = 4.5
         i.shippingTax = 7
 
-        then: 'I get the correct subtotal net'
+        then: 'the correct subtotal net is returned'
         (6 * s + 4.5) == i.subtotalNet
 
         where:
@@ -535,61 +558,61 @@ class InvoicingTransactionSpec extends Specification
         0.45    | 174.4572  | 14.5749   || 78.50574
     }
 
-    def 'Compute tax rate sums without items'() {
-        when: 'I use an empty invoicing transaction and obtain the tax rates'
+    void 'Compute tax rate sums without items'() {
+        when: 'an empty instance is used and the tax rates are obtained'
         def i = new InvoicingTransaction()
         Map<Double, BigDecimal> taxRateSums = i.taxRateSums
 
-        then: 'I get an empty map'
+        then: 'an empty map is returned'
         null != taxRateSums
         taxRateSums.isEmpty()
 
-        when: 'I set the items to an empty list and obtain the tax rates'
+        when: 'the items are set to an empty list'
         i.items = []
         taxRateSums = i.taxRateSums
 
-        then: 'I get an empty map'
+        then: 'an empty map is returned'
         null != taxRateSums
         taxRateSums.isEmpty()
     }
 
-    def 'Compute tax rate sums with items'(BigDecimal up, BigDecimal t,
-                                           BigDecimal trs1, BigDecimal trs2,
-                                           BigDecimal trs3)
+    void 'Compute tax rate sums with items'(BigDecimal up, BigDecimal t,
+                                            BigDecimal trs1, BigDecimal trs2,
+                                            BigDecimal trs3)
     {
         given: 'an empty invoicing transaction'
         def i = new InvoicingTransaction(items: [])
 
-        when: 'I add an item and obtain the tax rates'
+        when: 'an item is added'
         i.items << new InvoicingItem(quantity: 5, unitPrice: up, tax: t)
         Map<Double, BigDecimal> taxRateSums = i.taxRateSums
 
-        then: 'I get an ordered map containing the tax rates and their sums'
+        then: 'an ordered map with the tax rates and their sums is returned'
         null != taxRateSums
         taxRateSums instanceof LinkedHashMap
         1 == taxRateSums.size()
         trs1 == taxRateSums[(Double) (t ?: 0d)]
 
-        when: 'I add another item and obtain the tax rates'
+        when: 'another item is added'
         i.items << new InvoicingItem(
             quantity: 5, unitPrice: up, tax: (t ?: 0.0) + 2.0
         )
         taxRateSums = i.taxRateSums
 
-        then: 'I get an ordered map containing the tax rates and their sums'
+        then: 'an ordered map with the tax rates and their sums is returned'
         null != taxRateSums
         taxRateSums instanceof LinkedHashMap
         2 == taxRateSums.size()
         trs1 == taxRateSums[(Double) (t ?: 0d)]
         trs3 == taxRateSums[(Double) ((t ?: 0d) + 2.0d)]
 
-        when: 'I add another item and obtain the tax rates'
+        when: 'another item is added'
         i.items << new InvoicingItem(
             quantity: 5, unitPrice: up, tax: (t ?: 0.0) + 1.5
         )
         taxRateSums = i.taxRateSums
 
-        then: 'I get an ordered map containing the tax rates and their sums'
+        then: 'an ordered map with the tax rates and their sums is returned'
         null != taxRateSums
         taxRateSums instanceof LinkedHashMap
         3 == taxRateSums.size()
@@ -616,7 +639,7 @@ class InvoicingTransactionSpec extends Specification
         0.28    | 19        || 0.266    | 0.287     | 0.294
     }
 
-    def 'Compute dynamic values before insert'() {
+    void 'Compute dynamic values before insert'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction(
             adjustment: -5.47313,
@@ -650,7 +673,7 @@ class InvoicingTransactionSpec extends Specification
         197.242_5 == i.items[2]['totalGross']
     }
 
-    def 'Compute dynamic values before update'() {
+    void 'Compute dynamic values before update'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction(
             adjustment: -5.47313,
@@ -684,7 +707,7 @@ class InvoicingTransactionSpec extends Specification
         197.242_5 == i.items[2]['totalGross']
     }
 
-    def 'Get total'() {
+    void 'Get total'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction(
             discountPercent: 2.5,
@@ -697,11 +720,11 @@ class InvoicingTransactionSpec extends Specification
             shippingTax: 5
         )
 
-        when: 'I set discrete values for discount amount and adjustment'
+        when: 'discrete values for discount amount and adjustment are set'
         i.discountAmount = da
         i.adjustment = a
 
-        then: 'I get the correct total price'
+        then: 'the correct total price is returned'
         e == i.getTotal()       // 415,46607375
 
         where:
@@ -732,7 +755,7 @@ class InvoicingTransactionSpec extends Specification
         2.98657 | -5.47313  || 407.00637375
     }
 
-    def 'Copy the addresses from a given organization'() {
+    void 'Copy the addresses from a given organization'() {
         given: 'two addresses'
         def addr1 = new Address(
             street: '45 Nelson Rd.', postalCode: '03037',
@@ -752,7 +775,7 @@ class InvoicingTransactionSpec extends Specification
         and: 'an empty invoicing transaction'
         def i = new InvoicingTransaction()
 
-        when: 'I copy the addresses of that organization to the invoice'
+        when: 'the addresses of that organization are copied to the invoice'
         i.copyAddressesFromOrganization org
 
         then: 'the invoicing transaction addresses are equal'
@@ -764,7 +787,7 @@ class InvoicingTransactionSpec extends Specification
         !addr2.is(i.shippingAddr)
     }
 
-    def 'Copy the addresses from the associated organization'() {
+    void 'Copy the addresses from the associated organization'() {
         given: 'two addresses'
         def addr1 = new Address(
             street: '45 Nelson Rd.', postalCode: '03037',
@@ -783,7 +806,7 @@ class InvoicingTransactionSpec extends Specification
             )
         )
 
-        when: 'I copy the addresses of the associated organization'
+        when: 'the addresses are copied of the associated organization'
         i.copyAddressesFromOrganization()
 
         then: 'the invoicing transaction addresses are equal'
@@ -795,7 +818,7 @@ class InvoicingTransactionSpec extends Specification
         !addr2.is(i.shippingAddr)
     }
 
-    def 'Equals is null-safe'() {
+    void 'Equals is null-safe'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction()
 
@@ -806,7 +829,7 @@ class InvoicingTransactionSpec extends Specification
         !i.equals(null)
     }
 
-    def 'Instances of other types are always unequal'() {
+    void 'Instances of other types are always unequal'() {
         given: 'an invoicing transaction'
         def i = new InvoicingTransaction()
 
@@ -817,7 +840,7 @@ class InvoicingTransactionSpec extends Specification
         i != new Date()
     }
 
-    def 'Not persisted instances are equal'() {
+    void 'Not persisted instances are equal'() {
         given: 'three instances without ID'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -839,7 +862,7 @@ class InvoicingTransactionSpec extends Specification
         i3 == i1
     }
 
-    def 'Persisted instances are equal if they have the same ID'() {
+    void 'Persisted instances are equal if they have the same ID'() {
         given: 'three invoicing transactions with same ID'
         def id = new ObjectId()
         def i1 = new InvoicingTransaction(subject: 'Repair')
@@ -865,7 +888,7 @@ class InvoicingTransactionSpec extends Specification
         i3 == i1
     }
 
-    def 'Persisted instances are unequal if they have the different ID'() {
+    void 'Persisted instances are unequal if they have the different ID'() {
         given: 'three invoicing transactions with different IDs'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = new ObjectId()
@@ -890,7 +913,7 @@ class InvoicingTransactionSpec extends Specification
         i3 != i1
     }
 
-    def 'Can compute hash code of an empty instance'() {
+    void 'Can compute hash code of an empty instance'() {
         given: 'an empty instance'
         def i = new InvoicingTransaction()
 
@@ -898,7 +921,7 @@ class InvoicingTransactionSpec extends Specification
         3937i == i.hashCode()
     }
 
-    def 'Can compute hash code of a not persisted instance'() {
+    void 'Can compute hash code of a not persisted instance'() {
         given: 'an empty instance'
         def i = new InvoicingTransaction(subject: 'Repair')
 
@@ -906,7 +929,7 @@ class InvoicingTransactionSpec extends Specification
         3937i == i.hashCode()
     }
 
-    def 'Hash codes are consistent'() {
+    void 'Hash codes are consistent'() {
         given: 'an ID'
         def id = new ObjectId()
 
@@ -925,7 +948,7 @@ class InvoicingTransactionSpec extends Specification
         }
     }
 
-    def 'Equal instances produce the same hash code'() {
+    void 'Equal instances produce the same hash code'() {
         given: 'three invoicing transactions with same ID'
         def id = new ObjectId()
         def i1 = new InvoicingTransaction(subject: 'Repair')
@@ -940,7 +963,7 @@ class InvoicingTransactionSpec extends Specification
         i2.hashCode() == i3.hashCode()
     }
 
-    def 'Different instances produce different hash codes'() {
+    void 'Different instances produce different hash codes'() {
         given: 'three invoicing transactions with different properties'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = new ObjectId()
@@ -954,14 +977,14 @@ class InvoicingTransactionSpec extends Specification
         i2.hashCode() != i3.hashCode()
     }
 
-    def 'Can convert to string'(String subject, String s) {
+    void 'Can convert to string'(String subject, String s) {
         given: 'an empty invoicing transaction'
         def i = new InvoicingTransaction()
 
-        when: 'I set the subject'
+        when: 'the subject is set'
         i.subject = subject
 
-        then: 'I get a valid string representation'
+        then: 'a valid string representation is returned'
         s == i.toString()
 
         where:
@@ -976,8 +999,8 @@ class InvoicingTransactionSpec extends Specification
     }
 
     @SuppressWarnings("GroovyPointlessBoolean")
-    def 'Type must not be blank or longer than one character'(String t,
-                                                              boolean v)
+    void 'Type must not be blank or longer than one character'(String t,
+                                                               boolean v)
     {
         given: 'a quite valid invoicing item'
         def i = new InvoicingTransaction(
@@ -990,7 +1013,7 @@ class InvoicingTransactionSpec extends Specification
             items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
-        when: 'I set the type'
+        when: 'the type is set'
         i.type = t
 
         then: 'the instance is valid or not'
@@ -1007,7 +1030,7 @@ class InvoicingTransactionSpec extends Specification
     }
 
     @SuppressWarnings("GroovyPointlessBoolean")
-    def 'Subject must not be blank'(String s, boolean v) {
+    void 'Subject must not be blank'(String s, boolean v) {
         given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
@@ -1019,7 +1042,7 @@ class InvoicingTransactionSpec extends Specification
             items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
-        when: 'I set the subject'
+        when: 'the subject is set'
         i.subject = s
 
         then: 'the instance is valid or not'
@@ -1035,7 +1058,7 @@ class InvoicingTransactionSpec extends Specification
         ' name' || true
     }
 
-    def 'Organization must not be null'() {
+    void 'Organization must not be null'() {
         given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
@@ -1047,20 +1070,20 @@ class InvoicingTransactionSpec extends Specification
             items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
-        when: 'I set the organization'
+        when: 'the organization is set'
         i.organization = new Organization()
 
         then: 'the instance is valid'
         i.validate()
 
-        when: 'I unset the organization'
+        when: 'the organization is unset'
         i.organization = null
 
         then: 'the instance is not valid'
         !i.validate()
     }
 
-    def 'Document date must not be null'() {
+    void 'Document date must not be null'() {
         given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
@@ -1073,20 +1096,20 @@ class InvoicingTransactionSpec extends Specification
             items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
-        when: 'I set the document date'
+        when: 'the document date is set'
         i.docDate = new Date()
 
         then: 'the instance is valid'
         i.validate()
 
-        when: 'I unset the document date'
+        when: 'the document date is unset'
         i.docDate = null
 
         then: 'the instance is not valid'
         !i.validate()
     }
 
-    def 'Items must not be null nor empty'() {
+    void 'Items must not be null nor empty'() {
         given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
@@ -1098,7 +1121,7 @@ class InvoicingTransactionSpec extends Specification
             shippingAddr: new Address()
         )
 
-        when: 'I set the items'
+        when: 'the items are set'
         i.items = [
             new InvoicingItem(
                 unit: 'h', name: 'Administration', invoicingTransaction: i
@@ -1108,13 +1131,13 @@ class InvoicingTransactionSpec extends Specification
         then: 'the instance is valid'
         i.validate()
 
-        when: 'I unset the items'
+        when: 'the items are unset'
         i.items = null
 
         then: 'the instance is not valid'
         !i.validate()
 
-        when: 'I set the items to an empty list'
+        when: 'the items are set to an empty list'
         i.items = []
 
         then: 'the instance is not valid'
@@ -1122,7 +1145,7 @@ class InvoicingTransactionSpec extends Specification
     }
 
     @SuppressWarnings("GroovyPointlessBoolean")
-    def 'Discount percent must not be less than zero'() {
+    void 'Discount percent must not be less than zero'() {
         given: 'a valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
@@ -1135,7 +1158,7 @@ class InvoicingTransactionSpec extends Specification
             items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
-        when: 'I set various values and validate'
+        when: 'various values are set'
         i.discountPercent = dp
         i.validate()
 
@@ -1158,7 +1181,7 @@ class InvoicingTransactionSpec extends Specification
     }
 
     @SuppressWarnings("GroovyPointlessBoolean")
-    def 'Shipping tax must not be less than zero'() {
+    void 'Shipping tax must not be less than zero'() {
         given: 'a valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
@@ -1171,7 +1194,7 @@ class InvoicingTransactionSpec extends Specification
             items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
-        when: 'I set various values and validate'
+        when: 'various values are set'
         i.shippingTax = st
         i.validate()
 

@@ -14,14 +14,17 @@
     <content tag="scripts">
       <asset:javascript src="invoicing-transaction-form"/>
       <asset:script>//<![CDATA[
-        new SPRINGCRM.InvoicingTransaction(
-          $("#quote-form"), {
-              checkStageTransition: false,
-              stageValues: {
-                  shipping: 602
-              },
-              type: "Q"
-          });
+        var InvoicingTransaction =
+            window.modules.require("InvoicingTransaction");
+        new InvoicingTransaction(
+            $("#quote-form"), {
+                checkStageTransition: false,
+                stageValues: {
+                    shipping: 602
+                },
+                type: "Q"
+            }
+        );
       //]]></asset:script>
     </content>
   </body>
