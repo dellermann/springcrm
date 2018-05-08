@@ -132,10 +132,6 @@ class Invoice extends InvoicingTransaction
         super(q)
         type = 'I'
         quote = q
-        if (q.invoices == null) {
-            q.invoices = []
-        }
-        q.invoices << this
     }
 
     /**
@@ -147,10 +143,6 @@ class Invoice extends InvoicingTransaction
         super(so)
         type = 'I'
         salesOrder = so
-        if (so.invoices == null) {
-            so.invoices = []
-        }
-        so.invoices << this
     }
 
 
