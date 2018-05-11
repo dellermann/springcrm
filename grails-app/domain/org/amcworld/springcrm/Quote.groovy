@@ -57,12 +57,12 @@ class Quote extends InvoicingTransaction {
     //-- Fields ---------------------------------
 
     /**
-     * The stage of this quote.
+     * The stage of the quote.
      */
     QuoteStage stage
 
     /**
-     * The date until this quote is valid.
+     * The date til the quote is valid.
      */
     Date validUntil
 

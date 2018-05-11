@@ -76,6 +76,7 @@ class ViewTagLib implements TagLibrary {
     CalendarEventService calendarEventService
     ConfigService configService
     MongoClient mongo
+    SelValueService selValueService
     SeqNumberService seqNumberService
     UserService userService
 
@@ -548,6 +549,7 @@ class ViewTagLib implements TagLibrary {
                 buf << ' active'
             }
 
+            //noinspection GroovyAssignabilityCheck
             out << link(
                     action: action, params: linkParams, class: buf.toString(),
                     title: longMonthNames[i], 'data-month': i + 1
@@ -596,29 +598,34 @@ class ViewTagLib implements TagLibrary {
     Closure paginate = { attrs ->
         def writer = out
         if (attrs.total == null) {
-            throwTagError("Tag [paginate] is missing required attribute [total]")
+            throwTagError(
+                "Tag [paginate] is missing required attribute [total]"
+            )
         }
 
         def messageSource = grailsAttributes.messageSource
         def locale = RCU.getLocale(request)
 
-        def total = attrs.int('total') ?: 0
-        def offset = params.int('offset') ?: 0
-        def max = params.int('max')
-        def maxsteps = (attrs.int('maxsteps') ?: 10)
+        int total = attrs.int('total') ?: 0i
+        int offset = params.int('offset') ?: 0i
+        int max = params.int('max')
+        int maxSteps = (attrs.int('maxsteps') ?: 10i)
         def cssClass = attrs.remove('class')
 
-        if (!offset) offset = (attrs.int('offset') ?: 0)
-        if (!max) max = (attrs.int('max') ?: 10)
+        if (!offset) offset = (attrs.int('offset') ?: 0i)
+        if (!max) max = (attrs.int('max') ?: 10i)
 
-        def linkParams = [:]
-        if (attrs.params) linkParams.putAll(attrs.params)
+        Map<String, Object> linkParams = [: ]
+        if (attrs.params) {
+            //noinspection GroovyAssignabilityCheck
+            linkParams.putAll attrs.params
+        }
         linkParams.offset = offset - max
         linkParams.max = max
         if (params.sort) linkParams.sort = params.sort
         if (params.order) linkParams.order = params.order
 
-        def linkTagAttrs = [:]
+        Map<String, Object> linkTagAttrs = [: ]
         def action
         if (attrs.containsKey('mapping')) {
             linkTagAttrs.mapping = attrs.mapping
@@ -647,23 +654,24 @@ class ViewTagLib implements TagLibrary {
         linkTagAttrs.params = linkParams
 
         // determine paging variables
-        def steps = maxsteps > 0
-        int currentstep = (offset / max) + 1
-        int firststep = 1
-        int laststep = Math.round(Math.ceil(total / max))
+        def steps = maxSteps > 0
+        int currentStep = (int) ((offset / max) + 1i)
+        int firstStep = 1
+        int lastStep = (int) Math.round(Math.ceil(total / max))
 
-        if (laststep > 1) {
+        if (lastStep > 1) {
             writer << '<ul class="pagination'
             if (cssClass) writer << ' ' << cssClass
             writer << '" role="group">'
         }
 
-        // display previous link when not on firststep unless omitPrev is true
-        if (currentstep > firststep && !attrs.boolean('omitPrev')) {
+        // display previous link when not on firstStep unless omitPrev is true
+        if (currentStep > firstStep && !attrs.boolean('omitPrev')) {
             linkParams.offset = offset - max
             writer << '<li role="listitem" aria-label="'
             writer << messageSource.getMessage('default.paginate.prev', null, 'Previous', locale)
             writer << '">'
+            //noinspection GroovyAssignabilityCheck
             writer << link(linkTagAttrs.clone()) {
                 StringBuilder buf = new StringBuilder('<span aria-hidden="true">')
                 buf << (attrs.prev ?: messageSource.getMessage('default.paginate.prev.short', null, '«', locale))
@@ -671,73 +679,92 @@ class ViewTagLib implements TagLibrary {
             } << '</li>'
         }
 
-        // display steps when steps are enabled and laststep is not firststep
-        if (steps && laststep > firststep) {
+        // display steps when steps are enabled and lastStep is not firstStep
+        if (steps && lastStep > firstStep) {
 
-            // determine begin and endstep paging variables
-            int beginstep = currentstep - Math.round(maxsteps / 2) + (maxsteps % 2)
-            int endstep = currentstep + Math.round(maxsteps / 2) - 1
+            // determine begin and endStep paging variables
+            int beginStep =
+                currentStep - Math.round(maxSteps / 2) + (maxSteps % 2)
+            int endStep = currentStep + Math.round(maxSteps / 2) - 1
 
-            if (beginstep < firststep) {
-                beginstep = firststep
-                endstep = maxsteps
+            if (beginStep < firstStep) {
+                beginStep = firstStep
+                endStep = maxSteps
             }
-            if (endstep > laststep) {
-                beginstep = laststep - maxsteps + 1
-                if (beginstep < firststep) {
-                    beginstep = firststep
+            if (endStep > lastStep) {
+                beginStep = lastStep - maxSteps + 1
+                if (beginStep < firstStep) {
+                    beginStep = firstStep
                 }
-                endstep = laststep
+                endStep = lastStep
             }
 
-            // display firststep link when beginstep is not firststep
-            if (beginstep > firststep && !attrs.boolean('omitFirst')) {
+            // display firstStep link when beginStep is not firstStep
+            if (beginStep > firstStep && !attrs.boolean('omitFirst')) {
                 linkParams.offset = 0
+                //noinspection GroovyAssignabilityCheck
                 writer << '<li role="listitem">' <<
-                    link(linkTagAttrs.clone()) {firststep.toString()} <<
+                    link(linkTagAttrs.clone()) {firstStep.toString()} <<
                     '</li>'
             }
-            //show a gap if beginstep isn't immediately after firststep, and if were not omitting first or rev
-            if (beginstep > firststep+1 && (!attrs.boolean('omitFirst') || !attrs.boolean('omitPrev')) ) {
-                writer << '<li class="disabled" role="listitem" aria-disabled="true"><a href="#">…</a></li>'
+
+            // show a gap if beginStep isn't immediately after firstStep, and if
+            // were not omitting first or rev
+            if (beginStep > firstStep+1 &&
+                (!attrs.boolean('omitFirst') || !attrs.boolean('omitPrev')) )
+            {
+                writer << '<li class="disabled" role="listitem" ' <<
+                    'aria-disabled="true"><a href="#">…</a></li>'
             }
 
             // display paginate steps
-            (beginstep..endstep).each { i ->
-                if (currentstep == i) {
+            (beginStep..endStep).each { i ->
+                if (currentStep == i) {
+                    //noinspection GroovyAssignabilityCheck
                     writer << """\
 <li class="active" role="listitem">
-  <span>${i} <span class="sr-only">${messageSource.getMessage('default.paginate.current', null, 'current', locale)}</span></span>
+  <span>${i} <span class="sr-only">${
+    messageSource.getMessage(
+      'default.paginate.current', null, 'current', locale
+    )
+  }</span></span>
 </li>
 """
                 }
                 else {
                     linkParams.offset = (i - 1) * max
+                    //noinspection GroovyAssignabilityCheck
                     writer << '<li role="listitem">' <<
                         link(linkTagAttrs.clone()) {i.toString()} <<
                         '</li>'
                 }
             }
 
-            //show a gap if beginstep isn't immediately before firststep, and if were not omitting first or rev
-            if (endstep+1 < laststep && (!attrs.boolean('omitLast') || !attrs.boolean('omitNext'))) {
-                writer << '<li class="disabled" role="listitem" aria-disabled="true"><a href="#">…</a></li>'
+            // show a gap if beginStep isn't immediately before firstStep, and
+            // if were not omitting first or rev
+            if (endStep + 1 < lastStep && (!attrs.boolean('omitLast') ||
+                !attrs.boolean('omitNext')))
+            {
+                writer << '<li class="disabled" role="listitem" ' <<
+                    'aria-disabled="true"><a href="#">…</a></li>'
             }
-            // display laststep link when endstep is not laststep
-            if (endstep < laststep && !attrs.boolean('omitLast')) {
-                linkParams.offset = (laststep - 1) * max
+            // display lastStep link when endStep is not lastStep
+            if (endStep < lastStep && !attrs.boolean('omitLast')) {
+                linkParams.offset = (lastStep - 1) * max
+                //noinspection GroovyAssignabilityCheck
                 writer << '<li role="listitem">' <<
-                    link(linkTagAttrs.clone()) { laststep.toString() } <<
+                    link(linkTagAttrs.clone()) { lastStep.toString() } <<
                     '</li>'
             }
         }
 
-        // display next link when not on laststep unless omitNext is true
-        if (currentstep < laststep && !attrs.boolean('omitNext')) {
+        // display next link when not on lastStep unless omitNext is true
+        if (currentStep < lastStep && !attrs.boolean('omitNext')) {
             linkTagAttrs.class = 'nextLink'
             linkParams.offset = offset + max
             writer << '<li role="listitem" aria-label="'
             writer << messageSource.getMessage('default.paginate.next', null, 'Next', locale)
+            //noinspection GroovyAssignabilityCheck
             writer << '">' << link(linkTagAttrs.clone()) {
                 StringBuilder buf = new StringBuilder('<span aria-hidden="true">')
                 buf << (attrs.prev ?: messageSource.getMessage('default.paginate.next.short', null, '»', locale))
@@ -745,7 +772,7 @@ class ViewTagLib implements TagLibrary {
             } << '</li>'
         }
 
-        if (laststep > 1) writer << '</ul>'
+        if (lastStep > 1) writer << '</ul>'
     }
 
     /**
@@ -784,6 +811,7 @@ class ViewTagLib implements TagLibrary {
      */
     def title = { attrs ->
         if (layoutTitle()) {
+            //noinspection GroovyAssignabilityCheck
             out << layoutTitle()
             return
         }
@@ -794,16 +822,19 @@ class ViewTagLib implements TagLibrary {
         case 'edit':
         case 'show':
             def instance = pageScope."${controllerName}"
+            //noinspection GroovyAssignabilityCheck
             out << message(
                 code: "default.${actionName}.label",
                 args: [instance?.toString() ?: entityName]
             ) << ' - '
             break
         case 'create':
+            //noinspection GroovyAssignabilityCheck
             out << message(code: 'default.create.label', args: [entityName])
             out << ' - '
             break
         }
+        //noinspection GroovyAssignabilityCheck
         out << message(code: "${controllerName}.plural", default: entityName)
     }
 
@@ -811,6 +842,7 @@ class ViewTagLib implements TagLibrary {
      * Generates the URL of the current page including all request parameters.
      */
     def url = { attrs, body ->
+        //noinspection GroovyAssignabilityCheck
         out << createLink(action: actionName, params: params, absolute: true)
     }
 

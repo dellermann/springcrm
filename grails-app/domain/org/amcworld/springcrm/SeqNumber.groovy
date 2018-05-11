@@ -21,7 +21,6 @@
 package org.amcworld.springcrm
 
 import groovy.transform.EqualsAndHashCode
-import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -38,8 +37,8 @@ class SeqNumber implements GormEntity<SeqNumber> {
     //-- Class fields ---------------------------
 
     static constraints = {
-        prefix maxSize: 5
-        suffix maxSize: 5
+        prefix nullable: true, maxSize: 5
+        suffix nullable: true, maxSize: 5
         startValue min: 0i
         endValue min: 0i
         orderId min: 0i

@@ -1,966 +1,829 @@
 {
   "selValue": [
     {
-      "_id": { "$numberLong": "1" },
+      "_id": 1,
       "_class": "Salutation",
       "name": "Herr",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "2" },
+      "_id": 2,
       "_class": "Salutation",
       "name": "Frau",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "100" },
+      "_id": 100,
       "_class": "OrgType",
       "name": "Kunde",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "101" },
+      "_id": 101,
       "_class": "OrgType",
       "name": "Wettbewerber",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "102" },
+      "_id": 102,
       "_class": "OrgType",
       "name": "Partner",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "103" },
+      "_id": 103,
       "_class": "OrgType",
       "name": "Interessent",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "104" },
+      "_id": 104,
       "_class": "OrgType",
       "name": "Verkäufer",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "105" },
+      "_id": 105,
       "_class": "OrgType",
       "name": "Investor",
-      "orderId": 60,
-      "version": { "$numberLong": "0" }
+      "orderId": 60
     },
     {
-      "_id": { "$numberLong": "106" },
+      "_id": 106,
       "_class": "OrgType",
       "name": "sonstiges",
-      "orderId": 9000,
-      "version": { "$numberLong": "0" }
+      "orderId": 9000
     },
     {
-      "_id": { "$numberLong": "200" },
+      "_id": 200,
       "_class": "Rating",
       "name": "akquiriert",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "201" },
+      "_id": 201,
       "_class": "Rating",
       "name": "aktiv",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "202" },
+      "_id": 202,
       "_class": "Rating",
       "name": "Markt verfehlt",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "203" },
+      "_id": 203,
       "_class": "Rating",
       "name": "kein Interesse",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "204" },
+      "_id": 204,
       "_class": "Rating",
       "name": "stillgelegt",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "300" },
+      "_id": 300,
       "_class": "Unit",
       "name": "Stück",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "301" },
+      "_id": 301,
       "_class": "Unit",
       "name": "Einheiten",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "302" },
+      "_id": 302,
       "_class": "Unit",
       "name": "Kartons",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "303" },
+      "_id": 303,
       "_class": "Unit",
       "name": "Stunden",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "304" },
+      "_id": 304,
       "_class": "Unit",
       "name": "Minuten",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "305" },
+      "_id": 305,
       "_class": "Unit",
       "name": "m",
-      "orderId": 60,
-      "version": { "$numberLong": "0" }
+      "orderId": 60
     },
     {
-      "_id": { "$numberLong": "306" },
+      "_id": 306,
       "_class": "Unit",
       "name": "kg",
-      "orderId": 70,
-      "version": { "$numberLong": "0" }
+      "orderId": 70
     },
     {
-      "_id": { "$numberLong": "400" },
+      "_id": 400,
       "_class": "TaxRate",
       "name": "8 %",
       "orderId": 10,
-      "taxValue": { "$numberDecimal": "0.08" },
-      "version": { "$numberLong": "0" }
+      "taxValue": { "$numberDecimal": "0.08" }
     },
     {
-      "_id": { "$numberLong": "401" },
+      "_id": 401,
       "_class": "TaxRate",
       "name": "2,5 %",
       "orderId": 20,
-      "taxValue": { "$numberDecimal": "0.025" },
-      "version": { "$numberLong": "0" }
+      "taxValue": { "$numberDecimal": "0.025" }
     },
     {
-      "_id": { "$numberLong": "402" },
+      "_id": 402,
       "_class": "TaxRate",
       "name": "3,8 %",
       "orderId": 30,
-      "taxValue": { "$numberDecimal": "0.038" },
-      "version": { "$numberLong": "0" }
+      "taxValue": { "$numberDecimal": "0.038" }
     },
     {
-      "_id": { "$numberLong": "500" },
+      "_id": 500,
       "_class": "Carrier",
       "name": "Abholung",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "501" },
+      "_id": 501,
       "_class": "Carrier",
       "name": "elektronisch",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "502" },
+      "_id": 502,
       "_class": "Carrier",
       "name": "Schweizerische Post",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "503" },
+      "_id": 503,
       "_class": "Carrier",
       "name": "DHL",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "504" },
+      "_id": 504,
       "_class": "Carrier",
       "name": "UPS",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "505" },
+      "_id": 505,
       "_class": "Carrier",
       "name": "FedEx",
-      "orderId": 60,
-      "version": { "$numberLong": "0" }
+      "orderId": 60
     },
     {
-      "_id": { "$numberLong": "506" },
+      "_id": 506,
       "_class": "Carrier",
       "name": "GLS",
-      "orderId": 70,
-      "version": { "$numberLong": "0" }
+      "orderId": 70
     },
     {
-      "_id": { "$numberLong": "507" },
+      "_id": 507,
       "_class": "Carrier",
       "name": "TNT",
-      "orderId": 80,
-      "version": { "$numberLong": "0" }
+      "orderId": 80
     },
     {
-      "_id": { "$numberLong": "600" },
+      "_id": 600,
       "_class": "QuoteStage",
       "name": "erstellt",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "601" },
+      "_id": 601,
       "_class": "QuoteStage",
       "name": "durchgesehen",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "602" },
+      "_id": 602,
       "_class": "QuoteStage",
       "name": "versendet",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "603" },
+      "_id": 603,
       "_class": "QuoteStage",
       "name": "akzeptiert",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "604" },
+      "_id": 604,
       "_class": "QuoteStage",
       "name": "abgelehnt",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "700" },
+      "_id": 700,
       "_class": "TermsAndConditions",
       "name": "Dienstleistungen",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "701" },
+      "_id": 701,
       "_class": "TermsAndConditions",
       "name": "Waren",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "800" },
+      "_id": 800,
       "_class": "SalesOrderStage",
       "name": "erstellt",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "801" },
+      "_id": 801,
       "_class": "SalesOrderStage",
       "name": "durchgesehen",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "802" },
+      "_id": 802,
       "_class": "SalesOrderStage",
       "name": "versendet",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "803" },
+      "_id": 803,
       "_class": "SalesOrderStage",
       "name": "abgeschlossen",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "804" },
+      "_id": 804,
       "_class": "SalesOrderStage",
       "name": "storniert",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "900" },
+      "_id": 900,
       "_class": "InvoiceStage",
       "name": "erstellt",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "901" },
+      "_id": 901,
       "_class": "InvoiceStage",
       "name": "durchgesehen",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "902" },
+      "_id": 902,
       "_class": "InvoiceStage",
       "name": "versendet",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "903" },
+      "_id": 903,
       "_class": "InvoiceStage",
       "name": "bezahlt",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "904" },
+      "_id": 904,
       "_class": "InvoiceStage",
       "name": "gemahnt",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "905" },
+      "_id": 905,
       "_class": "InvoiceStage",
       "name": "inkasso",
-      "orderId": 60,
-      "version": { "$numberLong": "0" }
+      "orderId": 60
     },
     {
-      "_id": { "$numberLong": "906" },
+      "_id": 906,
       "_class": "InvoiceStage",
       "name": "ausgebucht",
-      "orderId": 70,
-      "version": { "$numberLong": "0" }
+      "orderId": 70
     },
     {
-      "_id": { "$numberLong": "907" },
+      "_id": 907,
       "_class": "InvoiceStage",
       "name": "storniert",
-      "orderId": 80,
-      "version": { "$numberLong": "0" }
+      "orderId": 80
     },
     {
-      "_id": { "$numberLong": "1000" },
+      "_id": 1000,
       "_class": "Industry",
       "name": "Bekleidungsindustrie",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1001" },
+      "_id": 1001,
       "_class": "Industry",
       "name": "Banken",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1002" },
+      "_id": 1002,
       "_class": "Industry",
       "name": "Biotechnologie",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1003" },
+      "_id": 1003,
       "_class": "Industry",
       "name": "Chemie",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1004" },
+      "_id": 1004,
       "_class": "Industry",
       "name": "Kommunikation",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1005" },
+      "_id": 1005,
       "_class": "Industry",
       "name": "Anlagenbau",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1006" },
+      "_id": 1006,
       "_class": "Industry",
       "name": "Beratung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1007" },
+      "_id": 1007,
       "_class": "Industry",
       "name": "Bildungswesen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1008" },
+      "_id": 1008,
       "_class": "Industry",
       "name": "Elektronik",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1009" },
+      "_id": 1009,
       "_class": "Industry",
       "name": "Energie",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1010" },
+      "_id": 1010,
       "_class": "Industry",
       "name": "Ingenieurwesen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1011" },
+      "_id": 1011,
       "_class": "Industry",
       "name": "Unterhaltung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1012" },
+      "_id": 1012,
       "_class": "Industry",
       "name": "Umwelt",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1013" },
+      "_id": 1013,
       "_class": "Industry",
       "name": "Finanzwesen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1014" },
+      "_id": 1014,
       "_class": "Industry",
       "name": "Essen und Trinken",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1015" },
+      "_id": 1015,
       "_class": "Industry",
       "name": "Regierung und Behörden",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1016" },
+      "_id": 1016,
       "_class": "Industry",
       "name": "Gesundheitswesen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1017" },
+      "_id": 1017,
       "_class": "Industry",
       "name": "Übernachtung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1018" },
+      "_id": 1018,
       "_class": "Industry",
       "name": "Versicherungen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1019" },
+      "_id": 1019,
       "_class": "Industry",
       "name": "Maschinenbau",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1020" },
+      "_id": 1020,
       "_class": "Industry",
       "name": "Fertigung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1021" },
+      "_id": 1021,
       "_class": "Industry",
       "name": "Medien",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1022" },
+      "_id": 1022,
       "_class": "Industry",
       "name": "Wohlfahrt",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1023" },
+      "_id": 1023,
       "_class": "Industry",
       "name": "Freizeit und Erholung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1024" },
+      "_id": 1024,
       "_class": "Industry",
       "name": "Einzelhandel",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1025" },
+      "_id": 1025,
       "_class": "Industry",
       "name": "Speditionen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1026" },
+      "_id": 1026,
       "_class": "Industry",
       "name": "Technologie",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1027" },
+      "_id": 1027,
       "_class": "Industry",
       "name": "Telekommunikation",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1028" },
+      "_id": 1028,
       "_class": "Industry",
       "name": "Transport und Verkehr",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1029" },
+      "_id": 1029,
       "_class": "Industry",
       "name": "Versorgungseinrichtungen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1030" },
+      "_id": 1030,
       "_class": "Industry",
       "name": "IT",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1031" },
+      "_id": 1031,
       "_class": "Industry",
       "name": "Bauwesen",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1032" },
+      "_id": 1032,
       "_class": "Industry",
       "name": "Öffentlicher Dienst",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1033" },
+      "_id": 1033,
       "_class": "Industry",
       "name": "Handwerk",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1034" },
+      "_id": 1034,
       "_class": "Industry",
       "name": "sonstiges",
-      "orderId": 9000,
-      "version": { "$numberLong": "0" }
+      "orderId": 9000
     },
     {
-      "_id": { "$numberLong": "1100" },
+      "_id": 1100,
       "_class": "TicketPriority",
       "name": "niedrig",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "1101" },
+      "_id": 1101,
       "_class": "TicketPriority",
       "name": "normal",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "1102" },
+      "_id": 1102,
       "_class": "TicketPriority",
       "name": "hoch",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "1103" },
+      "_id": 1103,
       "_class": "TicketPriority",
       "name": "Notfall",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "2000" },
+      "_id": 2000,
       "_class": "WorkCategory",
       "name": "Unterstützung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2001" },
+      "_id": 2001,
       "_class": "WorkCategory",
       "name": "Installation/Konfiguration",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2002" },
+      "_id": 2002,
       "_class": "WorkCategory",
       "name": "Umstellung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2003" },
+      "_id": 2003,
       "_class": "WorkCategory",
       "name": "Anpassung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2004" },
+      "_id": 2004,
       "_class": "WorkCategory",
       "name": "Schulung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2005" },
+      "_id": 2005,
       "_class": "WorkCategory",
       "name": "Programmierung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2006" },
+      "_id": 2006,
       "_class": "WorkCategory",
       "name": "Beratung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2007" },
+      "_id": 2007,
       "_class": "WorkCategory",
       "name": "Grafik und Design",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2008" },
+      "_id": 2008,
       "_class": "WorkCategory",
       "name": "Datenverarbeitung",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "2100" },
+      "_id": 2100,
       "_class": "PurchaseInvoiceStage",
       "name": "eingegangen",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "2101" },
+      "_id": 2101,
       "_class": "PurchaseInvoiceStage",
       "name": "geprüft",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "2102" },
+      "_id": 2102,
       "_class": "PurchaseInvoiceStage",
       "name": "bezahlt",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "2103" },
+      "_id": 2103,
       "_class": "PurchaseInvoiceStage",
       "name": "zurückgewiesen",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "2200" },
+      "_id": 2200,
       "_class": "DunningStage",
       "name": "erstellt",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "2201" },
+      "_id": 2201,
       "_class": "DunningStage",
       "name": "durchgesehen",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "2202" },
+      "_id": 2202,
       "_class": "DunningStage",
       "name": "versendet",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "2203" },
+      "_id": 2203,
       "_class": "DunningStage",
       "name": "bezahlt",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "2204" },
+      "_id": 2204,
       "_class": "DunningStage",
       "name": "inkasso",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "2205" },
+      "_id": 2205,
       "_class": "DunningStage",
       "name": "ausgebucht",
-      "orderId": 60,
-      "version": { "$numberLong": "0" }
+      "orderId": 60
     },
     {
-      "_id": { "$numberLong": "2206" },
+      "_id": 2206,
       "_class": "DunningStage",
       "name": "storniert",
-      "orderId": 70,
-      "version": { "$numberLong": "0" }
+      "orderId": 70
     },
     {
-      "_id": { "$numberLong": "2300" },
+      "_id": 2300,
       "_class": "DunningLevel",
       "name": "1. Mahnung",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "2301" },
+      "_id": 2301,
       "_class": "DunningLevel",
       "name": "2. Mahnung",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "2302" },
+      "_id": 2302,
       "_class": "DunningLevel",
       "name": "3. Mahnung",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "2400" },
+      "_id": 2400,
       "_class": "PaymentMethod",
       "name": "bar",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "2401" },
+      "_id": 2401,
       "_class": "PaymentMethod",
       "name": "Überweisung",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "2402" },
+      "_id": 2402,
       "_class": "PaymentMethod",
       "name": "Abbuchung",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "2403" },
+      "_id": 2403,
       "_class": "PaymentMethod",
       "name": "Scheck",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "2404" },
+      "_id": 2404,
       "_class": "PaymentMethod",
       "name": "Verrechnung",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "2500" },
+      "_id": 2500,
       "_class": "CreditMemoStage",
       "name": "erstellt",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "2501" },
+      "_id": 2501,
       "_class": "CreditMemoStage",
       "name": "durchgesehen",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "2502" },
+      "_id": 2502,
       "_class": "CreditMemoStage",
       "name": "versendet",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "2503" },
+      "_id": 2503,
       "_class": "CreditMemoStage",
       "name": "bezahlt",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "2504" },
+      "_id": 2504,
       "_class": "CreditMemoStage",
       "name": "storniert",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "2600" },
+      "_id": 2600,
       "_class": "ProjectStatus",
       "name": "in Bearbeitung",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "2601" },
+      "_id": 2601,
       "_class": "ProjectStatus",
       "name": "pausiert",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "2602" },
+      "_id": 2602,
       "_class": "ProjectStatus",
       "name": "wartet auf Kunden",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "2603" },
+      "_id": 2603,
       "_class": "ProjectStatus",
       "name": "wartet auf Lieferanten",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "2604" },
+      "_id": 2604,
       "_class": "ProjectStatus",
       "name": "abgeschlossen",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     },
     {
-      "_id": { "$numberLong": "2605" },
+      "_id": 2605,
       "_class": "ProjectStatus",
       "name": "abgebrochen",
-      "orderId": 60,
-      "version": { "$numberLong": "0" }
+      "orderId": 60
     },
     {
-      "_id": { "$numberLong": "3000" },
+      "_id": 3000,
       "_class": "ProductCategory",
       "name": "Hardware",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "3001" },
+      "_id": 3001,
       "_class": "ProductCategory",
       "name": "Software",
-      "orderId": 0,
-      "version": { "$numberLong": "0" }
+      "orderId": 0
     },
     {
-      "_id": { "$numberLong": "4000" },
+      "_id": 4000,
       "_class": "OrderMethod",
       "name": "E-Mail",
-      "orderId": 10,
-      "version": { "$numberLong": "0" }
+      "orderId": 10
     },
     {
-      "_id": { "$numberLong": "4001" },
+      "_id": 4001,
       "_class": "OrderMethod",
       "name": "Post",
-      "orderId": 20,
-      "version": { "$numberLong": "0" }
+      "orderId": 20
     },
     {
-      "_id": { "$numberLong": "4002" },
+      "_id": 4002,
       "_class": "OrderMethod",
       "name": "Telefax",
-      "orderId": 30,
-      "version": { "$numberLong": "0" }
+      "orderId": 30
     },
     {
-      "_id": { "$numberLong": "4003" },
+      "_id": 4003,
       "_class": "OrderMethod",
       "name": "Telefon",
-      "orderId": 40,
-      "version": { "$numberLong": "0" }
+      "orderId": 40
     },
     {
-      "_id": { "$numberLong": "4004" },
+      "_id": 4004,
       "_class": "OrderMethod",
       "name": "Kunde direkt",
-      "orderId": 50,
-      "version": { "$numberLong": "0" }
+      "orderId": 50
     }
   ],
   "seqNumber": [
@@ -970,8 +833,7 @@
       "orderId": 100,
       "prefix": "A",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "salesOrder",
@@ -979,8 +841,7 @@
       "orderId": 110,
       "prefix": "B",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "invoice",
@@ -988,8 +849,7 @@
       "orderId": 120,
       "prefix": "R",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "dunning",
@@ -997,8 +857,7 @@
       "orderId": 130,
       "prefix": "M",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "work",
@@ -1006,8 +865,7 @@
       "orderId": 210,
       "prefix": "S",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "product",
@@ -1015,8 +873,7 @@
       "orderId": 200,
       "prefix": "P",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "organization",
@@ -1024,8 +881,7 @@
       "orderId": 10,
       "prefix": "O",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "person",
@@ -1033,8 +889,7 @@
       "orderId": 20,
       "prefix": "E",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "note",
@@ -1042,8 +897,7 @@
       "orderId": 300,
       "prefix": "N",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "creditMemo",
@@ -1051,8 +905,7 @@
       "orderId": 140,
       "prefix": "G",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "project",
@@ -1060,8 +913,7 @@
       "orderId": 310,
       "prefix": "J",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     },
     {
       "_id": "ticket",
@@ -1069,29 +921,24 @@
       "orderId": 400,
       "prefix": "T",
       "startValue": 10000,
-      "suffix": "",
-      "version": { "$numberLong": "0" }
+      "suffix": ""
     }
   ],
   "config": [
     {
       "_id": "baseDataLocale",
-      "version": { "$numberLong": "0" },
       "value": "de-CH"
     },
     {
       "_id": "currency",
-      "version": { "$numberLong": "0" },
       "value": "CHF"
     },
     {
       "_id": "numFractionDigits",
-      "version": { "$numberLong": "0" },
       "value": "2"
     },
     {
       "_id": "numFractionDigitsExt",
-      "version": { "$numberLong": "0" },
       "value": "2"
     }
   ]

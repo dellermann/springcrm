@@ -1,7 +1,7 @@
 /*
  * InstallService.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,18 @@
 
 package org.amcworld.springcrm
 
-import com.mongodb.BasicDBList
-import com.mongodb.DBObject
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
 import grails.converters.JSON
 import grails.core.GrailsApplication
+import grails.core.GrailsClass
+import grails.validation.ValidationException
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.bson.Document as MDocument
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.gorm.GormEntity
 import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 import org.springframework.core.io.Resource
 
 
@@ -161,23 +163,45 @@ class InstallService {
      * @param key   the given package key
      * @since       1.4
      */
+    @CompileDynamic
     void installBaseDataPackage(String key) {
         InputStream stream = loadBaseDataPackage(key)
-        if (stream != null) {
-            MongoDatabase db = Organization.DB
+        if (stream == null) {
+            return
+        }
 
-            DBObject obj = (DBObject) com.mongodb.util.JSON.parse(
-                stream.getText('utf-8')
-            )
-            for (String collectionName : obj.keySet()) {
-                List<MDocument> list = []
-                for (Object elem : obj.get(collectionName) as BasicDBList) {
-                    list << new MDocument(elem as Map)
+        MongoDatabase db = Organization.DB
+        JSONObject collections = (JSONObject) JSON.parse(stream, 'utf-8')
+        for (Map.Entry<Object, Object> collectionEntry : collections) {
+            String name = collectionEntry.key.toString()
+            db.getCollection(name).drop()
+            if (log.debugEnabled) {
+                log.debug "Populating collection ${name}"
+            }
+
+            JSONArray entries = (JSONArray) collectionEntry.value
+            for (Object entry : entries) {
+                Map data = (Map) entry
+                if (data.containsKey('_class')) {
+                    name = data['_class'].toString().uncapitalize()
                 }
-                MongoCollection<MDocument> collection =
-                    db.getCollection(collectionName)
-                collection.drop()
-                collection.insertMany(list)
+                GrailsClass grailsClass =
+                    grailsApplication.getArtefactByLogicalPropertyName(
+                        DomainClassArtefactHandler.TYPE, name
+                    )
+                GormEntity instance =
+                    (GormEntity) grailsClass.clazz.newInstance(data)
+                def id = data['_id']
+                if (id != null) {
+                    instance.id = id
+                }
+                try {
+                    instance.insert flush: true
+                } catch (ValidationException ignore) {
+                    log.error(
+                        "Validation error in collection ${name}, value ${id}."
+                    )
+                }
             }
         }
     }
