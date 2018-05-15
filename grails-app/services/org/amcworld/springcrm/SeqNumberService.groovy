@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import com.mongodb.MongoClient
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Accumulators
 import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
@@ -29,7 +27,6 @@ import grails.core.ArtefactHandler
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.services.Service
-import grails.util.GrailsNameUtils
 import org.bson.conversions.Bson
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.beans.factory.annotation.Autowired
@@ -105,9 +102,6 @@ abstract class SeqNumberService implements ISeqNumberService {
 
     @Autowired
     GrailsApplication grailsApplication
-
-    @Autowired(required = false)
-    MongoClient mongo
 
     @Autowired(required = false)
     UserSettingService userSettingService
@@ -225,21 +219,33 @@ abstract class SeqNumberService implements ISeqNumberService {
     int nextNumber(String controllerName) {
         SeqNumber seq = get(controllerName)
         Class<?> clazz = domainNameToClass(controllerName)
+        if (log.debugEnabled) {
+            log.debug(
+                "Obtain next sequence number for ${controllerName} between " +
+                "${seq.startValue} and ${seq.endValue}"
+            )
+        }
 
         List<Bson> filters = [Filters.lte('number', seq.endValue)]
         if (clazz.hasProperty('nextNumberFilters')) {
             filters.addAll(
                 (List<Bson>) clazz.getField('nextNumberFilters').get(null)
             )
+            if (log.debugEnabled) {
+                log.debug "Added nextNumberFilters for ${controllerName}"
+            }
         }
 
-        Integer num = (Integer) getCollection(clazz)
+        Integer num = (Integer) clazz.collection
             .aggregate([
                 Aggregates.match(Filters.and(filters)),
                 Aggregates.group(null, Accumulators.max('num', '$number'))
             ])
             .first()
             ?.getAt('num')
+        if (log.debugEnabled) {
+            log.debug "Found highest sequence number ${num}"
+        }
 
         // TODO what if num >= seq.endValue?
 
@@ -329,20 +335,5 @@ abstract class SeqNumberService implements ISeqNumberService {
         grailsApplication.getArtefactByLogicalPropertyName(
                 DomainClassArtefactHandler.TYPE, domainName
             )?.clazz
-    }
-
-    /**
-     * Gets the MongoDB collection of the given domain model class.
-     *
-     * @param clazz the given domain model class
-     * @return      the MongoDB collection
-     */
-    private MongoCollection getCollection(Class<?> clazz) {
-        mongo.getDatabase(
-                grailsApplication.config.getProperty(
-                    'grails.mongodb.databaseName'
-                )
-            )
-            .getCollection(GrailsNameUtils.getPropertyName(clazz))
     }
 }

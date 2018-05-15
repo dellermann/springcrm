@@ -141,7 +141,7 @@ class InvoicingItems
     @_initTaxTypeahead $row.find '.col-tax input'
     autosize $row.find 'textarea'
     if jumpToNewRow
-      $('html').scrollTop($row.position().top - window.innerHeight / 2)
+      $('html').scrollTop($row.offset().top - window.innerHeight / 2)
 
     return
 

@@ -80,6 +80,12 @@ class SeqNumberLoadInterceptor implements Interceptor {
                 if (nd != null) {
                     if (actionName == 'create' || actionName == 'copy') {
                         nd.number = seqNumberService.nextNumber(controllerName)
+                        if (log.debugEnabled) {
+                            log.debug(
+                                "Controller ${controllerName}: " +
+                                "asssociated next sequence number ${nd.number}"
+                            )
+                        }
                     }
                     model.fullNumber = seqNumberService.getFullNumber(nd)
                 }

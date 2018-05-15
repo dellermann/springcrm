@@ -312,7 +312,7 @@
               <input type="text"
                 class="form-control form-control-number form-control-currency"
                 value="${formatNumber(
-                  type: "number", number: item.total,
+                  type: "number", number: item.totalNet,
                   minFractionDigits: numFractionDigits, groupingUsed: true
                 )}"
                 size="8" disabled="disabled"

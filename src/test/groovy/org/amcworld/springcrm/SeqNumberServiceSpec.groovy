@@ -20,27 +20,20 @@
 
 package org.amcworld.springcrm
 
-import com.github.fakemongo.Fongo
-import com.mongodb.client.MongoCollection
+import grails.test.mongodb.MongoSpec
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import java.beans.Introspector
-import org.bson.Document as MDocument
 import org.grails.datastore.mapping.services.Service
-import spock.lang.Ignore
-import spock.lang.Specification
 
 
-class SeqNumberServiceSpec extends Specification
+class SeqNumberServiceSpec extends MongoSpec
     implements ServiceUnitTest<SeqNumberService>, DataTest
 {
 
     //-- Fixture methods ------------------------
 
-    def setup() {
-        Fongo fongo = new Fongo('mongo test server')
-        service.mongo = fongo.mongo
-
+    void setup() {
         mockDomains(
             CreditMemo, Dunning, Invoice, Organization, Quote, SalesOrder
         )
@@ -55,7 +48,7 @@ class SeqNumberServiceSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Check suitable sequence numbers'() {
+    void 'Check suitable sequence numbers'() {
         given: 'the current year'
         String year = new Date().format('YY')
 
@@ -86,7 +79,7 @@ class SeqNumberServiceSpec extends Specification
         !service.getShowHint(user)
     }
 
-    def 'Check not suitable sequence numbers'() {
+    void 'Check not suitable sequence numbers'() {
         given: 'the current year'
         String year = new Date().format('YY')
 
@@ -110,7 +103,7 @@ class SeqNumberServiceSpec extends Specification
     }
 
     @SuppressWarnings("GroovyPointlessBoolean")
-    def 'Do not show again hint for this year'(int year, boolean res) {
+    void 'Do not show again hint for this year'(int year, boolean res) {
         given: 'a user with mocked settings'
         User user = makeUser()
         user.addToAuthorities(
@@ -150,7 +143,7 @@ class SeqNumberServiceSpec extends Specification
         9999i                           || false
     }
 
-    def 'Do not show again hint for non-admins'(int year) {
+    void 'Do not show again hint for non-admins'(int year) {
         given: 'a non-admin user with mocked settings'
         User user = makeUser()
 
@@ -183,7 +176,7 @@ class SeqNumberServiceSpec extends Specification
         9999i                           || _
     }
 
-    def 'Get fixed sequence numbers'() {
+    void 'Get fixed sequence numbers'() {
         given: 'the current year and another year'
         int year = new Date().format('YY').toInteger()
         int otherYear = year - 5
@@ -226,7 +219,7 @@ class SeqNumberServiceSpec extends Specification
         10000 == l.find { it.id == 'organization' }.startValue
     }
 
-    def 'Store year for sequence number hint'() {
+    void 'Store year for sequence number hint'() {
         given: 'a user'
         User user = makeUser()
 
@@ -243,7 +236,7 @@ class SeqNumberServiceSpec extends Specification
         )
     }
 
-    def 'Store never show again for sequence number hint'() {
+    void 'Store never show again for sequence number hint'() {
         given: 'a user'
         User user = makeUser()
 
@@ -258,7 +251,7 @@ class SeqNumberServiceSpec extends Specification
         1 * userSettingService.store(user, 'seqNumberHintYear', '9999')
     }
 
-    def 'Load sequence number of a known class'() {
+    void 'Load sequence number of a known class'() {
         when: 'I load a sequence number by an artifact type'
         SeqNumber sn = service.get('invoice')
 
@@ -290,43 +283,12 @@ class SeqNumberServiceSpec extends Specification
 //        99999 == sn.endValue
     }
 
-    def 'Load sequence number of an unknown class'() {
+    void 'Load sequence number of an unknown class'() {
         expect:
         null == service.get('foo')
     }
 
-    def 'Get next default sequence number'() {
-        expect:
-        10000 == service.nextNumber('invoice')
-        10000 == service.nextNumber(Invoice)
-//        10000 == service.nextNumber(InvoiceController)
-    }
-
-    @Ignore('Fongo aggregating does not work in the moment')
-    def 'Get next sequence number'() {
-        given: 'an organization with a particular sequence number'
-        mockOrganization()
-
-        expect:
-        40000 == service.nextNumber('organization')
-        40000 == service.nextNumber(Organization)
-//        40000 == service.nextNumber(OrganizationController)
-    }
-
-    @Ignore('Fongo aggregating does not work in the moment')
-    def 'Get next sequence number using maxNumber method'() {
-        given: 'an invoice and a quote with a particular sequence number'
-        Organization org = createOrganization()
-        Quote quote = createQuote(org)
-        createInvoice org, quote
-
-        expect:
-        14001 == service.nextNumber('invoice')
-        14001 == service.nextNumber(Invoice)
-//        14001 == service.nextNumber(InvoiceController)
-    }
-
-    def 'Get the full name for classes which do not support full names'() {
+    void 'Get the full name for classes which do not support full names'() {
         given: 'an organization'
         Organization org = createOrganization()
 
@@ -334,7 +296,7 @@ class SeqNumberServiceSpec extends Specification
         'O-39999' == service.getFullName(org)
     }
 
-    def 'Get the full name for classes which support full names'() {
+    void 'Get the full name for classes which support full names'() {
         given: 'an organization'
         Organization org = createOrganization()
 
@@ -345,7 +307,7 @@ class SeqNumberServiceSpec extends Specification
         'R-14000-39999-M Foo' == service.getFullName(invoice)
     }
 
-    def 'Get the full number'() {
+    void 'Get the full number'() {
         given: 'an organization'
         Organization org = createOrganization()
 
@@ -409,23 +371,6 @@ class SeqNumberServiceSpec extends Specification
         org.save flush: true
     }
 
-    private Quote createQuote(Organization org = createOrganization()) {
-        def quote = new Quote(
-            number: 29999, subject: 'Foo', organization: org,
-            docDate: new Date(), stage: new QuoteStage(name: 'delivered'),
-            billingAddr: new Address(), shippingAddr: new Address(),
-            items: []
-        )
-        quote.items << new InvoicingItem(
-            number: 'P-10000', quantity: 4, unit: 'pcs.',
-            name: 'books', unitPrice: 44.99, tax: 19
-        )
-
-        mockDomain Quote, [quote]
-
-        quote.save flush: true
-    }
-
     private User makeUser() {
         User user = new User(
             username: 'jsmith',
@@ -441,22 +386,5 @@ class SeqNumberServiceSpec extends Specification
         mockDomain User, [user]
 
         user
-    }
-
-    private void mockOrganization() {
-        given: 'a fake mongo instance'
-        Fongo fongo = new Fongo('mongo test server')
-        service.mongo = fongo.mongo
-
-        and: 'some note instances'
-        String dbName = grailsApplication.config.getProperty(
-            'grails.mongodb.databaseName'
-        )
-        MongoCollection<org.bson.Document> collection =
-            fongo.mongo.getDatabase(dbName).getCollection('organization')
-        MDocument doc = new MDocument(
-            number: 39999, recType: 1, name: 'YourOrganization Ltd.'
-        )
-        collection.insertOne doc
     }
 }
