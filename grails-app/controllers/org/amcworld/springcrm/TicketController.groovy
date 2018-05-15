@@ -32,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile
  * @version 2.2
  * @since   1.4
  */
-class TicketController extends OldGeneralController<Ticket> {
+class TicketController { //extends OldGeneralController<Ticket> {
 
     //-- Constants ------------------------------
 
@@ -52,9 +52,9 @@ class TicketController extends OldGeneralController<Ticket> {
 
     //-- Constructors ---------------------------
 
-    TicketController(Class<? extends Ticket> domainType) {
-        super(domainType)
-    }
+//    TicketController(Class<? extends Ticket> domainType) {
+//        super(domainType)
+//    }
 
 
     //-- Public methods -------------------------
@@ -380,21 +380,21 @@ class TicketController extends OldGeneralController<Ticket> {
         redirectToFrontendPage ticketInstance.helpdesk
     }
 
-    @Override
-    protected Map<String, Object> getCreateModel(Ticket instance) {
-        Map<String, Object> res = super.getCreateModel(instance)
-        res['helpdeskInstanceList'] = helpdesks
-
-        res
-    }
-
-    @Override
-    protected Map<String, Object> getEditModel(Ticket instance) {
-        Map<String, Object> res = super.getEditModel(instance)
-        res['helpdeskInstanceList'] = helpdesks
-
-        res
-    }
+//    @Override
+//    protected Map<String, Object> getCreateModel(Ticket instance) {
+//        Map<String, Object> res = super.getCreateModel(instance)
+//        res['helpdeskInstanceList'] = helpdesks
+//
+//        res
+//    }
+//
+//    @Override
+//    protected Map<String, Object> getEditModel(Ticket instance) {
+//        Map<String, Object> res = super.getEditModel(instance)
+//        res['helpdeskInstanceList'] = helpdesks
+//
+//        res
+//    }
 
     /**
      * Gets the model which is used in frontend views containing the given
@@ -409,8 +409,8 @@ class TicketController extends OldGeneralController<Ticket> {
                                                  Helpdesk helpdeskInstance)
     {
         [
-            (domainInstanceName): ticketInstance,
-            helpdeskInstance: helpdeskInstance
+//            (domainInstanceName): ticketInstance,
+//            helpdeskInstance: helpdeskInstance
         ]
     }
 
@@ -430,10 +430,10 @@ class TicketController extends OldGeneralController<Ticket> {
      * @return  the list of helpdesks
      */
     private List<Helpdesk> getHelpdesks() {
-        user.administrator ? Helpdesk.list() : Helpdesk.findByUser(user)
+        null //user.administrator ? Helpdesk.list() : Helpdesk.findByUser(user)
     }
 
-    @Override
+//    @Override
     protected Ticket lowLevelSave() {
         Ticket ticketInstance = new Ticket(params)
         String messageText = ticketInstance.messageText = params.messageText

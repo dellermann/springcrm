@@ -177,15 +177,37 @@ dependencies {
     testCompile 'org.grails.plugins:geb'
     // testCompile "org.gebish:geb-spock:${gebVersion}"
 
-    testRuntime 'org.seleniumhq.selenium:selenium-api:3.6.0'
-    testRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:3.6.0'
-    testRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:3.6.0'
+    testRuntime 'org.seleniumhq.selenium:selenium-api:3.9.1'
+    testRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:3.9.1'
+    testRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:3.9.1'
     testRuntime 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.52.0'
+    testRuntime 'org.seleniumhq.selenium:selenium-server:3.9.1'
 
     console 'org.grails:grails-console'
 }
 
 /* compiling */
+sourceSets {
+    /* TODO exclude old functional tests until they have been reworked */
+    integrationTest {
+        groovy {
+            exclude '**/*Test.groovy'
+            exclude '**/*TestCase.groovy'
+            exclude '**/*Tests.groovy'
+            exclude '**/module/**'
+            exclude '**/page/**'
+            exclude '**/CalendarEventFunctionalSpec.groovy'
+            exclude '**/CallFunctionalSpec.groovy'
+            exclude '**/ConfigFunctionalSpec.groovy'
+            exclude '**/HelpdeskFrontendFunctionalSpec.groovy'
+            exclude '**/HelpdeskFunctionalSpec.groovy'
+            exclude '**/LoginFunctionalSpec.groovy'
+            exclude '**/PhoneCallFunctionalSpec.groovy'
+            exclude '**/RoleGroupServiceSpec.groovy'
+            exclude '**/TicketFunctionalSpec.groovy'
+        }
+    }
+}
 processResources
     .filesMatching(['**/*.groovy', '**/*.properties', '**/*.xml', '**/*.yml']) {
         filter(
