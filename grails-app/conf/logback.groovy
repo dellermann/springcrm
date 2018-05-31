@@ -72,4 +72,5 @@ logger 'org.grails.plugins.coffee.compiler', INFO
 
 if (Environment.isDevelopmentMode()) {
     logger 'org.amcworld.springcrm.xml.InvoicingTransactionXML', DEBUG
+//    logger 'org.amcworld.springcrm.ConfigController', TRACE
 }

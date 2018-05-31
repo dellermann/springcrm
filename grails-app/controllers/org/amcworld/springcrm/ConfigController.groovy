@@ -24,6 +24,7 @@ import grails.converters.JSON
 import grails.core.GrailsClass
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.bson.types.ObjectId
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
@@ -37,6 +38,7 @@ import org.grails.web.json.JSONObject
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN'])
+@Slf4j
 class ConfigController {
 
     //-- Constants ------------------------------
@@ -154,17 +156,59 @@ class ConfigController {
                 JSONObject obj = (JSONObject) item
                 long id = obj.getLong('id')
                 if (obj.has('remove') && obj.getBoolean('remove')) {
-                    if (!(id in READONLY_IDS)) {
+                    if (id in READONLY_IDS) {
+                        log.debug 'Prevent deleting read-only selValue {}', id
+                    } else {
+                        log.debug 'Delete selValue {}', id
                         selValueService.delete id
                     }
                 } else {
-                    SelValue selValue = id < 0L ? cls.newInstance()
-                        : selValueService.findByClassAndId(cls, id)
-                    if (!(id in READONLY_IDS)) {
-                        selValue.name = obj.getString('name')
+                    String name = obj.getString('name')
+                    if (id < 0L) {
+                        SelValue selValue = cls.newInstance()
+                        selValue.name = name
+                        selValue.orderId = orderId
+                        selValueService.save selValue
+                        log.debug(
+                            'Inserted selValue: name={}, orderId={}, id={}',
+                            name, orderId, selValue.id
+                        )
+                    } else {
+                        SelValue selValue =
+                            selValueService.findByClassAndId(cls, id)
+                        boolean modified = false
+                        if (selValue.orderId != orderId) {
+                            selValue.orderId = orderId
+                            modified = true
+                        }
+                        if (id in READONLY_IDS) {
+                            if (modified) {
+                                selValueService.save selValue
+                                log.debug(
+                                    'Updated read-only selValue {}: orderId={}',
+                                    id, orderId
+                                )
+                            } else {
+                                log.trace(
+                                    'Read-only selValue {} not modified.', id
+                                )
+                            }
+                        } else {
+                            if (selValue.name != name) {
+                                selValue.name = name
+                                modified = true
+                            }
+                            if (modified) {
+                                selValueService.save selValue
+                                log.debug(
+                                    'Updated selValue {}: name={}, orderId={}',
+                                    id, name, orderId
+                                )
+                            } else {
+                                log.trace 'SelValue {} not modified.', id
+                            }
+                        }
                     }
-                    selValue.orderId = orderId
-                    selValueService.save selValue
                     orderId += 10i
                 }
             }
@@ -308,7 +352,7 @@ class ConfigController {
      * given value.  If the value is {@code null} or an empty string the
      * configuration is deleted, otherwise it is stored.
      *
-     * @param name  the name of the configuation
+     * @param name  the name of the configuration
      * @param value the value of the configuration
      * @since 3.0
      */

@@ -27,6 +27,7 @@ import grails.core.ArtefactHandler
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.services.Service
+import java.lang.reflect.Method
 import org.bson.conversions.Bson
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.beans.factory.annotation.Autowired
@@ -227,14 +228,13 @@ abstract class SeqNumberService implements ISeqNumberService {
         }
 
         List<Bson> filters = [Filters.lte('number', seq.endValue)]
-        if (clazz.hasProperty('nextNumberFilters')) {
-            filters.addAll(
-                (List<Bson>) clazz.getField('nextNumberFilters').get(null)
-            )
+        try {
+            Method m = clazz.getMethod('getNextNumberFilters')
+            filters.addAll((List<Bson>) m.invoke(null))
             if (log.debugEnabled) {
                 log.debug "Added nextNumberFilters for ${controllerName}"
             }
-        }
+        } catch (NoSuchMethodException ignore) {}
 
         Integer num = (Integer) clazz.collection
             .aggregate([

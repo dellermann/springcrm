@@ -7,7 +7,7 @@ model {
 }
 
 json(quoteList) { Quote quote ->
-    id quote.id
+    id quote.id.toString()
     number seqNumberService.getFullNumber(quote)
     name quote.subject
     fullName seqNumberService.getFullName(quote)

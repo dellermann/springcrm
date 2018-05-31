@@ -31,6 +31,7 @@ class OrganizationSpec extends Specification
 
     //-- Feature methods ------------------------
 
+    @SuppressWarnings("SpellCheckingInspection")
     void 'Copy using constructor'() {
         given: 'an organization'
         def o1 = new Organization(
@@ -154,6 +155,7 @@ class OrganizationSpec extends Specification
         expect:
         null != org
         org != null
+        //noinspection ChangeToOperator
         !org.equals(null)
     }
 
@@ -319,6 +321,7 @@ class OrganizationSpec extends Specification
         ' MyData ltd. ' || 'MyData ltd.'
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Record type must be within a particular value range'(Byte recType,
                                                                boolean valid)
     {
@@ -345,6 +348,7 @@ class OrganizationSpec extends Specification
         -1          || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Name must not be blank'(String name, boolean valid) {
         given: 'an instance'
         def org = new Organization(
@@ -362,13 +366,14 @@ class OrganizationSpec extends Specification
         name            || valid
         null            || false
         ''              || false
-        ' '             || true
-        '      '        || true
-        '  \t \n '      || true
+        ' '             || false
+        '      '        || false
+        '  \t \n '      || false
         'foo'           || true
         'any name'      || true
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Phone must have a maximum length'(String phone, boolean valid) {
         given: 'an instance'
         def org = new Organization(
@@ -394,6 +399,7 @@ class OrganizationSpec extends Specification
         'x' * 41        || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Fax must have a maximum length'(String fax, boolean valid) {
         given: 'an instance'
         def org = new Organization(
@@ -419,6 +425,7 @@ class OrganizationSpec extends Specification
         'x' * 41        || false
     }
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Other phone must have a maximum length'(String phone, boolean valid) {
         given: 'an instance'
         def org = new Organization(
@@ -444,6 +451,7 @@ class OrganizationSpec extends Specification
         'x' * 41        || false
     }
 
+    @SuppressWarnings(["GroovyPointlessBoolean", "SpellCheckingInspection"])
     void 'E-mail 1 must be valid e-mail address'(String email, boolean valid) {
         given: 'an instance'
         def org = new Organization(
@@ -473,6 +481,7 @@ class OrganizationSpec extends Specification
         'user@härbört.com'  || true
     }
 
+    @SuppressWarnings(["GroovyPointlessBoolean", "SpellCheckingInspection"])
     void 'E-mail 2 must be valid e-mail address'(String email, boolean valid) {
         given: 'an instance'
         def org = new Organization(

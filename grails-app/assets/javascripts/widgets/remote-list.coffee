@@ -1,7 +1,7 @@
 #
 # remote-list.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2018, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,9 +29,18 @@ $ = jQuery
 # all links within this list.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  3.0
 #
 class RemoteList
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = __jq = jQuery
+
+  # @nodoc
+  HttpUrl = __HttpUrl = window.modules.require 'HttpUrl'
+
 
   #-- Class variables ---------------------------
 
@@ -47,7 +56,7 @@ class RemoteList
   # @param [Object] options           any options
   #
   constructor: (element, options) ->
-    @$element = $el = $(element)
+    @$element = $(element)
     @options = options
 
     url = options.loadUrl
@@ -65,7 +74,6 @@ class RemoteList
   # @private
   #
   _computeUrl: (url) ->
-    $el = @$element
     options = @options
 
     url = new HttpUrl(url or options.loadUrl)
@@ -80,12 +88,12 @@ class RemoteList
   # @private
   #
   _loadContent: (url) ->
+    $ = __jq
     $el = @$element
     opts = @options
 
     $container = $el.find(opts.container)
     $container.load url, =>
-      $ = jQuery
       $element = $el
 
       $element.on 'click', 'thead a, .pagination a', (event) =>
@@ -140,5 +148,3 @@ $.fn.remotelist.noConflict = ->
 #== Main ========================================
 
 $('.remote-list').remotelist()
-
-# vim:set ts=2 sw=2 sts=2:

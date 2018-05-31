@@ -51,7 +51,7 @@ class ConfigServiceSpec extends Specification
         where:
         value   || b
         null    || null
-        ''      || false
+        ''      || null
         'false' || false
         'False' || false
         'true'  || true
@@ -195,7 +195,7 @@ class ConfigServiceSpec extends Specification
         where:
         value   || s
         null    || null
-        ''      || ''
+        ''      || null
         '0'     || '0'
         'a'     || 'a'
         'abc'   || 'abc'

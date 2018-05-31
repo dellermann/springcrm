@@ -24,14 +24,13 @@ import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
 
-class SalesOrderSpec extends Specification
-    implements DomainUnitTest<SalesOrder>
+class SalesOrderSpec extends Specification implements DomainUnitTest<SalesOrder>
 {
 
     //-- Feature methods ------------------------
 
-    def 'Creating an empty instance initializes the properties'() {
-        when: 'I create an empty sales order'
+    void 'Creating an empty instance initializes the properties'() {
+        when: 'an empty sales order is created'
         def so = new SalesOrder()
 
         then: 'the properties are initialized properly'
@@ -69,11 +68,11 @@ class SalesOrderSpec extends Specification
         null == so.deliveryDate
     }
 
-    def 'Copy an empty instance using constructor'() {
+    void 'Copy an empty instance using constructor'() {
         given: 'an empty sales order'
         def so1 = new SalesOrder()
 
-        when: 'I copy the sales order using the constructor'
+        when: 'the sales order is copied using the constructor'
         def so2 = new SalesOrder(so1)
 
         then: 'the properties are set properly'
@@ -109,7 +108,7 @@ class SalesOrderSpec extends Specification
         null == so2.deliveryDate
     }
 
-    def 'Copy a sales order using constructor'() {
+    void 'Copy a sales order using constructor'() {
         given: 'some dates'
         Date docDate = new Date()
         Date shippingDate = docDate + 7
@@ -176,7 +175,7 @@ class SalesOrderSpec extends Specification
             deliveryDate: deliveryDate
         )
 
-        when: 'I copy the sales order using the constructor'
+        when: 'the sales order is copied using the constructor'
         def so2 = new SalesOrder(so1)
 
         then: 'some properties are the equal'
@@ -226,7 +225,7 @@ class SalesOrderSpec extends Specification
         null == so2.deliveryDate
     }
 
-    def 'Stage must not be null'() {
+    void 'Stage must not be null'() {
         given: 'a quite valid sales order'
         def so = new SalesOrder(
             number: 39999,
@@ -239,13 +238,13 @@ class SalesOrderSpec extends Specification
             items: [new InvoicingItem(unit: 'm', name: 'cable')]
         )
 
-        when: 'I set the stage'
+        when: 'the stage is set'
         so.stage = new SalesOrderStage()
 
         then: 'the instance is valid'
         so.validate()
 
-        when: 'I unset the stage'
+        when: 'the stage is unset'
         so.stage = null
 
         then: 'the instance is not valid'

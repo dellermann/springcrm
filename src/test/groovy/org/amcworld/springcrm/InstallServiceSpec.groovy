@@ -33,7 +33,7 @@ class InstallServiceSpec extends Specification
     // TODO applyAllDiffSets
     // TODO applyDiffSet
 
-    def 'Can enable and disable installer'() {
+    void 'Can enable and disable installer'() {
         given: 'a configuration for installation data'
         File dir = File.createTempDir('springcrm-test-', '')
         grailsApplication.config.springcrm.dir.installer = dir.absolutePath
@@ -56,7 +56,7 @@ class InstallServiceSpec extends Specification
         dir.delete()
     }
 
-    def 'Can obtain base data packages'() {
+    void 'Can obtain base data packages'() {
         when: 'I obtain the base data packages'
         List<String> packages = service.baseDataPackages
 
@@ -76,7 +76,7 @@ class InstallServiceSpec extends Specification
 
     // TODO installBaseDataPackage
 
-    def 'Can check if installer enable file is expired'() {
+    void 'Can check if installer enable file is expired'() {
         given: 'a configuration for installation data'
         File dir = File.createTempDir('springcrm-test-', '')
         grailsApplication.config.springcrm.dir.installer = dir.absolutePath
@@ -98,22 +98,6 @@ class InstallServiceSpec extends Specification
 
         then: 'the enable file is expired yet'
         service.enableFileExpired
-    }
-
-    def 'Can obtain diff sets'() {
-        expect:
-        service.loadDiffSet(1, 'de-DE') != null
-        service.loadDiffSet(1, 'de-AT') != null
-        service.loadDiffSet(1, 'de-CH') != null
-        service.loadDiffSet(1, '') == null
-        service.loadDiffSet(2, 'de-DE') == null
-        service.loadDiffSet(2, 'de-AT') == null
-        service.loadDiffSet(2, 'de-CH') == null
-        service.loadDiffSet(2, '') == null
-        service.loadDiffSet(3, 'de-DE') != null
-        service.loadDiffSet(3, 'de-AT') != null
-        service.loadDiffSet(3, 'de-CH') != null
-        service.loadDiffSet(3, '') != null
     }
 
     // TODO migrateData

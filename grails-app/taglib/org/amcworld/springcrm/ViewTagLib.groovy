@@ -349,7 +349,7 @@ class ViewTagLib implements TagLibrary {
         if (number || attrs.displayZero) {
             Locale locale = userService.getCurrentLocale()
             Currency currency = getCurrencyForLocale(locale)
-            int fractionDigits = attrs.external \
+            int fractionDigits = attrs.remove('external') \
                 ? userService.getNumFractionDigitsExt() \
                 : userService.getNumFractionDigits()
             if (attrs.minFractionDigits != null) {

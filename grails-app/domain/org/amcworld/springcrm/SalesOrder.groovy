@@ -21,7 +21,6 @@
 package org.amcworld.springcrm
 
 import com.mongodb.client.model.Filters
-import org.grails.datastore.gorm.GormEntity
 
 
 /**
@@ -30,8 +29,7 @@ import org.grails.datastore.gorm.GormEntity
  * @author  Daniel Ellermann
  * @version 3.0
  */
-class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
-{
+class SalesOrder extends InvoicingTransaction {
 
     //-- Constants ----------------------------------
 
@@ -63,6 +61,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
         stage column: 'so_stage_id'
         signature type: 'text'
     }
+    @SuppressWarnings("GroovyUnusedDeclaration")
     static nextNumberFilters = [Filters.eq('type', TYPE)]
 
 
@@ -100,6 +99,11 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
     OrderMethod orderMethod
 
     /**
+     * The quote associated to the sales order.
+     */
+    Quote quote
+
+    /**
      * The signature of the client in SVG format.
      *
      * @since 2.2
@@ -107,7 +111,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
     String signature
 
     /**
-     * The stage of this sales order.
+     * The stage of the sales order.
      */
     SalesOrderStage stage
 
@@ -143,5 +147,44 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
         super(q)
         type = TYPE
         quote = q
+    }
+
+
+    //-- Properties -----------------------------
+
+    /*
+     * XXX These properties need to be re-implemented from the super class
+     * because otherwise the compile-time implementation of SalesOrderService
+     * does not work.  It seems to be a bug in Grails for MongoDB.
+     */
+
+    @Override
+    Organization getOrganization() {
+        super.getOrganization()
+    }
+
+    @Override
+    void setOrganization(Organization organization) {
+        super.setOrganization organization
+    }
+
+    @Override
+    Person getPerson() {
+        super.getPerson()
+    }
+
+    @Override
+    void setPerson(Person person) {
+        super.setPerson person
+    }
+
+    @Override
+    String getSubject() {
+        super.getSubject()
+    }
+
+    @Override
+    void setSubject(String subject) {
+        super.setSubject subject
     }
 }

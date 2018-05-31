@@ -1,4 +1,4 @@
-<g:applyLayout name="selectorList" model="[list: quoteList, total: quote]">
+<g:applyLayout name="selectorList" model="[list: quoteList, total: quoteCount]">
   <table class="table data-table">
     <thead>
       <tr>

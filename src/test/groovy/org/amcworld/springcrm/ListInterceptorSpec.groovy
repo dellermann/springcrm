@@ -30,10 +30,11 @@ class ListInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
-    def 'Interceptor matches the correct controller/action pairs'(
+    @SuppressWarnings("GroovyPointlessBoolean")
+    void 'Interceptor matches the correct controller/action pairs'(
         String a, boolean b
     ) {
-        when: 'I use a particular request'
+        when: 'a particular request is used'
         withRequest controller: 'PhoneCall', action: a
 
         then: 'the interceptor does match or not'
@@ -49,26 +50,43 @@ class ListInterceptorSpec extends Specification
         'listEmbedded'  || true
     }
 
-    def 'All interceptor methods return true'() {
+    void 'All interceptor methods return true'() {
         expect:
         interceptor.after()
         interceptor.afterView()
         interceptor.before()
     }
 
-    def 'A default maximum value is set'() {
-        when: 'I call the interceptor method'
+    void 'The character encoding is set at action listEmbedded'() {
+        when: 'the listEmbedded action has been called'
+        webRequest.actionName = 'listEmbedded'
+        interceptor.after()
+
+        then: 'the character encoding has been set'
+        'UTF-8' == response.characterEncoding
+
+        when: 'another action has been called'
+        response.reset()
+        webRequest.actionName = 'index'
+        interceptor.after()
+
+        then: 'the character encoding has not been changed'
+        null == response.characterEncoding
+    }
+
+    void 'A default maximum value is set'() {
+        when: 'the interceptor method is called'
         interceptor.before()
 
         then: 'a default value has been set'
         10 == params.max
     }
 
-    def 'The maximum value is set correctly'(int m, int e) {
+    void 'The maximum value is set correctly'(int m, int e) {
         given: 'a maximum value'
         params.max = m
 
-        when: 'I call the interceptor method'
+        when: 'the interceptor method is called'
         interceptor.before()
 
         then: 'a value has been set correctly'

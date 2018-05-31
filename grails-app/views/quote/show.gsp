@@ -19,22 +19,22 @@
           model="[id: quote.id]"/>
       </content>
       <content tag="actionMenu">
-        <g:ifModuleAllowed modules="SALES_ORDER">
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_SALES_ORDER">
         <li role="menuitem">
           <g:link controller="salesOrder" action="create"
             params="[quote: quote?.id]">
             <g:message code="quote.button.createSalesOrder"/>
           </g:link>
         </li>
-        </g:ifModuleAllowed>
-        <g:ifModuleAllowed modules="INVOICE">
+        </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_INVOICE">
         <li role="menuitem">
           <g:link controller="invoice" action="create"
             params="[quote: quote?.id]">
             <g:message code="quote.button.createInvoice"/>
           </g:link>
         </li>
-        </g:ifModuleAllowed>
+        </sec:ifAnyGranted>
       </content>
 
       <section>
@@ -114,14 +114,14 @@
       </g:if>
 
       <g:set var="loadParams" value="quote=${quote.id}"/>
-      <g:ifModuleAllowed modules="SALES_ORDER">
+      <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_SALES_ORDER">
       <g:applyLayout name="remoteList"
         model="[controller: 'salesOrder', createParams: [quote: quote.id]]"/>
-      </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="INVOICE">
+      </sec:ifAnyGranted>
+      <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_INVOICE">
       <g:applyLayout name="remoteList"
         model="[controller: 'invoice', createParams: [quote: quote.id]]"/>
-      </g:ifModuleAllowed>
+      </sec:ifAnyGranted>
     </g:applyLayout>
 
     <content tag="scripts">

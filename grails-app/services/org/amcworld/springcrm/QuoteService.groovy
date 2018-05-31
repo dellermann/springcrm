@@ -125,8 +125,8 @@ interface IQuoteService {
     /**
      * Creates or updates the given quote.
      *
-     * @param person    the given quote
-     * @return          the saved quote or {@code null} if an error occurred
+     * @param quote the given quote
+     * @return      the saved quote or {@code null} if an error occurred
      */
     Quote save(Quote quote)
 }

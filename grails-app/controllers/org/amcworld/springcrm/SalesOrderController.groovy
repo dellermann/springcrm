@@ -1,7 +1,7 @@
 /*
  * SalesOrderController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,10 @@
 
 package org.amcworld.springcrm
 
+import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationException
+import grails.web.RequestParameter
+import org.bson.types.ObjectId
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -28,9 +32,10 @@ import org.springframework.web.multipart.MultipartFile
  * orders.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
-class SalesOrderController extends InvoicingController<SalesOrder> {
+@Secured(['ROLE_ADMIN', 'ROLE_SALES_ORDER'])
+class SalesOrderController extends GeneralController<SalesOrder> {
 
     //-- Constants ------------------------------
 
@@ -40,6 +45,13 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
     //-- Fields ---------------------------------
 
     DataFileService dataFileService
+    InvoicingTransactionService invoicingTransactionService
+    OrganizationService organizationService
+    PersonService personService
+    QuoteService quoteService
+    SalesOrderService salesOrderService
+    SelValueService selValueService
+    SeqNumberService seqNumberService
 
 
     //-- Constructors ---------------------------
@@ -51,32 +63,65 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
 
     //-- Public methods -------------------------
 
-    def copy(Long id) {
-        super.copy id
+    def copy(SalesOrder salesOrder) {
+        respond new SalesOrder(salesOrder), view: 'create'
     }
 
-    def create() {
-        SalesOrder salesOrderInstance
-        if (params.quote) {
-            Quote quoteInstance = Quote.get(params.long('quote'))
-            salesOrderInstance = new SalesOrder(quoteInstance)
+    def create(@RequestParameter('quote') String quoteId) {
+        SalesOrder salesOrder
+        if (quoteId) {
+            Quote quote = quoteService.get(new ObjectId(quoteId))
+            salesOrder = new SalesOrder(quote)
         } else {
-            salesOrderInstance = new SalesOrder(params)
+            salesOrder = new SalesOrder(params)
         }
 
-        getCreateModel salesOrderInstance
+        respond salesOrder
     }
 
-    def delete(Long id) {
-        super.delete id
+    def delete(String id) {
+        if (id == null) {
+            notFound()
+            return
+        }
+
+        SalesOrder salesOrder = salesOrderService.delete(new ObjectId(id))
+        if (salesOrder?.orderDocument != null) {
+            dataFileService.removeFile(FILE_TYPE, salesOrder.orderDocument)
+        }
+
+        redirectAfterDelete salesOrder
     }
 
-    def edit(Long id) {
-        super.edit id
+    def edit(String id) {
+        respond id == null ? null : salesOrderService.get(new ObjectId(id))
     }
 
-    def find() {
-        super.find()
+    def find(String name,
+             @RequestParameter('organization') String organizationId)
+    {
+        Organization organization = organizationId \
+            ? organizationService.get(new ObjectId(organizationId))
+            : null
+        List<SalesOrder> salesOrderList
+        if (name) {
+            Integer number
+            try {
+                number = name as Integer
+            } catch (NumberFormatException ignored) {
+                number = null
+            }
+            //noinspection GroovyVariableNotAssigned
+            salesOrderList = salesOrderService.find(number, name, organization)
+        } else {
+            salesOrderList = organization == null ? salesOrderService.list([: ])
+                : salesOrderService.findAllByOrganization(organization, [: ])
+        }
+
+        /*
+         * XXX We cannot use respond here because it circumvents interceptors.
+         */
+        [salesOrderList: salesOrderList]
     }
 
     def index() {
@@ -84,110 +129,169 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = SalesOrder.findAllBySubjectLike(searchFilter, params)
-            count = SalesOrder.countBySubjectLike(searchFilter)
+            list = salesOrderService.findAllBySubjectLike(searchFilter, params)
+            count = salesOrderService.countBySubjectLike(searchFilter)
         } else {
-            list = SalesOrder.list(params)
-            count = SalesOrder.count()
+            list = salesOrderService.list(params)
+            count = salesOrderService.count()
         }
 
-        getIndexModel list, count
+        respond list, model: [salesOrderCount: count]
     }
 
-    def listEmbedded(Long organization, Long person, Long quote) {
-        List<SalesOrder> l = null
-        int count = 0
-        Map<String, Object> linkParams = null
-        if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            l = SalesOrder.findAllByOrganization(organizationInstance, params)
-            count = SalesOrder.countByOrganization(organizationInstance)
-            linkParams = [organization: organizationInstance.id]
-        } else if (person) {
-            Person personInstance = Person.get(person)
-            l = SalesOrder.findAllByPerson(personInstance, params)
-            count = SalesOrder.countByPerson(personInstance)
-            linkParams = [person: personInstance.id]
-        } else if (quote) {
-            Quote quoteInstance = Quote.get(quote)
-            l = SalesOrder.findAllByQuote(quoteInstance, params)
-            count = SalesOrder.countByQuote(quoteInstance)
-            linkParams = [quote: quoteInstance.id]
+    def listEmbedded(@RequestParameter('organization') String organizationId,
+                     @RequestParameter('person') String personId,
+                     @RequestParameter('quote') String quoteId)
+    {
+        List<SalesOrder> list = null
+        Map model = null
+
+        if (organizationId != null) {
+            Organization organization =
+                organizationService.get(new ObjectId(organizationId))
+            if (organization != null) {
+                list = salesOrderService.findAllByOrganization(
+                    organization, params
+                )
+                model = [
+                    salesOrderCount:
+                        salesOrderService.countByOrganization(organization),
+                    linkParams: [organization: organization.id.toString()]
+                ]
+            }
+        } else if (personId != null) {
+            Person person = personService.get(new ObjectId(personId))
+            if (person != null) {
+                list = salesOrderService.findAllByPerson(person, params)
+                model = [
+                    salesOrderCount: salesOrderService.countByPerson(person),
+                    linkParams: [person: person.id.toString()]
+                ]
+            }
+        } else if (quoteId != null) {
+            Quote quote = quoteService.get(new ObjectId(quoteId))
+            list = salesOrderService.findAllByQuote(quote, params)
+            model = [
+                salesOrderCount: salesOrderService.countByQuote(quote),
+                linkParams: [quote: quote.id.toString()]
+            ]
         }
 
-        getListEmbeddedModel l, count, linkParams
+        respond list, model: model
     }
 
-    def print(Long id, String template) {
-        SalesOrder salesOrderInstance = getDomainInstanceWithStatus(id)
-        if (salesOrderInstance != null) {
-            printDocument salesOrderInstance, template
+    def print(String id, String template) {
+        SalesOrder salesOrder =
+            id == null ? null : salesOrderService.get(new ObjectId(id))
+        if (salesOrder == null) {
+            respond salesOrder
+            return
+        }
+
+        boolean duplicate = params.duplicate
+        byte [] pdf =
+            invoicingTransactionService.print(salesOrder, template, duplicate)
+
+        StringBuilder buf = new StringBuilder()
+        buf << (message(code: 'salesOrder.label') as String)
+        buf << ' ' << seqNumberService.getFullNumber(salesOrder)
+        if (duplicate) {
+            buf << ' '
+            buf << (message(code: 'invoicingTransaction.duplicate') as String)
+        }
+        buf << '.pdf'
+
+        response.contentLength = pdf.length
+        render(
+            contentType: 'application/pdf',
+            file: pdf,
+            fileName: buf.toString()
+        )
+    }
+
+    def save(SalesOrder salesOrder) {
+        if (salesOrder == null) {
+            notFound()
+            return
+        }
+
+        salesOrder.orderDocument =
+            dataFileService.storeFile(FILE_TYPE, params.file as MultipartFile)
+
+        try {
+            salesOrder.beforeInsert()
+            updateAssociated salesOrder
+            salesOrderService.save salesOrder
+            redirectAfterStorage salesOrder
+        } catch (ValidationException ignored) {
+            respond salesOrder.errors, view: 'create'
         }
     }
 
-    def save() {
-        super.save()
-    }
-
-    def setSignature(Long id) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
-        if (salesOrderInstance) {
-            salesOrderInstance.signature = params.signature
-            salesOrderInstance.save failOnError: true, flush: true
+    def setSignature(String id) {
+        SalesOrder salesOrder = id == null ? null
+            : salesOrderService.get(new ObjectId(id))
+        if (salesOrder == null) {
+            notFound()
+            return
         }
+
+        salesOrder.signature = params.signature
+        salesOrderService.save salesOrder
 
         redirect action: 'show', id: id
     }
 
-    def show(Long id) {
-        super.show id
+    def show(String id) {
+        respond id == null ? null : salesOrderService.get(new ObjectId(id))
     }
 
-    def update(Long id) {
-        super.update id
+    def update(SalesOrder salesOrder) {
+        if (salesOrder == null) {
+            notFound()
+            return
+        }
+
+        DataFile df = salesOrder.orderDocument
+        if (params.fileRemove == '1') {
+            salesOrder.orderDocument = null
+        } else if (params.file != null && !params.file.empty) {
+            df = dataFileService.updateFile(
+                FILE_TYPE, df, params.file as MultipartFile
+            )
+            salesOrder.orderDocument = df
+        }
+
+        try {
+            salesOrder.beforeUpdate()
+            salesOrderService.save salesOrder
+            updateAssociated salesOrder
+            if (params.fileRemove == '1' && df != null) {
+                dataFileService.removeFile FILE_TYPE, df
+            }
+            redirectAfterStorage salesOrder
+        } catch (ValidationException ignored) {
+            respond salesOrder.errors, view: 'edit'
+        }
     }
 
 
     //-- Non-public methods ---------------------
 
-    @Override
-    protected SalesOrder lowLevelSave() {
-        SalesOrder salesOrderInstance = new SalesOrder(params)
-        salesOrderInstance.orderDocument =
-            dataFileService.storeFile(FILE_TYPE, params.file as MultipartFile)
+    /**
+     * Updates the associated quotes.
+     *
+     * @param salesOrder    the given sales order
+     */
+    private void updateAssociated(SalesOrder salesOrder) {
+        Quote quote = salesOrder.quote
+        if (quote != null) {
+            quote = quoteService.get(quote.id)
 
-        invoicingTransactionService.save(salesOrderInstance, params) \
-            ? salesOrderInstance
-            : null
-    }
-
-    @Override
-    protected SalesOrder lowLevelUpdate(SalesOrder salesOrderInstance) {
-        DataFile df = salesOrderInstance.orderDocument
-        if (params.fileRemove == '1') {
-            salesOrderInstance.orderDocument = null
-        } else if (!params.file?.empty) {
-            df = dataFileService.updateFile(
-                FILE_TYPE, df, params.file as MultipartFile
-            )
-            salesOrderInstance.orderDocument = df
-        }
-
-        boolean res =
-            invoicingTransactionService.save(salesOrderInstance, params)
-        if (res && params.fileRemove == '1' && df) {
-            dataFileService.removeFile FILE_TYPE, df
-        }
-
-        res ? salesOrderInstance : null
-    }
-
-    @Override
-    protected void updateAssociated(SalesOrder salesOrderInstance) {
-        Quote quoteInstance = salesOrderInstance.quote
-        if (quoteInstance) {
-            quoteInstance.stage = QuoteStage.get(603L)
-            quoteInstance.save failOnError: true, flush: true
+            // XXX selValueService.findByClassAndId() doesn't work here.  It
+            // causes an OptimisticLockingException for the SelValue object.
+            quote.stage = (QuoteStage) selValueService.get(603L)
+            quoteService.save quote
         }
     }
 }

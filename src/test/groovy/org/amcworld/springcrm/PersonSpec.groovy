@@ -329,9 +329,9 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         firstName		|| valid
         null			|| false
         ''				|| false
-        ' '				|| true
-        '    '			|| true
-        ' \t \n'		|| true
+        ' '				|| false
+        '    '			|| false
+        ' \t \n'		|| false
         1003			|| true
         'John'			|| true
         'Derk 1003'		|| true
@@ -361,9 +361,9 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         lastName		|| valid
         null			|| false
         ''				|| false
-        ' '				|| true
-        '    '			|| true
-        ' \t \n'		|| true
+        ' '				|| false
+        '    '			|| false
+        ' \t \n'		|| false
         1003			|| true
         'Doe'			|| true
         'Derk 1003'		|| true
@@ -518,7 +518,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'x' * 41        || false
     }
 
-    @SuppressWarnings("GroovyPointlessBoolean")
+    @SuppressWarnings(["GroovyPointlessBoolean", "SpellCheckingInspection"])
     void 'E-mail 1 must be valid e-mail address'(String email, boolean valid) {
         given: 'an instance'
         def person = new Person(
@@ -551,7 +551,7 @@ class PersonSpec extends Specification implements DomainUnitTest<Person> {
         'user@härbört.com'  || true
     }
 
-    @SuppressWarnings("GroovyPointlessBoolean")
+    @SuppressWarnings(["GroovyPointlessBoolean", "SpellCheckingInspection"])
     void 'E-mail 2 must be valid e-mail address'(String email, boolean valid) {
         given: 'an instance'
         def person = new Person(

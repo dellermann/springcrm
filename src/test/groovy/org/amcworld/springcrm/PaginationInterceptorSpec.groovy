@@ -49,6 +49,7 @@ class PaginationInterceptorSpec extends Specification
 
     //-- Feature methods ------------------------
 
+    @SuppressWarnings("GroovyPointlessBoolean")
     void 'Interceptor matches the correct controller/action pairs'(
         String c, String a, boolean b
     ) {
@@ -59,16 +60,16 @@ class PaginationInterceptorSpec extends Specification
         b == interceptor.doesMatch()
 
         where:
-        c                   | a                     || b
-        'phoneCall'         | null                  || false
-        'organization'      | null                  || false
-        'user'              | null                  || false
-        'phoneCall'         | 'show'                || false
-        'organization'      | 'show'                || false
-        'user'              | 'show'                || false
-        'phoneCall'         | 'index'               || true
-        'organization'      | 'index'               || true
-        'user'              | 'index'               || true
+        c                   | a             || b
+        'phoneCall'         | null          || false
+        'organization'      | null          || false
+        'user'              | null          || false
+        'phoneCall'         | 'show'        || false
+        'organization'      | 'show'        || false
+        'user'              | 'show'        || false
+        'phoneCall'         | 'index'       || true
+        'organization'      | 'index'       || true
+        'user'              | 'index'       || true
     }
 
     void 'All interceptor methods return true'() {
@@ -137,14 +138,14 @@ class PaginationInterceptorSpec extends Specification
         params.max = m
 
         and: 'an offset in session'
-        session.offsetCall = 500
+        session.offsetPhoneCall = 500
 
         when: 'the before method of the interceptor is executed'
         interceptor.before()
 
         then: 'the offset has been stored correctly'
         e == params.offset
-        e == session.offsetCall
+        e == session.offsetPhoneCall
 
         where:
         o       | m     || e
@@ -221,9 +222,10 @@ class PaginationInterceptorSpec extends Specification
         interceptor.before()
 
         then: 'the sort criterion has been set'
-        1 * interceptor.userSettingService.getString(user, 'sortCall') >>
+        //noinspection GroovyAssignabilityCheck
+        1 * interceptor.userSettingService.getString(user, 'sortPhoneCall') >>
             'type'
-        1 * interceptor.userSettingService.store(user, 'sortCall', 'type')
+        1 * interceptor.userSettingService.store(user, 'sortPhoneCall', 'type')
         'type' == params.sort
     }
 
@@ -239,8 +241,10 @@ class PaginationInterceptorSpec extends Specification
         interceptor.before()
 
         then: 'the sort criterion has been set'
-        1 * interceptor.userSettingService.getString(user, 'sortCall')
-        1 * interceptor.userSettingService.store(user, 'sortCall', 'subject')
+        1 * interceptor.userSettingService.getString(user, 'sortPhoneCall')
+        1 * interceptor.userSettingService.store(
+            user, 'sortPhoneCall', 'subject'
+        )
         'subject' == params.sort
     }
 
@@ -255,9 +259,10 @@ class PaginationInterceptorSpec extends Specification
         interceptor.before()
 
         then: 'the sort criterion has been set'
-        1 * interceptor.userSettingService.getString(user, 'orderCall') >>
+        //noinspection GroovyAssignabilityCheck
+        1 * interceptor.userSettingService.getString(user, 'orderPhoneCall') >>
             'desc'
-        1 * interceptor.userSettingService.store(user, 'orderCall', 'desc')
+        1 * interceptor.userSettingService.store(user, 'orderPhoneCall', 'desc')
         'desc' == params.order
     }
 
@@ -273,8 +278,8 @@ class PaginationInterceptorSpec extends Specification
         interceptor.before()
 
         then: 'the sort criterion has been set'
-        1 * interceptor.userSettingService.getString(user, 'orderCall')
-        1 * interceptor.userSettingService.store(user, 'orderCall', 'asc')
+        1 * interceptor.userSettingService.getString(user, 'orderPhoneCall')
+        1 * interceptor.userSettingService.store(user, 'orderPhoneCall', 'asc')
         'asc' == params.order
     }
 
@@ -289,7 +294,7 @@ class PaginationInterceptorSpec extends Specification
         interceptor.after()
 
         then: 'the offset has been stored in session'
-        50 == session.offsetCall
+        50 == session.offsetPhoneCall
     }
 
 

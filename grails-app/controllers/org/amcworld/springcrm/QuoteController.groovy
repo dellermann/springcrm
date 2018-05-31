@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.springframework.http.HttpStatus.*
-
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import grails.web.RequestParameter
@@ -76,24 +74,31 @@ class QuoteController extends GeneralController<Quote> {
         respond id == null ? null : quoteService.get(new ObjectId(id))
     }
 
-    def find(String name) {
-        if (!name) {
-            render status: NOT_FOUND
-            return
+    def find(String name,
+             @RequestParameter('organization') String organizationId)
+    {
+        Organization organization = organizationId \
+            ? organizationService.get(new ObjectId(organizationId))
+            : null
+        List<Quote> quoteList
+        if (name) {
+            Integer number
+            try {
+                number = name as Integer
+            } catch (NumberFormatException ignored) {
+                number = null
+            }
+            //noinspection GroovyVariableNotAssigned
+            quoteList = quoteService.find(number, name, organization)
+        } else {
+            quoteList = organization == null ? quoteService.list([: ])
+                : quoteService.findAllByOrganization(organization, [: ])
         }
 
-        Integer number
-        try {
-            number = name as Integer
-        } catch (NumberFormatException ignored) {
-            number = null
-        }
-
-        String organizationId = params.organization
-        Organization organization = organizationId == null ? null
-            : organizationService.get(new ObjectId(organizationId))
-
-        respond quoteService.find(number, name, organization)
+        /*
+         * XXX We cannot use respond here because it circumvents interceptors.
+         */
+        [quoteList: quoteList]
     }
 
     def index() {
@@ -132,7 +137,7 @@ class QuoteController extends GeneralController<Quote> {
             if (person != null) {
                 list = quoteService.findAllByPerson(person, params)
                 model = [
-                    phoneCallCount: quoteService.countByPerson(person),
+                    quoteCount: quoteService.countByPerson(person),
                     linkParams: [person: person.id.toString()]
                 ]
             }

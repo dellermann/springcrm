@@ -73,29 +73,15 @@ class SeqNumberLoadInterceptorSpec extends Specification
 
     void 'No model leaves it unmodified'() {
         given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
+        SeqNumberService seqNumberService = Mock()
+        interceptor.seqNumberService = seqNumberService
 
         when: 'the interceptor is called'
         interceptor.after()
 
         then: 'the sequence number service is not used'
         //noinspection GroovyAssignabilityCheck
-        0 * interceptor.seqNumberService.get(_)
-    }
-
-    void 'An empty model leaves it unmodified'() {
-        given: 'a mocked sequence number service'
-        interceptor.seqNumberService = Mock(SeqNumberService)
-
-        and: 'an empty model'
-        interceptor.model = [: ]
-
-        when: 'the interceptor is called'
-        interceptor.after()
-
-        then: 'the sequence number service has not been used'
-        //noinspection GroovyAssignabilityCheck
-        0 * interceptor.seqNumberService.get(_)
+        0 * seqNumberService.get(_)
     }
 
     void 'A non-existing sequence number leaves model unmodified'() {
@@ -115,6 +101,9 @@ class SeqNumberLoadInterceptorSpec extends Specification
         then: 'the sequence number service has been used but returned null'
         //noinspection GroovyAssignabilityCheck
         1 * seqNumberService.get('phoneCall') >> null
+
+        and: 'the sequence number service has been set'
+        seqNumberService.is interceptor.model.seqNumberService
     }
 
     void 'No instance does not set number'() {
@@ -154,7 +143,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         seqNumber.suffix == interceptor.model.seqNumberSuffix
 
         and: 'the sequence number service has been set'
-        seqNumberService == interceptor.model.seqNumberService
+        seqNumberService.is interceptor.model.seqNumberService
     }
 
     void 'A non NumberedDomain instance does not set number'() {
@@ -194,7 +183,7 @@ class SeqNumberLoadInterceptorSpec extends Specification
         seqNumber.suffix == interceptor.model.seqNumberSuffix
 
         and: 'the sequence number service has been set'
-        seqNumberService == interceptor.model.seqNumberService
+        seqNumberService.is interceptor.model.seqNumberService
     }
 
     void 'An existing sequence number sets prefix and suffix'() {

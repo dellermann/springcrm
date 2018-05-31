@@ -48,34 +48,27 @@ class DocumentFileInput
 
   # Creates a new file input widget for setting a document.
   #
-  # @param [jQuery] $element  the file input control which is augmented as widget
+  # @param [jQuery] $element  the file input control which is augmented as
+  #                           widget
   # @param [Object] [options] any options used to configure the widget
   #
   constructor: ($element, options = {}) ->
     $ = __jq
-    $L = __$L
     tmpl = Handlebars.templates['widgets/file-upload-document']
 
-    removeLabelKey = options.removeLabelKey ? 'default.document.delete'
-    builderOptions = $.extend {},
-        browseIcon: '<i class="fa fa-file-o"></i> '
-        browseLabel: $L('default.document.select')
-        layoutTemplates:
-          main1: tmpl section: 'main1'
-        removeClass: 'btn btn-danger btn-sm'
-        removeIcon: '<i class="fa fa-trash-o"></i> '
-        removeLabel: $L(removeLabelKey)
-        showPreview: false
-        showRemove: true
-      ,
-        options.builderOptions
+    builder = new FileinputBuilder
+      layoutTemplates:
+        main1: tmpl()
+      removeClass: 'btn btn-danger btn-sm'
+      showPreview: false
+      showRemove: true
+    builder.addOptions options.builderOptions
 
-    builder = new FileinputBuilder(builderOptions)
+    if options.removeLabelKey
+      builder.addOption 'removeLabelKey', __$L(options.removeLabelKey)
 
-    previewOptions = {}
     url = $element.data 'initial-file'
-    previewOptions.initialPreview = [url] if url
-    builder.addOptions previewOptions
+    builder.addOption 'initialPreview', [url] if url
 
     builder.build $element
 

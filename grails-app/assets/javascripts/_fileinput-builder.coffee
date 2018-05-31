@@ -68,6 +68,17 @@ class FileinputBuilder
 
   #-- Public methods ----------------------------
 
+  # Adds and possibly overwrites the option with the given key and value.
+  #
+  # @param [String] key         the given name of the option
+  # @param [Object] value       the given value
+  # @return [FileinputBuilder]  this object for method chaining
+  #
+  addOption: (key, value) ->
+    @options[key] = value
+
+    this
+
   # Extends and overwrites the current options with the given options.
   #
   # @param [Object] [options]   the given options

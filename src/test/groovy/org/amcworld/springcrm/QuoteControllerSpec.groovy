@@ -168,18 +168,34 @@ class QuoteControllerSpec extends Specification
         controller.organizationService = organizationService
 
         when: 'the action is executed with a null value'
-        controller.find null
+        def model = controller.find(null, null)
 
-        then: 'a 404 error is returned'
+        then: 'the model is correct'
         //noinspection GroovyAssignabilityCheck
         0 * organizationService.get(_)
         //noinspection GroovyAssignabilityCheck
         0 * service.find(_, _, _)
-        404 == response.status
+        //noinspection GroovyAssignabilityCheck
+        1 * service.list([: ]) >> list.subList(1, 2)
+        1 == model.quoteList.size()
+        list[1] == model.quoteList.first()
+
+        when: 'the action is executed with an empty value'
+        model = controller.find('', null)
+
+        then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
+        0 * organizationService.get(_)
+        //noinspection GroovyAssignabilityCheck
+        0 * service.find(_, _, _)
+        //noinspection GroovyAssignabilityCheck
+        1 * service.list([: ]) >> list.subList(1, 2)
+        1 == model.quoteList.size()
+        list[1] == model.quoteList.first()
 
         when: 'the action is executed with a numeric name'
         response.reset()
-        controller.find '10020'
+        model = controller.find('10020', null)
 
         then: 'the model is correct'
         //noinspection GroovyAssignabilityCheck
@@ -191,9 +207,10 @@ class QuoteControllerSpec extends Specification
 
         when: 'the action is executed with a name'
         response.reset()
-        controller.find 'ote'
+        model = controller.find('ote', null)
 
         then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
         0 * organizationService.get(_)
         //noinspection GroovyAssignabilityCheck
         1 * service.find(null, 'ote', null) >> list
@@ -201,10 +218,50 @@ class QuoteControllerSpec extends Specification
         //noinspection GroovyAssignabilityCheck
         list == model.quoteList
 
+        when: 'the action is executed with a name and an empty organization'
+        response.reset()
+        model = controller.find('ote', '')
+
+        then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
+        0 * organizationService.get(_)
+        //noinspection GroovyAssignabilityCheck
+        1 * service.find(null, 'ote', null) >> list
+        3 == model.quoteList.size()
+        //noinspection GroovyAssignabilityCheck
+        list == model.quoteList
+
+        when: 'the action is executed with no name and an organization'
+        response.reset()
+        model = controller.find(null, org.id.toString())
+
+        then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
+        1 * organizationService.get(org.id) >> org
+        //noinspection GroovyAssignabilityCheck
+        0 * service.find(_, _, _)
+        //noinspection GroovyAssignabilityCheck
+        1 * service.findAllByOrganization(org, [: ]) >> list.subList(1, 2)
+        1 == model.quoteList.size()
+        list[1] == model.quoteList.first()
+
+        when: 'the action is executed with an empty name and an organization'
+        response.reset()
+        model = controller.find('', org.id.toString())
+
+        then: 'the model is correct'
+        //noinspection GroovyAssignabilityCheck
+        1 * organizationService.get(org.id) >> org
+        //noinspection GroovyAssignabilityCheck
+        0 * service.find(_, _, _)
+        //noinspection GroovyAssignabilityCheck
+        1 * service.findAllByOrganization(org, [: ]) >> list.subList(1, 2)
+        1 == model.quoteList.size()
+        list[1] == model.quoteList.first()
+
         when: 'the action is executed with a numeric name and an organization'
         response.reset()
-        params.organization = org.id
-        controller.find '10020'
+        model = controller.find('10020', org.id.toString())
 
         then: 'the model is correct'
         //noinspection GroovyAssignabilityCheck
@@ -214,9 +271,9 @@ class QuoteControllerSpec extends Specification
         1 == model.quoteList.size()
         list[1] == model.quoteList.first()
 
-        when: 'the action is executed with a name'
+        when: 'the action is executed with a name and an organization'
         response.reset()
-        controller.find 'ote'
+        model = controller.find('ote', org.id.toString())
 
         then: 'the model is correct'
         //noinspection GroovyAssignabilityCheck

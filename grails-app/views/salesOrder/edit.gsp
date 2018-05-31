@@ -2,7 +2,10 @@
   <head>
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[message(code: 'salesOrder.label'), fullNumber]"/> -
+        args="[
+          message(code: 'salesOrder.label'),
+          fullNumber(bean: salesOrder)
+        ]"/> -
       <g:message code="salesOrder.plural"/>
     </title>
     <meta name="stylesheet" content="sales-order"/>
@@ -15,9 +18,12 @@
     ]"/>
 
     <content tag="scripts">
+      <asset:javascript src="modules"/>
+      <asset:javascript src="lang/bootstrap-fileinput/${lang}.js"/>
       <asset:javascript src="sales-order-form"/>
       <asset:script>//<![CDATA[
-        new SPRINGCRM.SalesOrder(
+      var SalesOrder = window.modules.require("SalesOrder");
+      new SalesOrder(
           $("#sales-order-form"), {
               checkStageTransition: false,
               stageValues: {
@@ -25,7 +31,8 @@
                   shipping: 802
               },
               type: "S"
-          });
+          }
+      );
       //]]></asset:script>
     </content>
   </body>

@@ -195,9 +195,9 @@ class ConfigSpec extends Specification implements DomainUnitTest<Config> {
         where:
         value       || e
         null        || null
-        ''          || ''
-        '  '        || ''
-        ' \t \r'    || ''
+        ''          || null
+        '  '        || null
+        ' \t \r'    || null
         'foo'       || 'foo'
         'BaR'       || 'BaR'
     }

@@ -1,7 +1,7 @@
 /*
  * ListInterceptor.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * are visible in a list.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  * @since   2.2
  */
 class ListInterceptor {
@@ -42,6 +42,21 @@ class ListInterceptor {
 
 
     //-- Public methods -------------------------
+
+    /**
+     * Called after the action has been executed.  The method sets the correct
+     * charset for action {@code listEmbedded} because rendering errors
+     * occurred.
+     *
+     * @return  always {@code true}
+     */
+    boolean after() {
+        if (actionName == 'listEmbedded') {
+            response.characterEncoding = 'UTF-8'
+        }
+
+        true
+    }
 
     /**
      * Limits the maximum number of items in a list to be in range 10 til 100.

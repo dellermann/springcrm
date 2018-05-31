@@ -2,7 +2,10 @@
   <head>
     <title>
       <g:message code="invoicingTransaction.show.label"
-        args="[message(code: 'salesOrder.label'), fullNumber]"/> -
+        args="[
+          message(code: 'salesOrder.label'),
+          fullNumber(bean: salesOrder)
+        ]"/> -
       <g:message code="salesOrder.plural"/>
     </title>
     <meta name="stylesheet" content="sales-order"/>
@@ -20,14 +23,14 @@
           model="[id: salesOrder.id]"/>
       </content>
       <content tag="actionMenu">
-        <g:ifModuleAllowed modules="INVOICE">
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_INVOICE">
         <li role="menuitem">
           <g:link controller="invoice" action="create"
             params="[salesOrder: salesOrder?.id]">
             <g:message code="salesOrder.button.createInvoice"/>
           </g:link>
         </li>
-        </g:ifModuleAllowed>
+        </sec:ifAnyGranted>
       </content>
 
       <section>
@@ -41,9 +44,9 @@
             <f:display bean="${salesOrder}" property="subject"/>
             <f:display bean="${salesOrder}" property="organization"/>
             <f:display bean="${salesOrder}" property="person"/>
-            <g:ifModuleAllowed modules="QUOTE">
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_QUOTE">
             <f:display bean="${salesOrder}" property="quote"/>
-            </g:ifModuleAllowed>
+            </sec:ifAnyGranted>
             <f:display bean="${salesOrder}" property="stage"/>
             <f:display bean="${salesOrder}" property="createUser"/>
           </div>
@@ -116,17 +119,16 @@
       </g:if>
 
       <g:set var="loadParams" value="salesOrder=${salesOrder.id}"/>
-      <g:ifModuleAllowed modules="INVOICE">
+      <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_INVOICE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'invoice', createParams: [salesOrder: salesOrder.id]
         ]"/>
-      </g:ifModuleAllowed>
+      </sec:ifAnyGranted>
       <g:render template="signatureDialog"/>
     </g:applyLayout>
 
     <content tag="scripts">
-      <asset:javascript src="show"/>
       <asset:javascript src="sales-order-show"/>
     </content>
   </body>

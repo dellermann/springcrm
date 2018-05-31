@@ -45,6 +45,15 @@ interface ISelValueService {
      * @param id    the given ID
      */
     void delete(long id)
+
+    /**
+     * Gets the selection value with the given ID.
+     *
+     * @param id    the given ID
+     * @return      the selection value or {@code null} if no such value has
+     *              been found
+     */
+    SelValue get(long id)
 }
 
 

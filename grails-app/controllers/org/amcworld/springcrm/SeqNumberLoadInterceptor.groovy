@@ -69,8 +69,10 @@ class SeqNumberLoadInterceptor implements Interceptor {
      * @return  always {@code true}
      */
     boolean after() {
+        log.trace 'Looking for a model…'
         Map<String, Object> model = getModel()
-        if (model) {
+        if (model != null) {
+            log.trace 'Model found.'
             SeqNumber seqNumber = seqNumberService.get(controllerName)
             if (seqNumber != null) {
                 def inst = model[controllerName]
@@ -93,9 +95,13 @@ class SeqNumberLoadInterceptor implements Interceptor {
                 // XXX we must add the instance of SeqNumberService to the
                 // model because GSON files don't support dependency injection,
                 // yet.
-                model.seqNumberService = seqNumberService
                 model.seqNumberPrefix = seqNumber.prefix
                 model.seqNumberSuffix = seqNumber.suffix
+            }
+
+            model.seqNumberService = seqNumberService
+            if (log.traceEnabled) {
+                log.trace "Populated model: ${model.dump()}"
             }
         }
 

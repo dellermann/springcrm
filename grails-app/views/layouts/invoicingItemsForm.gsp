@@ -250,7 +250,7 @@
                     value="${fieldValue(bean: item, field: 'name')}"
                     required="required"/>
                   <span class="input-group-btn">
-                    <sec:ifAnyGranted roles="ROLE_PRODUCT">
+                    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PRODUCT">
                       <button type="button"
                         class="btn btn-default btn-select-sales-item"
                         data-type="product">
@@ -263,7 +263,7 @@
                         )}</span>
                       </button>
                     </sec:ifAnyGranted>
-                    <sec:ifAnyGranted roles="ROLE_WORK">
+                    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_WORK">
                       <button type="button"
                         class="btn btn-default btn-select-sales-item"
                         data-type="work">
@@ -477,7 +477,7 @@
             value="" required="required"/>
           <g:if test="${params.controller != 'purchase-invoice'}">
             <span class="input-group-btn">
-              <sec:ifAnyGranted roles="ROLE_PRODUCT">
+              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PRODUCT">
                 <button type="button"
                   class="btn btn-default btn-select-sales-item"
                   data-type="product">
@@ -490,7 +490,7 @@
                   )}</span>
                 </button>
               </sec:ifAnyGranted>
-              <sec:ifAnyGranted roles="ROLE_WORK">
+              <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_WORK">
                 <button type="button"
                   class="btn btn-default btn-select-sales-item"
                   data-type="work">
