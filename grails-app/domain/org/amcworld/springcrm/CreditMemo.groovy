@@ -1,7 +1,7 @@
 /*
  * CreditMemo.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,10 +111,6 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         headerText = ''
         footerText = ''
         invoice = i
-        if (i.creditMemos == null) {
-            i.creditMemos = []
-        }
-        i.creditMemos << this
     }
 
     /**
@@ -129,10 +125,6 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         headerText = ''
         footerText = ''
         dunning = d
-        if (d.creditMemos == null) {
-            d.creditMemos = []
-        }
-        d.creditMemos << this
     }
 
     /**

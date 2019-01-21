@@ -1,7 +1,7 @@
 /*
  * PaginationInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ class PaginationInterceptor extends SettingsInterceptorBase {
         /* limit offset */
         int max = Math.min(params.max ? params.int('max') : 10, 100)
         int maxOffset =
-            count > 0 ? (int) (Math.floor((count - 1) / max) * max) : 0
+            count > 0 ? (int) (Math.floor((count - 1.0f) / max) * max) : 0
         params.offset =
             Math.max(0, Math.min(maxOffset, params.int('offset') ?: 0))
         session.setAttribute key, params.offset

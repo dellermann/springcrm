@@ -156,8 +156,10 @@ class DunningController {
         request.dunningInstance = dunningInstance
 
         Invoice invoiceInstance = dunningInstance.invoice
-        invoiceInstance.stage = InvoiceStage.get(904)
-        invoiceInstance.save flush: true
+        if (invoiceInstance) {
+            invoiceInstance.stage = InvoiceStage.get(904)
+            invoiceInstance.save flush: true
+        }
 
         flash.message = message(
             code: 'default.created.message',

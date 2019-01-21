@@ -44,6 +44,7 @@ class CreditMemoController {
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
     SeqNumberService seqNumberService
+    UserService userService
 
 
     //-- Public methods -------------------------
@@ -111,11 +112,13 @@ class CreditMemoController {
     def create() {
         CreditMemo creditMemoInstance
         if (params.invoice) {
-            def invoiceInstance = Invoice.get(params.invoice)
+            def invoiceInstance = Invoice.get(params.long('invoice'))
             creditMemoInstance = new CreditMemo(invoiceInstance)
+            creditMemoInstance.userService = userService
         } else if (params.dunning) {
-            def dunningInstance = Dunning.get(params.dunning)
+            def dunningInstance = Dunning.get(params.long('dunning'))
             creditMemoInstance = new CreditMemo(dunningInstance)
+            creditMemoInstance.userService = userService
         } else {
             creditMemoInstance = new CreditMemo(params)
         }
