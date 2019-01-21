@@ -1,7 +1,7 @@
 /*
  * ProxyRequest.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2019, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory
  * AMC World proxy in order to perform OAuth2 communication.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.0
  */
 @CompileStatic
@@ -49,7 +49,7 @@ class ProxyRequest extends GenericData {
      * The URL of the AMC World OAuth proxy.
      */
     protected static final String PROXY_URL =
-        'http://www.amc-world.de/oauth-proxy/index.php'
+        'https://www.amc-world.de/oauth-proxy/index.php'
 
     private static final Log log = LogFactory.getLog(this)
 
@@ -101,9 +101,8 @@ class ProxyRequest extends GenericData {
      *                      error code
      */
     ProxyResponse execute() throws IOException {
-        HttpResponse response
+        HttpResponse response = executeUnparsed()
         try {
-            response = executeUnparsed()
             ProxyResponse res = response.parseAs(ProxyResponse)
             if (res == null || res.code != 200) {
                 throw new HttpResponseException(response)
