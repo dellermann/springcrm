@@ -1,7 +1,7 @@
 /*
  * SeqNumberStoreInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2019, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class SeqNumberStoreInterceptor implements Interceptor {
      * Creates a new instance of the interceptor.
      */
     SeqNumberStoreInterceptor() {
-        match action: 'save'
+        match action: ~/(frontendSave|save)/
     }
 
 
