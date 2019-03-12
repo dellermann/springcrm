@@ -1,7 +1,7 @@
 /*
  * TicketService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2019, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class TicketService {
                 creator: creator,
                 recipient: assignTo
             ))
-            .save()
+            .save flush: true
 
         if (creator != assignTo) {
             mailSystemService.sendMail(
@@ -96,7 +96,7 @@ class TicketService {
                 creator: creator,
                 stage: stage
             ))
-            .save()
+            .save flush: true
 
         if (stage == TicketStage.assigned && (ticket.email1 || ticket.email2))
         {
@@ -166,7 +166,7 @@ class TicketService {
                 message: message,
                 attachment: dataFile
             ))
-            .save()
+            .save flush: true
     }
 
     /**
@@ -190,7 +190,7 @@ class TicketService {
                 message: message,
                 attachment: dataFile
             ))
-            .save()
+            .save flush: true
 
         /* send mail to helpdesk team */
         mailSystemService.sendMail(
@@ -244,7 +244,7 @@ class TicketService {
                 message: message,
                 attachment: dataFile
             ))
-            .save()
+            .save flush: true
 
         def toAddr
         String msgView = 'sendMessageUser'
