@@ -1,7 +1,7 @@
 /*
  * Ticket.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2019, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 
 
 package org.amcworld.springcrm
+
+import groovy.transform.CompileStatic
+import org.apache.commons.codec.binary.Base32
+import org.apache.commons.codec.digest.DigestUtils
 
 
 /**
@@ -45,6 +49,7 @@ class Ticket implements NumberedDomain {
     static belongsTo = [helpdesk: Helpdesk]
     static constraints = {
         number unique: true, widget: 'autonumber'
+        code nullable: true
         subject blank: false
         salutation nullable: true
         firstName blank: false
@@ -94,6 +99,7 @@ class Ticket implements NumberedDomain {
     String fax
     String email1
     String email2
+    String code
     User creator
     User assignedUser
     TicketPriority priority
@@ -131,6 +137,7 @@ class Ticket implements NumberedDomain {
         email1 = ticket.email1
         email2 = ticket.email2
         priority = ticket.priority
+        code = generateCode()
     }
 
 
@@ -180,12 +187,38 @@ class Ticket implements NumberedDomain {
         messageText
     }
 
+    String getShortCode() {
+        code && code.length() >= 10 ? code.substring(0, 10) : (code ?: '')
+    }
+
 
     //-- Public methods -------------------------
 
     @Override
     boolean equals(Object obj) {
         obj instanceof Ticket && id == obj.id
+    }
+
+    /**
+     * Generates a unique code for the ticket.
+     *
+     * @return  the generated code
+     * @since   2.1
+     */
+    @CompileStatic
+    String generateCode() {
+        StringBuilder buf = new StringBuilder()
+        if (helpdesk != null) {
+            buf << helpdesk.id << '/'
+            if (helpdesk.organization != null) {
+                buf << helpdesk.organization.id << '/'
+            }
+        }
+        if (subject) buf << subject << '/'
+        buf << System.nanoTime()
+
+        byte[] hash = new DigestUtils('SHA-1').digest(buf.toString())
+        new Base32().encodeAsString hash
     }
 
     @Override
@@ -204,13 +237,14 @@ class Ticket implements NumberedDomain {
  * The enumeration {@code TicketStage} represents the stages of tickets.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  * @since   1.4
  */
 enum TicketStage {
     created,
     assigned,
     inProcess,
+    deferred,
     closed,
     resubmitted
 }

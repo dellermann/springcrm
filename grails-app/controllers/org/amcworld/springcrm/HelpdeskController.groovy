@@ -223,12 +223,6 @@ class HelpdeskController {
             return
         }
 
-        List<Ticket> ticketInstanceList =
-            Ticket.findAllByHelpdesk(helpdeskInstance, params)
-
-        [
-            helpdeskInstance: helpdeskInstance,
-            ticketInstanceList: ticketInstanceList
-        ]
+        [helpdeskInstance: helpdeskInstance]
     }
 }

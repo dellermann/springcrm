@@ -4,10 +4,7 @@
   <i class="fa fa-tag"></i>
   <g:message code="ticket.changeStage.label" />
 </li>
-<g:if test="${
-  (user.admin || user in users) &&
-  ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted]
-}">
+<g:if test="${(user.admin || user in users) && ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted]}">
 <li role="menuitem">
   <g:link action="takeOn" id="${ticketInstance?.id}" class="take-on-link">
     <i class="fa fa-check"></i>
@@ -15,10 +12,7 @@
   </g:link>
 </li>
 </g:if>
-<g:if test="${
-  (user.admin || user == ticketInstance.assignedUser) &&
-  ticketInstance.stage == TicketStage.assigned
-}">
+<g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage == TicketStage.assigned}">
 <li role="menuitem">
   <g:link action="changeStage" id="${ticketInstance?.id}"
     params="[stage: TicketStage.inProcess]"
@@ -28,16 +22,32 @@
   </g:link>
 </li>
 </g:if>
-<g:if test="${
-  ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]
-}">
-<li role="menuitem">
+<g:if test="${ticketInstance.stage == TicketStage.inProcess}">
+<li>
   <g:link action="changeStage" id="${ticketInstance?.id}"
-    params="[stage: TicketStage.closed]" class="close-ticket-link">
-    <i class="fa fa-check-circle-o"></i>
-    <g:message code="ticket.changeStage.closed" />
+    params="[stage: TicketStage.deferred]">
+    <i class="fa fa-clock-o"></i>
+    <g:message code="ticket.changeStage.deferred" />
   </g:link>
 </li>
+</g:if>
+<g:if test="${ticketInstance.stage == TicketStage.deferred}">
+<li>
+  <g:link action="changeStage" id="${ticketInstance?.id}"
+    params="[stage: TicketStage.inProcess]">
+    <i class="fa fa-thumb-tack"></i>
+    <g:message code="ticket.changeStage.inProcess" />
+  </g:link>
+</li>
+</g:if>
+<g:if test="${ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]}">
+  <li role="menuitem">
+    <g:link action="changeStage" id="${ticketInstance?.id}"
+      params="[stage: TicketStage.closed]" class="close-ticket-link">
+      <i class="fa fa-check-circle-o"></i>
+      <g:message code="ticket.changeStage.closed" />
+    </g:link>
+  </li>
 </g:if>
 <g:if test="${ticketInstance.stage == TicketStage.closed}">
 <li>
@@ -49,11 +59,7 @@
 </li>
 </g:if>
 
-<g:if test="${
-  (user.admin || user == ticketInstance.assignedUser) &&
-  ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess] &&
-  otherUsers
-}">
+<g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess] && otherUsers}">
 <li class="dropdown-header hidden-lg" role="presentation">
   <i class="fa fa-hand-o-right"></i>
   <g:message code="ticket.changeStage.assign" />
@@ -69,10 +75,7 @@
 </g:each>
 </g:if>
 
-<g:if test="${
-  (user.admin || user == ticketInstance.assignedUser) &&
-  ticketInstance.stage == TicketStage.assigned
-}">
+<g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage == TicketStage.assigned}">
 <li role="menuitem" class="item-separated">
   <a href="#" class="create-note-link"
     data-title="${message(code: 'ticket.createNote.title')}"

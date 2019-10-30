@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DynamicElementsStorage">
+    <option name="containingClasses">
+      <map>
+        <entry key="gsp.default.email/ticket/assignedUser_gsp">
+          <value>
+            <DClassElement>
+              <option name="name" value="gsp.default.email/ticket/assignedUser_gsp" />
+              <option name="myName" value="gsp.default.email/ticket/assignedUser_gsp" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="creator" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.User" />
+                    <option name="myType" value="org.amcworld.springcrm.User" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="creator" />
+                  </DPropertyElement>
+                  <DPropertyElement>
+                    <option name="name" value="ticketInstance" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myType" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="ticketInstance" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+        <entry key="gsp.default.email/ticket/assigned_gsp">
+          <value>
+            <DClassElement>
+              <option name="name" value="gsp.default.email/ticket/assigned_gsp" />
+              <option name="myName" value="gsp.default.email/ticket/assigned_gsp" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="ticketInstance" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myType" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="ticketInstance" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+        <entry key="gsp.default.email/ticket/changedStageCustomer_gsp">
+          <value>
+            <DClassElement>
+              <option name="name" value="gsp.default.email/ticket/changedStageCustomer_gsp" />
+              <option name="myName" value="gsp.default.email/ticket/changedStageCustomer_gsp" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="oldStage" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.TicketStage" />
+                    <option name="myType" value="org.amcworld.springcrm.TicketStage" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="oldStage" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+        <entry key="gsp.default.email/ticket/closedCustomer_gsp">
+          <value>
+            <DClassElement>
+              <option name="name" value="gsp.default.email/ticket/closedCustomer_gsp" />
+              <option name="myName" value="gsp.default.email/ticket/closedCustomer_gsp" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="ticketInstance" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myType" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="ticketInstance" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+        <entry key="gsp.default.email/ticket/createdCustomer_gsp">
+          <value>
+            <DClassElement>
+              <option name="name" value="gsp.default.email/ticket/createdCustomer_gsp" />
+              <option name="myName" value="gsp.default.email/ticket/createdCustomer_gsp" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="ticketInstance" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myType" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="ticketInstance" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+        <entry key="gsp.default.email/ticket/sendMessageCustomer_gsp">
+          <value>
+            <DClassElement>
+              <option name="name" value="gsp.default.email/ticket/sendMessageCustomer_gsp" />
+              <option name="myName" value="gsp.default.email/ticket/sendMessageCustomer_gsp" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="ticketInstance" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myType" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="ticketInstance" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+        <entry key="gsp.default.ticket/_actionMenuItems_gsp">
+          <value>
+            <DClassElement>
+              <option name="name" value="gsp.default.ticket/_actionMenuItems_gsp" />
+              <option name="myName" value="gsp.default.ticket/_actionMenuItems_gsp" />
+              <option name="myProperties">
+                <set>
+                  <DPropertyElement>
+                    <option name="name" value="ticketInstance" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myType" value="org.amcworld.springcrm.Ticket" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="ticketInstance" />
+                  </DPropertyElement>
+                  <DPropertyElement>
+                    <option name="name" value="user" />
+                    <option name="static" value="false" />
+                    <option name="type" value="org.amcworld.springcrm.User" />
+                    <option name="myType" value="org.amcworld.springcrm.User" />
+                    <option name="myStatic" value="false" />
+                    <option name="myName" value="user" />
+                  </DPropertyElement>
+                </set>
+              </option>
+            </DClassElement>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

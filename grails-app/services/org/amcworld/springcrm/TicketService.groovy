@@ -76,6 +76,17 @@ class TicketService {
                 ]
             )
         }
+        if (ticket.email1 || ticket.email2) {
+            mailSystemService.sendMail(
+                to: ticket.email1 ?: ticket.email2,
+                subject: [key: 'email.ticket.assigned.subject'],
+                message: [
+                    controller: 'ticket',
+                    view: 'assignedCustomer',
+                    model: getCustomerEmailLinks(ticket)
+                ]
+            )
+        }
 
         ticket
     }
@@ -90,6 +101,7 @@ class TicketService {
      * @return          the modified ticket
      */
     Ticket changeStage(Ticket ticket, TicketStage stage, User creator = null) {
+        TicketStage oldStage = ticket.stage
         ticket.stage = stage
         ticket.addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.changeStage,
@@ -98,25 +110,17 @@ class TicketService {
             ))
             .save flush: true
 
-        if (stage == TicketStage.assigned && (ticket.email1 || ticket.email2))
-        {
-            mailSystemService.sendMail(
-                to: ticket.email1 ?: ticket.email2,
-                subject: [key: 'email.ticket.assigned.subject'],
-                message: [
-                    controller: 'ticket',
-                    view: 'assigned',
-                    model: [ticketInstance: ticket]
-                ]
-            )
-        } else if (stage == TicketStage.resubmitted) {
+        Map model = getCustomerEmailLinks(ticket)
+        model.oldStage = oldStage
+        log.debug "Change to stage ${stage}"
+        if (stage == TicketStage.resubmitted) {
             mailSystemService.sendMail(
                 to: ticket.helpdesk.users*.email,
                 subject: [key: 'email.ticket.resubmitted.subject'],
                 message: [
                     controller: 'ticket',
                     view: 'resubmittedUser',
-                    model: [ticketInstance: ticket]
+                    model: model
                 ]
             )
         } else if (stage == TicketStage.closed) {
@@ -127,21 +131,33 @@ class TicketService {
                     message: [
                         controller: 'ticket',
                         view: 'closedCustomer',
-                        model: [ticketInstance: ticket]
+                        model: model
                     ]
                 )
             }
             if (!creator) {
                 mailSystemService.sendMail(
-                    to: ticket.assignedUser?.email ?: ticket.helpdesk.users*.email,
+                    to: ticket.assignedUser?.email
+                        ?: ticket.helpdesk.users*.email,
                     subject: [key: 'email.ticket.closed.subject'],
                     message: [
                         controller: 'ticket',
                         view: 'closedUser',
-                        model: [ticketInstance: ticket]
+                        model: model
                     ]
                 )
             }
+        } else if (ticket.email1 || ticket.email2) {
+            log.debug "Send change stage mail to ${ticket.email1 ?: ticket.email2}"
+            mailSystemService.sendMail(
+                to: ticket.email1 ?: ticket.email2,
+                subject: [key: 'email.ticket.changedStage.subject'],
+                message: [
+                    controller: 'ticket',
+                    view: 'changedStageCustomer',
+                    model: model
+                ]
+            )
         }
 
         ticket
@@ -182,6 +198,7 @@ class TicketService {
                         MultipartFile attachment)
     {
         DataFile dataFile = dataFileService.storeFile(FILE_TYPE, attachment)
+        ticket.code = ticket.generateCode()
         ticket.stage = TicketStage.created
         ticket.addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.create
@@ -206,7 +223,6 @@ class TicketService {
         /* send mail to customer */
         if (ticket.email1 || ticket.email2) {
             Map model = getCustomerEmailLinks(ticket)
-            model.ticketInstance = ticket
             model.messageText = message
             mailSystemService.sendMail(
                 to: ticket.email1 ?: ticket.email2,
@@ -257,7 +273,6 @@ class TicketService {
             if (toAddr) {
                 msgView = 'sendMessageCustomer'
                 msgModel = getCustomerEmailLinks(ticket)
-                msgModel.ticketInstance = ticket
                 msgModel.messageText = message
                 msgModel.sender = sender
             }
@@ -303,7 +318,7 @@ class TicketService {
          * the server port in non-request rendering operations."
          */
         String showLink = grailsLinkGenerator.link(
-            controller: 'ticket', action: 'frontendShow', id: ticket.id,
+            controller: 'ticket', action: 'frontendShow', id: ticket.code,
             params: [
                 helpdesk: ticket.helpdesk.id,
                 accessCode: ticket.helpdesk.accessCode
@@ -317,6 +332,7 @@ class TicketService {
             ],
             absolute: true
         )
-        [showLink: showLink, overviewLink: overviewLink]
+
+        [ticketInstance: ticket, showLink: showLink, overviewLink: overviewLink]
     }
 }

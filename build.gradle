@@ -64,7 +64,7 @@ plugins {
  *
 \*===============================================*/
 
-version '2.1.8'
+version '2.1.9'
 group 'org.amcworld'
 
 apply plugin: 'project-report'
@@ -144,6 +144,12 @@ dependencies {
     profile 'org.grails.profiles:web'
 //    profile 'org.grails.profiles:web:3.2.2.BUILD-SNAPSHOT'
 
+    // System dependencies (for Java 9 and higher)
+    compile 'javax.xml.bind:jaxb-api:2.3.1'
+    compile 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    compile 'com.sun.xml.bind:jaxb-impl:2.3.2'
+    compile 'javax.activation:activation:1.1.1'
+
     // SpringCRM dependencies
     compile 'com.google.apis:google-api-services-calendar:v3-rev20181125-1.28.0'
     compile 'com.google.gdata:core:1.47.1'
@@ -151,6 +157,7 @@ dependencies {
     compile 'commons-io:commons-io:2.4'
     compile 'jmimemagic:jmimemagic:0.1.2'
     compile 'org.apache.commons:commons-vfs2:2.0'
+    compile 'commons-codec:commons-codec:1.12'
     compile 'org.apache.httpcomponents:httpclient:4.3.2'
     compile 'org.apache.xmlgraphics:fop:1.0'
     compile files('lib/groovy-ldap.jar')

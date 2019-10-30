@@ -15,8 +15,10 @@
   <body>
     <content tag="toolbar">
       <g:unless test="${helpdeskInstance.forEndUsers}">
-        <g:button mapping="helpdeskFrontend"
-          params="[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]"
+        <g:button mapping="helpdeskFrontend" params="[
+            urlName: helpdeskInstance.urlName,
+            accessCode: helpdeskInstance.accessCode
+          ]"
           color="default" class="hidden-xs" icon="arrow-left"
           message="default.button.back.label"/>
       </g:unless>
@@ -26,9 +28,7 @@
         <g:message code="ticket.sendMessage.title"/>
       </button>
     </content>
-    <g:if test="${
-      ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess, TicketStage.closed]
-    }">
+    <g:if test="${ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess, TicketStage.deferred, TicketStage.closed]}">
     <content tag="actionMenu">
       <li class="visible-xs visible-sm" role="menuitem">
         <a href="#" class="send-message-link">
@@ -36,11 +36,10 @@
           <g:message code="ticket.sendMessage.title"/>
         </a>
       </li>
-      <g:if test="${
-        ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]
-      }">
+      <g:if test="${ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess, TicketStage.deferred]}">
       <li role="menuitem">
-        <g:link action="frontendCloseTicket" id="${ticketInstance.id}"
+        <g:link action="frontendCloseTicket"
+          id="${ticketInstance.code ?: ticketInstance.id}"
           params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
           class="close-ticket-link">
           <i class="fa fa-check-circle-o"></i>
@@ -50,7 +49,8 @@
       </g:if>
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
       <li>
-        <g:link action="frontendResubmitTicket" id="${ticketInstance.id}"
+        <g:link action="frontendResubmitTicket"
+          id="${ticketInstance.code ?: ticketInstance.id}"
           params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]">
           <i class="fa fa-share-square-o"></i>
           <g:message code="ticket.resubmission.label"/>
@@ -67,9 +67,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${ticketInstance}" property="number">
-              <g:fullNumber bean="${ticketInstance}"/>
-            </f:display>
+            <f:display bean="${ticketInstance}" property="code"/>
             <f:display bean="${ticketInstance}" property="subject"/>
             <f:display bean="${ticketInstance}" property="stage"/>
           </div>
@@ -130,12 +128,20 @@
           <div class="modal-body">
             <div class="container-fluid">
               <g:uploadForm action="frontendSendMessage"
-                id="${ticketInstance.id}" method="post">
+                id="${ticketInstance.code ?: ticketInstance.id}" method="post">
                 <g:hiddenField name="helpdesk"
                   value="${helpdeskInstance.id}"/>
                 <g:hiddenField name="accessCode"
                   value="${helpdeskInstance.accessCode}"/>
-                <g:hiddenField name="returnUrl" value="${url()}"/>
+                <g:hiddenField name="returnUrl"
+                  value="${createLink(
+                    controller: 'ticket', action: 'frontendShow',
+                    id: ticketInstance.code ?: ticketInstance.id,
+                    params: [
+                      helpdesk: helpdeskInstance.id,
+                      accessCode: helpdeskInstance.accessCode
+                    ]
+                  )}"/>
                 <f:field bean="${new TicketLogEntry()}" property="message"
                   required="true" orientation="vertical"
                   toolbar="markdown-help"/>

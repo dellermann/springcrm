@@ -1,7 +1,7 @@
 /*
  * TicketSecurityInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2019, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 import grails.artefact.Interceptor
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 
 
 /**
@@ -71,7 +71,7 @@ class TicketSecurityInterceptor implements Interceptor {
         }
 
         if (params.id) {
-            Ticket ticketInstance = loadTicket()
+            Ticket ticketInstance = loadTicket(params.id.toString())
             if (!ticketInstance) {
                 render status: SC_NOT_FOUND
                 return false
@@ -81,6 +81,8 @@ class TicketSecurityInterceptor implements Interceptor {
                 render status: SC_FORBIDDEN
                 return false
             }
+
+            params.id = ticketInstance.id
         }
 
         true
@@ -89,13 +91,18 @@ class TicketSecurityInterceptor implements Interceptor {
 
     //-- Non-public methods ---------------------
 
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     private Helpdesk loadHelpdesk() {
         Helpdesk.read params.helpdesk
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
-    private Ticket loadTicket() {
-        Ticket.read params.id
+    @CompileDynamic
+    private static Ticket loadTicket(String id) {
+        try {
+            Ticket ticket = Ticket.read(new BigInteger(id, 10))
+            ticket.code ? null : ticket
+        } catch (NumberFormatException ignored) {
+            Ticket.findByCode id
+        }
     }
 }

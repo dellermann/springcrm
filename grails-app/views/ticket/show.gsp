@@ -30,6 +30,7 @@
         <div class="column-group">
           <div class="column">
             <f:display bean="${ticketInstance}" property="number" />
+            <f:display bean="${ticketInstance}" property="code" />
             <f:display bean="${ticketInstance}" property="helpdesk" />
             <f:display bean="${ticketInstance}" property="subject" />
           </div>

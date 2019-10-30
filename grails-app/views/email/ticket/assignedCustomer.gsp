@@ -5,6 +5,6 @@
 
 * * *
 
-# <g:fullNumber bean="${ticketInstance}"/> – ${ticketInstance.subject}
+# ${ticketInstance.shortCode} – ${ticketInstance.subject}
 
 <g:applyLayout name="emailTicketData" />

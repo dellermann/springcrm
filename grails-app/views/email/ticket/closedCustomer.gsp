@@ -4,10 +4,9 @@
 <g:message code="email.ticket.closed.customer.text1" />
 
 > [<g:message code="email.ticket.link.show" />](${showLink})
-> [<g:message code="email.ticket.link.list" />](${overviewLink})
 
 * * *
 
-# <g:fullNumber bean="${ticketInstance}"/> – ${ticketInstance.subject}
+# ${ticketInstance.shortCode} – ${ticketInstance.subject}
 
 <g:applyLayout name="emailTicketData" />

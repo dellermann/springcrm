@@ -1,7 +1,7 @@
 /*
  * PermissionInterceptor.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2019, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class PermissionInterceptor implements Interceptor {
                 controller: ~/(about|assets|dataFile|help|install|notification|overview|search)/
             )
             .excludes(
-                action: ~/(login|authenticate|logout|settings*|frontend.*)/
+                action: ~/(login|authenticate|logout|settings.*|frontend.*)/
             )
     }
 

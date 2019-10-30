@@ -1,7 +1,7 @@
 /*
  * TicketController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2019, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ package org.amcworld.springcrm
 
 import javax.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.validation.BindingResult
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -219,7 +218,7 @@ class TicketController {
             }
         }
 
-        ticketInstance.properties = params as BindingResult
+        bindData ticketInstance, params
         if (!ticketInstance.save(flush: true)) {
             render view: 'edit', model: [
                 ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks
@@ -362,7 +361,12 @@ class TicketController {
                 )
                 break
             case TicketStage.inProcess:
-                allowedStages = EnumSet.of(TicketStage.closed)
+                allowedStages =
+                    EnumSet.of(TicketStage.deferred, TicketStage.closed)
+                break
+            case TicketStage.deferred:
+                allowedStages =
+                    EnumSet.of(TicketStage.inProcess, TicketStage.closed)
                 break
             case TicketStage.closed:
                 allowedStages = EnumSet.of(TicketStage.resubmitted)
@@ -415,9 +419,10 @@ class TicketController {
 
         Organization organization = helpdeskInstance.organization
         Ticket ticketInstance = new Ticket(
-            address: organization?.shippingAddr, phone: organization?.phone,
+            address: organization?.shippingAddr
+            /*, phone: organization?.phone,
             fax: organization?.fax, email1: organization?.email1,
-            email2: organization?.email2
+            email2: organization?.email2*/
         )
 
         [helpdeskInstance: helpdeskInstance, ticketInstance: ticketInstance]
@@ -488,6 +493,55 @@ class TicketController {
             ticketInstance: ticketInstance,
             helpdeskInstance: ticketInstance.helpdesk
         ]
+    }
+
+    def frontendSearchTicket(String code) {
+        code = code.toString()
+        Helpdesk helpdesk = Helpdesk.read(params.helpdesk)
+        Ticket ticketInstance
+        try {
+            ticketInstance = Ticket.get(new BigInteger(code, 10))
+            if (ticketInstance && ticketInstance.code) {
+                flash.message = message(
+                    code: 'ticket.message.invalidCode', args: [code]
+                ) as Object
+                redirectToFrontendPage helpdesk
+                return
+            }
+        } catch (NumberFormatException ignored) {
+            if (code.length() < 10 || code.indexOf('%') >= 0) {
+                flash.message = message(
+                    code: 'ticket.message.invalidCode', args: [code]
+                ) as Object
+                redirectToFrontendPage helpdesk
+                return
+            }
+            code = code.toUpperCase().replace('0', 'O').replace('1', 'I')
+            if (Ticket.countByCodeIlike("${code}%") > 1) {
+                flash.message = message(
+                    code: 'ticket.message.ambiguous', args: [code]
+                ) as Object
+                redirectToFrontendPage helpdesk
+                return
+            }
+            ticketInstance = Ticket.findByCodeIlike("${code}%")
+        }
+        if (ticketInstance == null) {
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), code]
+            ) as Object
+            redirectToFrontendPage helpdesk
+            return
+        }
+
+        render(
+            model: [
+                ticketInstance: ticketInstance,
+                helpdeskInstance: ticketInstance.helpdesk
+            ],
+            view: 'frontendShow'
+        )
     }
 
     def frontendSendMessage(Long id) {
