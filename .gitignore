@@ -16,5 +16,6 @@
 /bin
 /bower_components
 /build
+/config
 /node_modules
 /target

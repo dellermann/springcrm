@@ -1,4 +1,3 @@
-<%@page import="java.lang.ProcessEnvironment.Value"%>
 <g:applyLayout name="fieldDisplay">
   <g:if test="${bean?.documentFile}">
   <g:link controller="dataFile" action="loadFile" id="${bean.documentFile.id}"

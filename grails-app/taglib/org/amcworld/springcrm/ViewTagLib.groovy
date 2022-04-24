@@ -334,7 +334,7 @@ class ViewTagLib {
 <input type="text" id="${id}-date" name="${name}_date"
   value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
   class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
+  maxlength="10" autocomplete="off" />
 """
 
         if (useTime) {
@@ -342,7 +342,7 @@ class ViewTagLib {
 <input type="text" id="${id}-time" name="${name}_time"
   value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
   class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
+  maxlength="5" autocomplete="off" />
 </div>
 """
         }

@@ -1,3 +1,10 @@
+## 2.1.10
+
+* Fehlerbehebung: Rechnungspositionen verschwanden beim Erstellen einer Mahnung
+* Fehlerbehebung: Adressfelder konnten aufgrund eines JavaScript-Fehlers nicht
+  von links nach rechts oder umgekehrt kopiert werden
+* Autovervollständigung für Datumsfelder deaktiviert
+
 ## 2.1.8
 
 * Aktualisierung auf Grails 3.2.11, Groovy 2.4.15 und Gradle 3.5

@@ -1,7 +1,7 @@
 #
 # addr-fields.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2022, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ $ = jQuery
 # copying to each other or loading an address from the associated organization.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.1
 #
 class AddrFields
 
@@ -251,9 +251,11 @@ class AddrFields
       $fromAddr.find('.column-content :input')
         .each ->
           $this = $(this)
-          name = toPrefix + '.' + $this.attr('name').split('.').pop()
-          $toAddr.find(":input[name='#{name}']")
-            .val $this.val()
+          name = $this.attr('name')
+          if name
+            name = toPrefix + '.' + name.split('.').pop()
+            $toAddr.find(":input[name='#{name}']")
+              .val $this.val()
 
     return
 

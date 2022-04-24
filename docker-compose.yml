@@ -1,0 +1,13 @@
+version: "3.1"
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: springcrm
+      MYSQL_ROOT_PASSWORD: to5teef5,egoh9bo
+      MYSQL_USER: springcrm
+      MYSQL_PASSWORD: AhPheeng-elo6pha
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d

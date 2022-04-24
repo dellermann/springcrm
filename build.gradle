@@ -1,7 +1,7 @@
 /*
  * build.gradle
  *
- * Copyright (c) 2011-2019, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ buildscript {
 plugins {
     id 'edu.sc.seis.macAppBundle' version '2.1.6'
     id 'io.spring.dependency-management' version '0.5.4.RELEASE'
+    id 'ua.eshepelyuk.ManifestClasspath' version '1.0.0'
 }
 
 
@@ -64,7 +65,7 @@ plugins {
  *
 \*===============================================*/
 
-version '2.1.9'
+version '2.1.10'
 group 'org.amcworld'
 
 apply plugin: 'project-report'

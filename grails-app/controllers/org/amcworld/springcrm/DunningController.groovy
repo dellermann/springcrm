@@ -1,7 +1,7 @@
 /*
  * DunningController.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,8 +103,8 @@ class DunningController {
         Dunning dunningInstance
         if (params.invoice) {
             def invoiceInstance = Invoice.get(params.long('invoice'))
-            invoiceInstance.items?.clear()
             dunningInstance = new Dunning(invoiceInstance)
+            dunningInstance.items?.clear()
         } else {
             dunningInstance = new Dunning()
             dunningInstance.setProperties params

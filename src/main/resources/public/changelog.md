@@ -1,3 +1,10 @@
+## 2.1.10
+
+* Issue: items of invoices disappeared when creating a dunning
+* Issue: could not copy address fields from left to right or vice versa due to
+  a JavaScript error
+* Disable autocomplete for date input fields
+
 ## 2.1.8
 
 * Upgrade to Grails 3.2.11, Groovy 2.4.15 and Gradle 3.5

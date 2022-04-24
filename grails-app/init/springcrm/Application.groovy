@@ -1,7 +1,7 @@
 /*
  * Application.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,6 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
         }
 
         AbstractEnvironment env = (AbstractEnvironment) environment
-        log.debug "Environment: ${env}"
 
         parseConfigFile(
             env, 'system.properties', getUserConfigFile('config.properties')
@@ -101,6 +100,8 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
         } catch (Exception e) {
             log.error "Instance configuration lookup failed: ${e}"
         }
+
+        log.debug "Environment: ${env}"
     }
 
 

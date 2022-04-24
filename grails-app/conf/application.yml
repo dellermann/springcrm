@@ -129,8 +129,8 @@ dataSource:
     password:
     pooled: true
     jmxExport: true
-    properties:
-        initSQL: SET REFERENTIAL_INTEGRITY FALSE
+#    properties :
+#        initSQL: SET REFERENTIAL_INTEGRITY FALSE
 
 grails:
     plugin:

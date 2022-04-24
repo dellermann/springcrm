@@ -1,7 +1,7 @@
 /*
  * logback.groovy
  *
- * Copyright (c) 2011-2019, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,11 @@ logger 'org.grails.plugins.coffee.compiler', INFO
 //logger 'org.amcworld.springcrm.google.GoogleContactSyncTask', DEBUG
 //logger 'org.amcworld.springcrm.google.AbstractGoogleSync', DEBUG
 //logger 'org.springframework.boot', DEBUG
+//logger 'org.springframework.jdbc', DEBUG
+//logger 'org.springframework.web.servlet.mvc', DEBUG
 //logger 'liquibase', DEBUG
+//logger 'org.grails.datastore', DEBUG
+//logger 'org.grails.orm', DEBUG
 //logger 'org.grails.plugins.databasemigration.liquibase', DEBUG
 
 if (Environment.isDevelopmentMode()) {
