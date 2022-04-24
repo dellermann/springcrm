@@ -71,6 +71,7 @@ class InvoicingTransaction
         termsAndConditions: TermsAndConditions
     ]
     static mapping = {
+        docDate index: 'docDate'
         items cascade: 'all-delete-orphan'
         headerText type: 'text'
         footerText type: 'text'
@@ -79,6 +80,7 @@ class InvoicingTransaction
         subject index: 'subject'
         termsAndConditions lazy: false
         order 'desc'
+        type index: 'invoicing_transaction_type'
     }
     static transients = [
         'discountPercentAmount', 'shippingCostsGross', 'subtotalGross',

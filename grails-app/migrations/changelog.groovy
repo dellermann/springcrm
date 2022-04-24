@@ -1,7 +1,7 @@
 /*
  * changelog.groovy
  *
- * Copyright (c) 2011-2019, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,4 +43,5 @@ databaseChangeLog = {
     include file: 'helpdesk-for-end-users.xml'
     include file: 'seq-number-order.xml'
     include file: 'ticket-codes.xml'
+    include file: 'invoicing-transaction-indexes.xml'
 }
