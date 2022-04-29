@@ -5,11 +5,11 @@
   <g:layoutBody />
 </div>
 <nav class="text-center">
-  <div class="visible-xs">
-    <g:paginate total="${total}" maxsteps="3" class="pagination-sm" />
+  <div class="pagination-container-xs">
+    <g:paginate total="${total}" maxsteps="3" class="pagination-sm"/>
   </div>
-  <div class="hidden-xs">
-    <g:paginate total="${total}" />
+  <div class="pagination-container-sm">
+    <g:paginate total="${total}"/>
   </div>
 </nav>
 </g:if>

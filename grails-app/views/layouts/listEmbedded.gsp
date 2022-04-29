@@ -3,12 +3,12 @@
   <g:layoutBody />
 </div>
 <nav class="text-center">
-  <div class="visible-xs">
+  <div class="pagination-container-xs">
     <g:paginate total="${total}" params="${linkParams}" maxsteps="3"
-      class="pagination-sm" />
+      class="pagination-sm"/>
   </div>
-  <div class="hidden-xs">
-    <g:paginate total="${total}" params="${linkParams}" />
+  <div class="pagination-container-sm">
+    <g:paginate total="${total}" params="${linkParams}"/>
   </div>
 </nav>
 </g:if>

@@ -1,7 +1,7 @@
 //
 // _lists.less
 //
-// Copyright (c) 2011-2015, Daniel Ellermann
+// Copyright (c) 2011-2022, Daniel Ellermann
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -92,10 +92,32 @@
     width: auto !important;
   }
 }
-@media (max-width: @screen-sm-max) {
-  .pagination-container {
-    text-align: center;
+.page-selector {
+  display: flex;
+  margin-left: 1rem;
+}
+.pagination-container > div {
+  align-items: center;
+  display: flex;
+
+  &.pagination-container-xs {
+    display: flex;
+    justify-content: center;
   }
+  &.pagination-container-sm {
+    display: none;
+  }
+  @media (min-width: @screen-sm) {
+    &.pagination-container-xs {
+      display: none;
+    }
+    &.pagination-container-sm {
+      display: flex;
+    }
+  }
+}
+.pagination-sm.selectize-control {
+  font-size: @font-size-small;
 }
 .num-items-per-page-form {
   margin: @line-height-computed 0;

@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoiceSpec.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ class PurchaseInvoiceSpec extends Specification {
         def pi = new PurchaseInvoice()
 
         then: 'the properties are initialized properly'
-        null == pi.number
+        null == pi.invoiceNumber
         null == pi.subject
         null == pi.vendorName
         null == pi.vendor
@@ -67,7 +67,7 @@ class PurchaseInvoiceSpec extends Specification {
         def pi2 = new PurchaseInvoice(pi1)
 
         then: 'the properties are set properly'
-        null == pi2.number
+        null == pi2.invoiceNumber
         null == pi2.subject
         null == pi2.vendorName
         null == pi2.vendor
@@ -100,7 +100,7 @@ class PurchaseInvoiceSpec extends Specification {
 
         and: 'a purchase invoice with various properties'
         PurchaseInvoice p1 = new PurchaseInvoice(
-            number: 225,
+            invoiceNumber: '225',
             subject: 'International delivery',
             vendor: organization,
             vendorName: 'Sugar & salt & bicycle vendor',
@@ -143,7 +143,7 @@ class PurchaseInvoiceSpec extends Specification {
         def p2 = new PurchaseInvoice(p1)
 
         then: 'some properties are the equal'
-        p2.number == p1.number
+        p2.invoiceNumber == p1.invoiceNumber
         p2.subject == p1.subject
         p2.vendorName == p1.vendorName
         !p1.items.is(p2.items)
@@ -1053,7 +1053,7 @@ class PurchaseInvoiceSpec extends Specification {
     def 'Subject must not be blank'(String s, boolean v) {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),
             dueDate: new Date(),
@@ -1081,7 +1081,7 @@ class PurchaseInvoiceSpec extends Specification {
 	def 'Vendor name must not be blank'(String vn, boolean v) {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             subject: 'International delivery',
             docDate: new Date(),
             dueDate: new Date(),
@@ -1109,7 +1109,7 @@ class PurchaseInvoiceSpec extends Specification {
     def 'Document date must not be null'() {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             subject: 'International delivery',
             vendorName: 'Sugar & salt & bicycle vendor',
             dueDate: new Date(),
@@ -1133,7 +1133,7 @@ class PurchaseInvoiceSpec extends Specification {
     def 'Due date must not be null'() {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             subject: 'International delivery',
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),
@@ -1157,7 +1157,7 @@ class PurchaseInvoiceSpec extends Specification {
     def 'Stage must not be null'() {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             subject: 'International delivery',
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),
@@ -1181,7 +1181,7 @@ class PurchaseInvoiceSpec extends Specification {
     def 'Items must not be null nor empty'() {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             subject: 'International delivery',
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),
@@ -1216,7 +1216,7 @@ class PurchaseInvoiceSpec extends Specification {
     {
         given: 'a valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             subject: 'International delivery',
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),
@@ -1251,7 +1251,7 @@ class PurchaseInvoiceSpec extends Specification {
     {
         given: 'a valid purchase invoice'
         def pi = new PurchaseInvoice(
-            number: '123456',
+            invoiceNumber: '123456',
             subject: 'International delivery',
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),

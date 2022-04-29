@@ -705,7 +705,7 @@ class ViewTagLib {
         def total = attrs.int('total') ?: 0
         def offset = params.int('offset') ?: 0
         def max = params.int('max')
-        def maxsteps = (attrs.int('maxsteps') ?: 10)
+        def maxsteps = (attrs.int('maxsteps') ?: 9)
         def cssClass = attrs.remove('class')
 
         if (!offset) offset = (attrs.int('offset') ?: 0)
@@ -846,6 +846,17 @@ class ViewTagLib {
         }
 
         if (laststep > 1) writer << '</ul>'
+
+        writer << '<select class="form-control page-selector ' << cssClass <<
+            '" style="width: 7rem;">'
+        for (int i = 0; i < laststep; i++) {
+            linkParams.offset = i * max
+            writer << '<option value="' <<
+                createLink(linkTagAttrs.clone()) << '"' <<
+                (currentstep == i + 1 ? ' selected="selected"' : '') <<
+                '>' << (i + 1) << '</option>'
+        }
+        writer << '</select>'
     }
 
     /**

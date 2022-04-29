@@ -13,6 +13,8 @@
         <div class="column-group">
           <div class="column">
             <f:display bean="${purchaseInvoiceInstance}" property="number" />
+            <f:display bean="${purchaseInvoiceInstance}"
+              property="invoiceNumber" />
             <f:display bean="${purchaseInvoiceInstance}" property="subject" />
             <f:display bean="${purchaseInvoiceInstance}"
               property="vendorName" />

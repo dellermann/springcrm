@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Sources" pattern="file[springcrm_main]:*/||file[springcrm_test]:*/" />
+  <scope name="Sources" pattern="file[springcrm_main]:*/||file[springcrm.main]:controllers//*||file[springcrm.main]:domain//*||file[springcrm.main]:init//*||file[springcrm.main]:services//*||file[springcrm.main]:taglib//*||file[springcrm.main]:utils//*||file[springcrm.main]:groovy//*||file[springcrm_test]:*/||file[springcrm.test]:groovy//*" />
 </component>

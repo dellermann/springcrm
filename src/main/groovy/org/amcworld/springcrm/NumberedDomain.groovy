@@ -1,7 +1,7 @@
 /*
  * NumberedDomain.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ trait NumberedDomain {
     /**
      * The sequence number.
      */
-    int number
+    Integer number
 
 
     //-- Public methods -------------------------

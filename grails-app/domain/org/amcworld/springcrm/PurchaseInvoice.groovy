@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoice.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import static java.math.BigDecimal.ZERO
 
 import groovy.transform.CompileStatic
 import java.math.RoundingMode
+import org.grails.datastore.gorm.GormEntity
 
 
 /**
@@ -32,22 +33,23 @@ import java.math.RoundingMode
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class PurchaseInvoice {
+class PurchaseInvoice implements GormEntity<PurchaseInvoice>, NumberedDomain {
 
     //-- Constants ------------------------------
 
     public static final List<String> SEARCH_FIELDS = [
-        'number', 'subject', 'vendorName', 'notes', 'items.*name',
-        'items.*description'
+        'number', 'invoiceNumber', 'subject', 'vendorName', 'notes',
+        'items.*name', 'items.*description'
     ].asImmutable()
 
-    private static final BigInteger HUNDRED = new BigDecimal(100i)
+    private static final BigDecimal HUNDRED = new BigDecimal(100i)
 
 
     //-- Class fields ---------------------------
 
     static constraints = {
-        number blank: false
+        number unique: true, widget: 'autonumber'
+        invoiceNumber blank: false
         subject blank: false
         vendor nullable: true
         vendorName blank: false
@@ -84,7 +86,7 @@ class PurchaseInvoice {
     /**
      * The number of this purchase invoice.
      */
-    String number
+    String invoiceNumber
 
     /**
      * The subject of this purchase invoice.
@@ -202,7 +204,7 @@ class PurchaseInvoice {
      * @param p the given purchase invoice
      */
     PurchaseInvoice(PurchaseInvoice p) {
-        number = p.number
+        invoiceNumber = p.invoiceNumber
         subject = p.subject
         vendor = p.vendor
         vendorName = p.vendorName

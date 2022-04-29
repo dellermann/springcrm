@@ -13,6 +13,8 @@
             <tr>
               <g:sortableColumn property="number"
                 title="${message(code: 'purchaseInvoice.number.label')}"/>
+              <g:sortableColumn property="invoiceNumber"
+                title="${message(code: 'purchaseInvoice.invoiceNumber.label')}"/>
               <g:sortableColumn property="subject"
                 title="${message(code: 'purchaseInvoice.subject.label')}"/>
               <g:sortableColumn property="vendor.name"
@@ -34,10 +36,15 @@
             <g:each in="${purchaseInvoiceInstanceList}" status="i"
               var="purchaseInvoiceInstance">
             <tr>
+              <td class="col-type-id purchase-seq-number">
+                <g:link action="show" id="${purchaseInvoiceInstance.id}">
+                  <g:fullNumber bean="${purchaseInvoiceInstance}"/>
+                </g:link>
+              </td>
               <td class="col-type-string purchase-invoice-number">
                 <g:link action="show" id="${purchaseInvoiceInstance.id}">
                   <g:fieldValue bean="${purchaseInvoiceInstance}"
-                    field="number"/>
+                    field="invoiceNumber"/>
                 </g:link>
               </td>
               <td class="col-type-string purchase-invoice-subject">
@@ -90,11 +97,11 @@
       </div>
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
-          <div class="visible-xs">
+          <div class="pagination-container-xs">
             <g:paginate total="${purchaseInvoiceInstanceTotal}" maxsteps="3"
               class="pagination-sm"/>
           </div>
-          <div class="hidden-xs">
+          <div class="pagination-container-sm">
             <g:paginate total="${purchaseInvoiceInstanceTotal}"/>
           </div>
         </nav>

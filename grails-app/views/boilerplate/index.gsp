@@ -53,11 +53,11 @@
       </div>
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
-          <div class="visible-xs">
+          <div class="pagination-container-xs">
             <g:paginate total="${boilerplateInstanceTotal}" maxsteps="3"
               class="pagination-sm"/>
           </div>
-          <div class="hidden-xs">
+          <div class="pagination-container-sm">
             <g:paginate total="${boilerplateInstanceTotal}"/>
           </div>
         </nav>

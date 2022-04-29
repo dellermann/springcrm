@@ -1,7 +1,7 @@
 #
 # _ui.coffee
 #
-# Copyright (c) 2011-2017, Daniel Ellermann
+# Copyright (c) 2011-2022, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -114,6 +114,7 @@ class Page
       .on('change', '.date-input-time-control', (event) =>
         @_onChangeTimeInput event
       )
+      .on('change', '.page-selector', (event) => @_onChangePage event)
       .on('change', '.num-items-per-page-form select', (event) =>
         @_onChangeNumItemsPerPage event
       )
@@ -352,6 +353,18 @@ class Page
     url.overwriteQuery max: $(event.currentTarget).val()
 
     window.location.href = url.toString()
+
+    return
+
+  # Called when the selector with the page number has been changed.  The method
+  # reloads the current URL.
+  #
+  # @param [Event] event  any event data
+  # @private
+  # @since 2.1
+  #
+  _onChangePage: (event) ->
+    window.location.href = $(event.currentTarget).val()
 
     return
 

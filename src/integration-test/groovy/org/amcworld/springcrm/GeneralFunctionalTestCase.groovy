@@ -985,7 +985,7 @@ Wir vereinbarten folgende Vorgehensweise:
         new File(purchaseInvoiceFolder, dataFile.storageName) << file.newInputStream()
 
         def purchaseInvoice = new PurchaseInvoice(
-            number: '4049493-4994',
+            invoiceNumber: '4049493-4994',
             subject: 'Entwicklung eines Designs',
             vendor: org,
             vendorName: 'Katja Schmale Webdesignerin',

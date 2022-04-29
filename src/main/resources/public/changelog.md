@@ -1,5 +1,7 @@
 ## 2.1.10
 
+* Feature: add sequence numbers to purchase invoices
+* Feature: add page selector to paginator
 * Issue: items of invoices disappeared when creating a dunning
 * Issue: could not copy address fields from left to right or vice versa due to
   a JavaScript error

@@ -1,5 +1,7 @@
 ## 2.1.10
 
+* Feature: laufende Nummer zu Eingangsrechnungen hinzugefügt
+* Feature: Seitenauswähler hinzugefügt
 * Fehlerbehebung: Rechnungspositionen verschwanden beim Erstellen einer Mahnung
 * Fehlerbehebung: Adressfelder konnten aufgrund eines JavaScript-Fehlers nicht
   von links nach rechts oder umgekehrt kopiert werden

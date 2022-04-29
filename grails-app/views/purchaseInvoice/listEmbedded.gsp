@@ -17,7 +17,7 @@
     <g:each in="${purchaseInvoiceInstanceList}" status="i"
       var="purchaseInvoiceInstance">
       <tr>
-        <td class="col-type-string purchase-invoice-number"><g:link controller="purchaseInvoice" action="show" id="${purchaseInvoiceInstance.id}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="number" /></g:link></td>
+        <td class="col-type-string purchase-invoice-number"><g:link controller="purchaseInvoice" action="show" id="${purchaseInvoiceInstance.id}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="invoiceNumber" /></g:link></td>
         <td class="col-type-string purchase-invoice-subject"><g:link controller="purchaseInvoice" action="show" id="${purchaseInvoiceInstance.id}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="subject" /></g:link></td>
         <td class="col-type-status purchase-invoice-stage payment-state payment-state-${purchaseInvoiceInstance?.paymentStateColor}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="stage" /></td>
         <td class="col-type-date purchase-invoice-doc-date"><g:formatDate date="${purchaseInvoiceInstance.docDate}" formatName="default.format.date" /></td>

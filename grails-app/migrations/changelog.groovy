@@ -44,4 +44,5 @@ databaseChangeLog = {
     include file: 'seq-number-order.xml'
     include file: 'ticket-codes.xml'
     include file: 'invoicing-transaction-indexes.xml'
+    include file: 'purchase-invoice-numbers.xml'
 }

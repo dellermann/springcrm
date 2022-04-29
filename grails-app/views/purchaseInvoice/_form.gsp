@@ -4,7 +4,8 @@
   </header>
   <div class="column-group">
     <div class="column">
-      <f:field bean="${purchaseInvoiceInstance}" property="number" />
+      <f:field bean="${purchaseInvoiceInstance}" property="number"/>
+      <f:field bean="${purchaseInvoiceInstance}" property="invoiceNumber" />
       <f:field bean="${purchaseInvoiceInstance}" property="subject" />
       <g:ifModuleAllowed modules="CONTACT">
       <f:field bean="${purchaseInvoiceInstance}" property="vendorName" />
