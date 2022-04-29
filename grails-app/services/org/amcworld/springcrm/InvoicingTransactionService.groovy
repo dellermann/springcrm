@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionService.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,7 +149,7 @@ class InvoicingTransactionService implements Service {
     }
 
     /**
-     * Finds the first year in which invoices, credit notes or reminders have
+     * Finds the last year in which invoices, credit notes or reminders have
      * been written.
      *
      * @return  the first year with invoices, credit notes or reminders; -1 if
@@ -164,6 +164,29 @@ class InvoicingTransactionService implements Service {
             order by docDate desc
             ''',
             [: ],
+            [max: 1]
+        )
+
+        ((Integer) transaction?.docDate[YEAR]) ?: -1
+    }
+
+    /**
+     * Finds the last year in which invoicing transactions of the given type
+     * have been written.
+     *
+     * @param type  the given type
+     * @return      the last year with invoicing transactions of the given type;
+     *              -1 if no such elements exist
+     * @since       2.1
+     */
+    int findYearEnd(String type) {
+        InvoicingTransaction transaction = InvoicingTransaction.find(
+            '''
+            from InvoicingTransaction as i 
+            where i.type = :type
+            order by docDate desc
+            ''',
+            [type: type],
             [max: 1]
         )
 
@@ -203,6 +226,29 @@ class InvoicingTransactionService implements Service {
             order by docDate asc
             ''',
             [: ],
+            [max: 1]
+        )
+
+        ((Integer) transaction?.docDate[YEAR]) ?: -1
+    }
+
+    /**
+     * Finds the first year in which invoicing transactions of the given type
+     * have been written.
+     *
+     * @param type  the given type
+     * @return      the first year with invoicing transactions of the given
+     *              type; -1 if no such elements exist
+     * @since       2.1
+     */
+    int findYearStart(String type) {
+        InvoicingTransaction transaction = InvoicingTransaction.find(
+            '''
+            from InvoicingTransaction as i 
+            where i.type = :type
+            order by docDate asc
+            ''',
+            [type: type],
             [max: 1]
         )
 

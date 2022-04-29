@@ -2,6 +2,8 @@
 
 * Feature: add sequence numbers to purchase invoices
 * Feature: add page selector to paginator
+* Feature: add year selector to quotes, sales orders, invoices, dunnings,
+  credit memos and purchase invoices
 * Issue: items of invoices disappeared when creating a dunning
 * Issue: could not copy address fields from left to right or vice versa due to
   a JavaScript error

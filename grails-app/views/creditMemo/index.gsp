@@ -5,6 +5,23 @@
   </head>
 
   <body>
+    <content tag="caption">
+      <span class="caption-with-year-selector">
+        <span>
+          ${message(code: "creditMemo.plural")}
+          <g:if test="${params.year}"> ${params.year}</g:if>
+        </span>
+        <a href="#" class="open-selector-link"><i class="fa fa-calendar"></i></a>
+        <span class="selector-container">
+          <g:select name="year" from="${(yearEnd..yearStart)}"
+            value="${params.year}" noSelection="['': '']" class="form-control"
+            style="width: 9rem;"/>
+        </span>
+        <button type="button" class="btn btn-info btn-sm btn-show-all"
+        >alle</button>
+        <a href="#" class="close-selector-link"><i class="fa fa-close"></i></a>
+      </span>
+    </content>
     <g:applyLayout name="list"
       model="[list: creditMemoInstanceList, type: 'creditMemo']">
       <div class="table-responsive">
@@ -100,5 +117,8 @@
         <g:render template="/layouts/numItemsPerPage"/>
       </div>
     </g:applyLayout>
+    <content tag="scripts">
+      <asset:javascript src="invoicing-transaction-list" />
+    </content>
   </body>
 </html>

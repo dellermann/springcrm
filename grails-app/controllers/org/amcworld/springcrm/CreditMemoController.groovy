@@ -1,7 +1,7 @@
 /*
  * CreditMemoController.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,12 +58,21 @@ class CreditMemoController {
             String searchFilter = "%${params.search}%".toString()
             list = CreditMemo.findAllBySubjectLike(searchFilter, params)
             count = CreditMemo.countBySubjectLike(searchFilter)
+        } else if (params.year) {
+            int start = (params.int('year') % 1000) * 1000
+            int end = start + 999
+            list = CreditMemo.findAllByNumberBetween(start, end, params)
+            count = CreditMemo.countByNumberBetween(start, end)
         } else {
             list = CreditMemo.list(params)
             count = CreditMemo.count()
         }
 
-        [creditMemoInstanceList: list, creditMemoInstanceTotal: count]
+        [
+            creditMemoInstanceList: list, creditMemoInstanceTotal: count,
+            yearStart: invoicingTransactionService.findYearStart('C'),
+            yearEnd: invoicingTransactionService.findYearEnd('C'),
+        ]
     }
 
     def listEmbedded(Long organization, Long person, Long invoice,

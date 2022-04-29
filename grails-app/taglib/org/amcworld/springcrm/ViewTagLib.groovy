@@ -845,18 +845,19 @@ class ViewTagLib {
             } << '</li>'
         }
 
-        if (laststep > 1) writer << '</ul>'
-
-        writer << '<select class="form-control page-selector ' << cssClass <<
-            '" style="width: 7rem;">'
-        for (int i = 0; i < laststep; i++) {
-            linkParams.offset = i * max
-            writer << '<option value="' <<
-                createLink(linkTagAttrs.clone()) << '"' <<
-                (currentstep == i + 1 ? ' selected="selected"' : '') <<
-                '>' << (i + 1) << '</option>'
+        if (laststep > 1) {
+            writer << '</ul>'
+            writer << '<select class="form-control page-selector ' <<
+                cssClass << '" style="width: 7rem;">'
+            for (int i = 0; i < laststep; i++) {
+                linkParams.offset = i * max
+                writer << '<option value="' <<
+                    createLink(linkTagAttrs.clone()) << '"' <<
+                    (currentstep == i + 1 ? ' selected="selected"' : '') <<
+                    '>' << (i + 1) << '</option>'
+            }
+            writer << '</select>'
         }
-        writer << '</select>'
     }
 
     /**

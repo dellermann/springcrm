@@ -1,7 +1,7 @@
 /*
  * InvoiceController.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,21 @@ class InvoiceController {
             String searchFilter = "%${params.search}%".toString()
             list = Invoice.findAllBySubjectLike(searchFilter, params)
             count = Invoice.countBySubjectLike(searchFilter)
+        } else if (params.year) {
+            int start = (params.int('year') % 1000) * 1000
+            int end = start + 999
+            list = Invoice.findAllByNumberBetween(start, end, params)
+            count = Invoice.countByNumberBetween(start, end)
         } else {
             list = Invoice.list(params)
             count = Invoice.count()
         }
 
-        [invoiceInstanceList: list, invoiceInstanceTotal: count]
+        [
+            invoiceInstanceList: list, invoiceInstanceTotal: count,
+            yearStart: invoicingTransactionService.findYearStart('I'),
+            yearEnd: invoicingTransactionService.findYearEnd('I'),
+        ]
     }
 
     def listEmbedded(Long organization, Long person, Long quote,

@@ -1,7 +1,7 @@
 /*
  * QuoteController.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,12 +56,21 @@ class QuoteController {
             String searchFilter = "%${params.search}%".toString()
             list = Quote.findAllBySubjectLike(searchFilter, params)
             count = Quote.countBySubjectLike(searchFilter)
+        } else if (params.year) {
+            int start = (params.int('year') % 1000) * 1000
+            int end = start + 999
+            list = Quote.findAllByNumberBetween(start, end, params)
+            count = Quote.countByNumberBetween(start, end)
         } else {
             list = Quote.list(params)
             count = Quote.count()
         }
 
-        [quoteInstanceList: list, quoteInstanceTotal: count]
+        [
+            quoteInstanceList: list, quoteInstanceTotal: count,
+            yearStart: invoicingTransactionService.findYearStart('Q'),
+            yearEnd: invoicingTransactionService.findYearEnd('Q'),
+        ]
     }
 
     def listEmbedded(Long organization, Long person) {

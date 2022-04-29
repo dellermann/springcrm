@@ -56,12 +56,21 @@ class DunningController {
             String searchFilter = "%${params.search}%".toString()
             list = Dunning.findAllBySubjectLike(searchFilter, params)
             count = Dunning.countBySubjectLike(searchFilter)
+        } else if (params.year) {
+            int start = (params.int('year') % 1000) * 1000
+            int end = start + 999
+            list = Dunning.findAllByNumberBetween(start, end, params)
+            count = Dunning.countByNumberBetween(start, end)
         } else {
             list = Dunning.list(params)
             count = Dunning.count()
         }
 
-        [dunningInstanceList: list, dunningInstanceTotal: count]
+        [
+            dunningInstanceList: list, dunningInstanceTotal: count,
+            yearStart: invoicingTransactionService.findYearStart('D'),
+            yearEnd: invoicingTransactionService.findYearEnd('D'),
+        ]
     }
 
     def listEmbedded(Long organization, Long person, Long invoice) {

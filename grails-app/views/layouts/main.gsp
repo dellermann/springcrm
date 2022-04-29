@@ -4,7 +4,7 @@
 
   SpringCRM
 
-  Copyright (c) 2011-2016, Daniel Ellermann
+  Copyright (c) 2011-2022, Daniel Ellermann
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -56,6 +56,9 @@
                 <g:if test="${pageProperty(name: 'meta.caption')}">
                 <g:pageProperty name="meta.caption" />
                 </g:if>
+                <g:elseif test="${pageProperty(name: 'page.caption')}">
+                <g:pageProperty name="page.caption" />
+                </g:elseif>
                 <g:else>
                 <g:message code="${controllerName}.plural"
                   default="${message(code: "${controllerName}.label")}" />

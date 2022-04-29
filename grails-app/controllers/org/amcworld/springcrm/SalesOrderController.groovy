@@ -1,7 +1,7 @@
 /*
  * SalesOrderController.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,21 @@ class SalesOrderController {
             String searchFilter = "%${params.search}%".toString()
             list = SalesOrder.findAllBySubjectLike(searchFilter, params)
             count = SalesOrder.countBySubjectLike(searchFilter)
+        } else if (params.year) {
+            int start = (params.int('year') % 1000) * 1000
+            int end = start + 999
+            list = SalesOrder.findAllByNumberBetween(start, end, params)
+            count = SalesOrder.countByNumberBetween(start, end)
         } else {
             list = SalesOrder.list(params)
             count = SalesOrder.count()
         }
 
-        [salesOrderInstanceList: list, salesOrderInstanceTotal: count]
+        [
+            salesOrderInstanceList: list, salesOrderInstanceTotal: count,
+            yearStart: invoicingTransactionService.findYearStart('O'),
+            yearEnd: invoicingTransactionService.findYearEnd('O'),
+        ]
     }
 
     def listEmbedded(Long organization, Long person, Long quote) {

@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoiceController.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ class PurchaseInvoiceController {
     //-- Fields ---------------------------------
 
     DataFileService dataFileService
+    PurchaseInvoiceService purchaseInvoiceService
 
 
     //-- Public methods -------------------------
@@ -59,6 +60,11 @@ class PurchaseInvoiceController {
             String searchFilter = "%${params.search}%".toString()
             list = PurchaseInvoice.findAllBySubjectLike(searchFilter, params)
             count = PurchaseInvoice.countBySubjectLike(searchFilter)
+        } else if (params.year) {
+            int start = (params.int('year') % 1000) * 1000
+            int end = start + 999
+            list = PurchaseInvoice.findAllByNumberBetween(start, end, params)
+            count = PurchaseInvoice.countByNumberBetween(start, end)
         } else {
             list = PurchaseInvoice.list(params)
             count = PurchaseInvoice.count()
@@ -66,7 +72,9 @@ class PurchaseInvoiceController {
 
         [
             purchaseInvoiceInstanceList: list,
-            purchaseInvoiceInstanceTotal: count
+            purchaseInvoiceInstanceTotal: count,
+            yearStart: purchaseInvoiceService.findYearStart(),
+            yearEnd: purchaseInvoiceService.findYearEnd(),
         ]
     }
 
