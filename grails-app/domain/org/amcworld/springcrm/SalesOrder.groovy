@@ -35,7 +35,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
     //-- Constants ----------------------------------
 
     public static final List<String> SEARCH_FIELDS = [
-        'subject', 'billingAddr.street', 'billingAddr.poBox',
+        'number', 'subject', 'billingAddr.street', 'billingAddr.poBox',
         'billingAddr.postalCode', 'billingAddr.location', 'billingAddr.state',
         'billingAddr.country', 'shippingAddr.street', 'shippingAddr.poBox',
         'shippingAddr.postalCode', 'shippingAddr.location',

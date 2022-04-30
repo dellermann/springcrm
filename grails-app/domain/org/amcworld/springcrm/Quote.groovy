@@ -1,7 +1,7 @@
 /*
  * Quote.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ class Quote extends InvoicingTransaction implements GormEntity<Quote> {
     //-- Constants ----------------------------------
 
     public static final List<String> SEARCH_FIELDS = [
-        'subject', 'billingAddr.street', 'billingAddr.poBox',
+        'number', 'subject', 'billingAddr.street', 'billingAddr.poBox',
         'billingAddr.postalCode', 'billingAddr.location', 'billingAddr.state',
         'billingAddr.country', 'shippingAddr.street', 'shippingAddr.poBox',
         'shippingAddr.postalCode', 'shippingAddr.location',
