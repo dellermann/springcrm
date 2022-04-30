@@ -116,8 +116,10 @@
             <td class="col-type-currency sales-journal-total"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-invoicingTransactionInstance?.total}" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.total}" displayZero="true" external="true" /></g:else></td>
             <td class="col-type-date sales-journal-payment-date"><g:formatDate date="${invoicingTransactionInstance?.paymentDate}" formatName="default.format.date" /></td>
             <td class="col-type-currency sales-journal-payment-amount"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-(invoicingTransactionInstance?.paymentAmount ?: 0)}" displayZero="true" external="true" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.paymentAmount}" displayZero="true" external="true" /></g:else></td>
-            <td class="col-type-currency sales-journal-sum balance-state balance-state-${invoicingTransactionInstance?.balanceColor}"><g:formatCurrency number="${invoicingTransactionInstance?.balance}" displayZero="true" external="true" /></td>
-            <td class="col-type-status sales-journal-stage payment-state payment-state-${invoicingTransactionInstance?.paymentStateColor}"><g:fieldValue bean="${invoicingTransactionInstance}" field="stage" /></td>
+%{--            <td class="col-type-currency sales-journal-sum balance-state balance-state-${invoicingTransactionInstance?.balanceColor}"><g:formatCurrency number="${invoicingTransactionInstance?.balance}" displayZero="true" external="true" /></td>--}%
+            <td class="col-type-currency sales-journal-sum balance-state"><g:formatCurrency number="${invoicingTransactionInstance?.balance}" displayZero="true" external="true" /></td>
+%{--            <td class="col-type-status sales-journal-stage payment-state payment-state-${invoicingTransactionInstance?.paymentStateColor}"><g:fieldValue bean="${invoicingTransactionInstance}" field="stage" /></td>--}%
+            <td class="col-type-status sales-journal-stage payment-state"><g:fieldValue bean="${invoicingTransactionInstance}" field="stage" /></td>
           </tr>
           </g:each>
           </tbody>

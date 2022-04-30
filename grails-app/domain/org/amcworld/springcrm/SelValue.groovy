@@ -1,7 +1,7 @@
 /*
  * SelValue.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ class SelValue implements GormEntity<SelValue> {
         name blank: false
     }
     static mapping = {
+        cache true
         sort 'orderId'
         id(
             generator: 'org.hibernate.id.enhanced.SequenceStyleGenerator',

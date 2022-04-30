@@ -1,7 +1,7 @@
 /*
  * SeqNumberService.groovy
  *
- * Copyright (c) 2011-2018, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ class SeqNumberService {
 
     //-- Fields ---------------------------------
 
+    private final WeakHashMap<String, SeqNumber> cache = new WeakHashMap<>()
     GrailsApplication grailsApplication
 
 
@@ -79,7 +80,7 @@ class SeqNumberService {
             res &= checkControllerNumberScheme(c, year)
         }
 
-        res
+        res && checkControllerNumberScheme(PurchaseInvoiceController, year)
     }
 
     /**
@@ -95,6 +96,10 @@ class SeqNumberService {
         int num = year.toInteger() * 1000
 
         List<SeqNumber> res = SeqNumber.list(readOnly: true)
+        synchronized (cache) {
+            cache.clear()
+            res.each {cache[it.controllerName] = it }
+        }
         for (SeqNumber sn : res) {
             Class<?> cls = domainNameToClass(sn.controllerName)
             if (InvoicingTransaction.isAssignableFrom(cls)) {
@@ -170,7 +175,20 @@ class SeqNumberService {
      */
     @CompileDynamic
     SeqNumber loadSeqNumber(String controllerName) {
-        SeqNumber.findByControllerName controllerName
+        SeqNumber seqNumber
+        if (cache.containsKey(controllerName)) {
+            synchronized (cache) {
+                seqNumber = cache[controllerName]
+                if (seqNumber != null) return seqNumber
+            }
+        }
+
+        seqNumber = SeqNumber.findByControllerName controllerName
+        synchronized (cache) {
+            cache[controllerName] = seqNumber
+        }
+
+        seqNumber
     }
 
     /**
@@ -249,9 +267,9 @@ class SeqNumberService {
      *                      {@code false} otherwise
      * @since 2.1
      */
-    private boolean checkControllerNumberScheme(
-        Class<? extends InvoicingTransaction> controller, String year
-    ) {
+    private boolean checkControllerNumberScheme(Class<?> controller,
+                                                String year)
+    {
         SeqNumber seqNumber = loadSeqNumber(controller)
 
         seqNumber != null && (seqNumber.startValue as String).startsWith(year)

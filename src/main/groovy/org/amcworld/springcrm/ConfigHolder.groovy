@@ -1,7 +1,7 @@
 /*
  * ConfigHolder.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,11 @@ import groovy.transform.PackageScope
 @CompileStatic
 class ConfigHolder {
 
+    //-- Fields ---------------------------------
+
+    private final WeakHashMap<String, Config> cache = new WeakHashMap<>()
+
+
     //-- Constructors ---------------------------
 
     @PackageScope
@@ -49,7 +54,13 @@ class ConfigHolder {
      * @return  a list of all configurations
      */
     List<Config> getAllConfig() {
-        Config.list()
+        def list = Config.list()
+        synchronized (cache) {
+            cache.clear()
+            list.each { cache[it.name] = it }
+        }
+
+        list
     }
 
     /**
@@ -74,7 +85,20 @@ class ConfigHolder {
      */
     @CompileDynamic
     Config getConfig(String name) {
-        Config.findByName name
+        Config config
+        if (cache.containsKey(name)) {
+            synchronized (cache) {
+                config = cache[name]
+                if (config != null) return config
+            }
+        }
+
+        config = Config.findByName name
+        synchronized (cache) {
+            cache[name] = config
+        }
+
+        config
     }
 
     /**
@@ -93,8 +117,11 @@ class ConfigHolder {
      */
     void removeConfig(String name) {
         Config config = getConfig(name)
-        if (config) {
+        if (config != null) {
             config.delete flush: true
+            synchronized (cache) {
+                cache.remove name
+            }
         }
     }
 
@@ -120,6 +147,9 @@ class ConfigHolder {
         Config config = getConfig(name) ?: new Config(name: name)
         config.value = value
         config.save flush: true
+        synchronized (cache) {
+            cache[name] = config
+        }
     }
 
 
