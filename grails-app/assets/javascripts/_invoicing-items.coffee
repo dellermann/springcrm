@@ -1,7 +1,7 @@
 #
 # _invoicing-items.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2022, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -463,6 +463,11 @@ class InvoicingItems
       .on('click', '.modal-body a:not(.select-link)', (event) =>
         @_loadSalesItemSelector type, pos,
           $(event.currentTarget).attr('href'), getData()
+        false
+      )
+      .on('change', '.modal-body .page-selector', (event) =>
+        @_loadSalesItemSelector type, pos,
+          $(event.currentTarget).val(), getData()
         false
       )
       .find('form')

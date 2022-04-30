@@ -4,7 +4,7 @@
 <div class="table-responsive">
   <g:layoutBody />
 </div>
-<nav class="text-center">
+<nav class="pagination-container">
   <div class="pagination-container-xs">
     <g:paginate total="${total}" maxsteps="3" class="pagination-sm"/>
   </div>

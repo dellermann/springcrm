@@ -1,7 +1,7 @@
 /*
  * invoicing-transaction.less
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2022, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 @import "application";
 @import "_typeahead";
+@import "_lists";
 
 
 // control styles
@@ -133,9 +134,15 @@
   .search-form {
     width: auto;
   }
-  .pagination {
-    margin-bottom: 0;
+  .pagination-container {
     margin-top: (@line-height-computed / 2);
+
+    > div {
+      justify-content: center;
+    }
+    > .pagination {
+      margin-bottom: 0;
+    }
   }
 }
 

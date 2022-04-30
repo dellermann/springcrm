@@ -4,6 +4,7 @@
 * Feature: Seitenauswähler hinzugefügt
 * Feature: Jahreswähler für Angebote, Verkaufsbestellungen, Rechnungen, 
   Mahnungen, Gutschriften und Einkaufsrechnungen implementiert
+* Fehlerbehebung: Ladegeschwindigkeit des Rechnungsausgangsbuchs erhöht
 * Fehlerbehebung: Rechnungspositionen verschwanden beim Erstellen einer Mahnung
 * Fehlerbehebung: Adressfelder konnten aufgrund eines JavaScript-Fehlers nicht
   von links nach rechts oder umgekehrt kopiert werden
