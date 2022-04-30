@@ -75,7 +75,6 @@ logger 'org.grails.plugins.coffee.compiler', INFO
 //logger 'org.grails.datastore', DEBUG
 //logger 'org.grails.orm', DEBUG
 //logger 'org.grails.plugins.databasemigration.liquibase', DEBUG
-logger 'grails.app.controllers.org.amcworld.springcrm.ReportController', DEBUG
 
 /* log SQL statements */
 //logger 'org.hibernate.SQL', TRACE

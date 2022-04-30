@@ -109,6 +109,9 @@ class SeqNumberService {
                     sn.startValue = num
                 }
             }
+            if (cls == PurchaseInvoice) {
+                sn.startValue = num
+            }
         }
 
         res
